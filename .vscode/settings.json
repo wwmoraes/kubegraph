@@ -1,0 +1,13 @@
+{
+  "cSpell.words": [
+    "cgraph",
+    "configurators",
+    "goccy",
+    "kgraph",
+    "kubegraph",
+    "rbac"
+  ],
+  "search.exclude": {
+    "**/vendor": true,
+  }
+}
