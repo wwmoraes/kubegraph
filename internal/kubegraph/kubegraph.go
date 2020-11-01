@@ -11,10 +11,6 @@ import (
 	"github.com/goccy/go-graphviz/cgraph"
 	"github.com/wwmoraes/kubegraph/internal/adapters"
 	"github.com/wwmoraes/kubegraph/internal/utils"
-	appsV1 "k8s.io/api/apps/v1"
-	v1 "k8s.io/api/core/v1"
-	rbacV1 "k8s.io/api/rbac/v1"
-	rbacV1beta1 "k8s.io/api/rbac/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -200,42 +196,6 @@ func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*cgraph.Node, error) 
 	}
 
 	return node, err
-}
-
-// CreateStatefulSetAppsV1 creates a new StatefulSet node on the graph
-func (kgraph KubeGraph) CreateStatefulSetAppsV1(statefulSet *appsV1.StatefulSet) (*cgraph.Node, error) {
-	name := fmt.Sprintf("%s.%s~%s", statefulSet.APIVersion, statefulSet.Kind, statefulSet.Name)
-	return kgraph.createStyledNode(name, statefulSet.Name, "icons/deploy.svg")
-}
-
-// CreateSecretV1 creates a new Secret node on the graph
-func (kgraph KubeGraph) CreateSecretV1(secret *v1.Secret) (*cgraph.Node, error) {
-	name := fmt.Sprintf("%s.%s~%s", secret.APIVersion, secret.Kind, secret.Name)
-	return kgraph.createStyledNode(name, secret.Name, "icons/secret.svg")
-}
-
-// CreateServiceV1 creates a new Service node on the graph
-func (kgraph KubeGraph) CreateServiceV1(service *v1.Service) (*cgraph.Node, error) {
-	name := fmt.Sprintf("%s.%s~%s", service.APIVersion, service.Kind, service.Name)
-	return kgraph.createStyledNode(name, service.Name, "icons/svc.svg")
-}
-
-// CreateClusterRoleV1 creates a new ClusterRole node on the graph
-func (kgraph KubeGraph) CreateClusterRoleV1(clusterRole *rbacV1.ClusterRole) (*cgraph.Node, error) {
-	name := fmt.Sprintf("%s.%s~%s", clusterRole.APIVersion, clusterRole.Kind, clusterRole.Name)
-	return kgraph.createStyledNode(name, clusterRole.Name, "icons/sa.svg")
-}
-
-// CreateClusterRoleV1beta1 creates a new ClusterRole node on the graph
-func (kgraph KubeGraph) CreateClusterRoleV1beta1(clusterRole *rbacV1beta1.ClusterRole) (*cgraph.Node, error) {
-	name := fmt.Sprintf("%s.%s~%s", clusterRole.APIVersion, clusterRole.Kind, clusterRole.Name)
-	return kgraph.createStyledNode(name, clusterRole.Name, "icons/c-role.svg")
-}
-
-// CreateClusterRoleBindingV1beta1 creates a new ClusterRoleBinding node on the graph
-func (kgraph KubeGraph) CreateClusterRoleBindingV1beta1(clusterRoleBinding *rbacV1beta1.ClusterRoleBinding) (*cgraph.Node, error) {
-	name := fmt.Sprintf("%s.%s~%s", clusterRoleBinding.APIVersion, clusterRoleBinding.Kind, clusterRoleBinding.Name)
-	return kgraph.createStyledNode(name, clusterRoleBinding.Name, "icons/crb.svg")
 }
 
 // ConnectNodes creates edges between the nodes
