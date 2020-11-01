@@ -2,9 +2,12 @@ package adapters
 
 import (
 	"fmt"
+	"log"
 	"reflect"
 
 	"github.com/goccy/go-graphviz/cgraph"
+	"github.com/wwmoraes/kubegraph/internal/utils"
+	policyV1beta1 "k8s.io/api/policy/v1beta1"
 	rbacV1beta1 "k8s.io/api/rbac/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -52,5 +55,35 @@ func (adapter adapterRbacV1beta1Role) Connect(statefulGraph StatefulGraph, sourc
 
 // Configure connects the resources on this adapter with its dependencies
 func (adapter adapterRbacV1beta1Role) Configure(statefulGraph StatefulGraph) error {
+	podSecurityPolicyV1beta1Adapter, err := GetAdapterFor(reflect.TypeOf(&policyV1beta1.PodSecurityPolicy{}))
+	if err != nil {
+		log.Println(fmt.Errorf("warning[%s configure]: %v", adapter.GetType().String(), err))
+	}
+
+	objects, err := statefulGraph.GetObjects(adapter.GetType())
+	if err != nil {
+		return err
+	}
+	for resourceName, resourceObject := range objects {
+		resource, err := adapter.tryCastObject(resourceObject)
+		if err != nil {
+			return err
+		}
+		resourceNode, err := statefulGraph.GetNode(adapter.GetType(), resourceName)
+		if err != nil {
+			return err
+		}
+
+		for _, rule := range resource.Rules {
+			if utils.ContainsString(rule.ResourceNames, "podsecuritypolicies") &&
+				utils.ContainsString(rule.Verbs, "use") {
+				for _, podSecurityPolicyResourceName := range rule.ResourceNames {
+					if utils.ContainsString(rule.APIGroups, "policy") {
+						podSecurityPolicyV1beta1Adapter.Connect(statefulGraph, resourceNode, podSecurityPolicyResourceName)
+					}
+				}
+			}
+		}
+	}
 	return nil
 }
