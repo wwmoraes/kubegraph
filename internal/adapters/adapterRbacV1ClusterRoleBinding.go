@@ -12,15 +12,21 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type adapterRbacV1ClusterRoleBinding struct{}
+type adapterRbacV1ClusterRoleBinding struct {
+	Resource
+}
 
 func init() {
-	RegisterResourceAdapter(&adapterRbacV1ClusterRoleBinding{})
+	RegisterResourceAdapter(&adapterRbacV1ClusterRoleBinding{
+		Resource{
+			resourceType: reflect.TypeOf(&rbacV1.ClusterRoleBinding{}),
+		},
+	})
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterRbacV1ClusterRoleBinding) GetType() reflect.Type {
-	return reflect.TypeOf(&rbacV1.ClusterRoleBinding{})
+	return adapter.resourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions

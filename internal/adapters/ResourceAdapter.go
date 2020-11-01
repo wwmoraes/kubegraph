@@ -10,6 +10,10 @@ import (
 
 var resourceAdapters = make(map[reflect.Type]ResourceAdapter)
 
+type Resource struct {
+	resourceType reflect.Type
+}
+
 // ResourceAdapter instructions on how to deal with a given kubernetes kind
 type ResourceAdapter interface {
 	// GetType returns the reflected type of the k8s kind managed by this instance

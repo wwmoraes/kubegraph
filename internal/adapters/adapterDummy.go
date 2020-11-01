@@ -28,15 +28,21 @@ func (d dummy) DeepCopyObject() runtime.Object {
 	return dummy{}
 }
 
-type adapterCoreV1Dummy struct{}
+type adapterCoreV1Dummy struct {
+	Resource
+}
 
 func init() {
-	RegisterResourceAdapter(&adapterCoreV1Dummy{})
+	RegisterResourceAdapter(&adapterCoreV1Dummy{
+		Resource{
+			resourceType: reflect.TypeOf(&dummy{}),
+		},
+	})
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterCoreV1Dummy) GetType() reflect.Type {
-	return reflect.TypeOf(&dummy{})
+	return adapter.resourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions

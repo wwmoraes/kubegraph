@@ -10,15 +10,21 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type adapterCoreV1Service struct{}
+type adapterCoreV1Service struct {
+	Resource
+}
 
 func init() {
-	RegisterResourceAdapter(&adapterCoreV1Service{})
+	RegisterResourceAdapter(&adapterCoreV1Service{
+		Resource{
+			resourceType: reflect.TypeOf(&coreV1.Service{}),
+		},
+	})
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterCoreV1Service) GetType() reflect.Type {
-	return reflect.TypeOf(&coreV1.Service{})
+	return adapter.resourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions

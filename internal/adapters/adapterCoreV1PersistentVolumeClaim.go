@@ -9,15 +9,21 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type adapterCoreV1PersistentVolumeClaim struct{}
+type adapterCoreV1PersistentVolumeClaim struct {
+	Resource
+}
 
 func init() {
-	RegisterResourceAdapter(&adapterCoreV1PersistentVolumeClaim{})
+	RegisterResourceAdapter(&adapterCoreV1PersistentVolumeClaim{
+		Resource{
+			resourceType: reflect.TypeOf(&coreV1.PersistentVolumeClaim{}),
+		},
+	})
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterCoreV1PersistentVolumeClaim) GetType() reflect.Type {
-	return reflect.TypeOf(&coreV1.PersistentVolumeClaim{})
+	return adapter.resourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions

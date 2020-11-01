@@ -11,15 +11,21 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type adapterBatchV1Job struct{}
+type adapterBatchV1Job struct {
+	Resource
+}
 
 func init() {
-	RegisterResourceAdapter(&adapterBatchV1Job{})
+	RegisterResourceAdapter(&adapterBatchV1Job{
+		Resource{
+			resourceType: reflect.TypeOf(&batchV1.Job{}),
+		},
+	})
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterBatchV1Job) GetType() reflect.Type {
-	return reflect.TypeOf(&batchV1.Job{})
+	return adapter.resourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
