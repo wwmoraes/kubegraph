@@ -3,6 +3,7 @@ package kubegraph
 import (
 	"fmt"
 	"log"
+	"os"
 	"reflect"
 	goRuntime "runtime"
 	"strings"
@@ -16,8 +17,9 @@ import (
 
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
-	graphviz *graphviz.Graphviz
-	graph    *cgraph.Graph
+	graphviz  *graphviz.Graphviz
+	graph     *cgraph.Graph
+	iconsPath string
 	// unknownArea *cgraph.Graph
 	nodes   map[reflect.Type]map[string]*cgraph.Node
 	objects map[reflect.Type]map[string]runtime.Object
@@ -60,6 +62,11 @@ func New() (KubeGraph, error) {
 	goRuntime.SetFinalizer(graph, closeGraph)
 	goRuntime.SetFinalizer(gz, closeGraphviz)
 
+	path, err := os.Getwd()
+	if err != nil {
+		return KubeGraph{}, err
+	}
+
 	// initialize nodes map with registered adapter types
 	nodes := make(map[reflect.Type]map[string]*cgraph.Node)
 	for adapterType := range adapters.GetAdapters() {
@@ -73,27 +80,15 @@ func New() (KubeGraph, error) {
 	}
 
 	kubegraph := KubeGraph{
-		graphviz: gz,
-		graph:    graph,
+		graphviz:  gz,
+		graph:     graph,
+		iconsPath: path,
 		// unknownArea: unknownArea,
 		nodes:   nodes,
 		objects: objects,
 	}
 
 	return kubegraph, nil
-}
-
-// AddStyledNode creates a new styled node with the given resource
-func (kgraph KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (*cgraph.Node, error) {
-	node, err := kgraph.createStyledNode(nodeName, resourceName, icon)
-	if err != nil {
-		return nil, err
-	}
-
-	kgraph.addNode(resourceType, resourceName, node)
-	kgraph.addObject(resourceType, resourceName, resourceObject)
-
-	return node, nil
 }
 
 func (kgraph KubeGraph) createStyledNode(name string, label string, icon string) (*cgraph.Node, error) {
@@ -125,46 +120,21 @@ func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *cg
 	kgraph.nodes[nodeType][nodeName] = node
 }
 
-// GetNode gets a node by type/name
-func (kgraph KubeGraph) GetNode(nodeType reflect.Type, nodeName string) (*cgraph.Node, error) {
-	typeNodes, typeExists := kgraph.nodes[nodeType]
 	if !typeExists {
-		return nil, fmt.Errorf("no nodes for type %s found", nodeType.String())
 	}
 
-	node, nodeExists := typeNodes[nodeName]
-	if !nodeExists {
-		return nil, fmt.Errorf("node %s/%s not found", nodeType.String(), nodeName)
-	}
-
-	return node, nil
 }
 
-// GetObjects gets all objects in store
-func (kgraph KubeGraph) GetObjects(objectType reflect.Type) (map[string]runtime.Object, error) {
-	typeObjects, typeExists := kgraph.objects[objectType]
-	if !typeExists {
-		return nil, fmt.Errorf("no objects for type %s found", objectType.String())
 	}
 
-	return typeObjects, nil
 }
 
 func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) {
 	kgraph.objects[objectType][objectName] = object
 }
 
-// LinkNode links the node to the target node type/name, if it exists
-func (kgraph KubeGraph) LinkNode(node *cgraph.Node, targetNodeType reflect.Type, targetNodeName string) (*cgraph.Edge, error) {
-	targetNode, ok := kgraph.nodes[targetNodeType][targetNodeName]
-	// TODO get or create unknown node and link here
-	if !ok {
-		// log.Printf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
-		return nil, fmt.Errorf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
 	}
 
-	edgeName := fmt.Sprintf("%s-%s", node.Name(), targetNode.Name())
-	return kgraph.graph.CreateEdge(edgeName, node, targetNode)
 }
 
 func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*cgraph.Node, error) {
