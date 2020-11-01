@@ -6,6 +6,7 @@ import (
 	"reflect"
 
 	"github.com/goccy/go-graphviz/cgraph"
+	"github.com/wwmoraes/kubegraph/internal/utils"
 	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -91,7 +92,17 @@ func (adapter adapterAppsV1Deployment) Configure(statefulGraph StatefulGraph) er
 			return err
 		}
 
-		podAdapter.Connect(statefulGraph, resourceNode, resource.Name)
+		objects, err := statefulGraph.GetObjects(reflect.TypeOf(&coreV1.Pod{}))
+		if err != nil {
+			return err
+		}
+		for podName, podObject := range objects {
+			pod := podObject.(*coreV1.Pod)
+
+			if utils.MatchLabels(resource.Spec.Selector.MatchLabels, pod.Labels) {
+				podAdapter.Connect(statefulGraph, resourceNode, podName)
+			}
+		}
 	}
 	return nil
 }
