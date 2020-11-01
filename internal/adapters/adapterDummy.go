@@ -1,9 +1,5 @@
 package adapters
 
-/*
- * remove the dummy struct and replace the references with a proper kubernetes API resource
- */
-
 import (
 	"fmt"
 	"log"
@@ -15,6 +11,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
+/*
+ * remove the dummy struct and replace the references with a proper kubernetes API resource
+ */
 type dummy struct {
 	metaV1.TypeMeta
 	metaV1.ObjectMeta

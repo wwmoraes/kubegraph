@@ -1,9 +1,5 @@
 package adapters
 
-/*
- * remove the dummy struct and replace the references with a proper kubernetes API resource
- */
-
 import (
 	"fmt"
 	"log"
