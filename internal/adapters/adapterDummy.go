@@ -86,7 +86,7 @@ func (adapter adapterCoreV1Dummy) Configure(statefulGraph StatefulGraph) error {
 		}
 
 		// do something with each resource
-		log.Printf("dummy resource %s, node %s", resource.Name, resourceNode.Name())
+		log.Printf("%s resource %s, node %s", adapter.GetType().String(), resource.Name, resourceNode.Name())
 	}
 	return nil
 }
