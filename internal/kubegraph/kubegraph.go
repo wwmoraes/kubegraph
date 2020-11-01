@@ -116,25 +116,33 @@ func (kgraph KubeGraph) createStyledNode(name string, label string, icon string)
 	return node, nil
 }
 
-func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *cgraph.Node) {
-	kgraph.nodes[nodeType][nodeName] = node
-}
-
+func (kgraph KubeGraph) getNodes(objectType reflect.Type) (map[string]*cgraph.Node, error) {
+	typeNodes, typeExists := kgraph.nodes[objectType]
 	if !typeExists {
+		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
 	}
 
+	return typeNodes, nil
 }
 
+func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *cgraph.Node) error {
+	nodes, err := kgraph.getNodes(nodeType)
+	if err != nil {
+		return err
 	}
 
+	nodes[nodeName] = node
+	return nil
 }
 
-func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) {
-	kgraph.objects[objectType][objectName] = object
-}
-
+func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
+	objects, err := kgraph.GetObjects(objectType)
+	if err != nil {
+		return err
 	}
 
+	objects[objectName] = object
+	return nil
 }
 
 func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*cgraph.Node, error) {
