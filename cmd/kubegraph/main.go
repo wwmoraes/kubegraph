@@ -92,10 +92,10 @@ func main() {
 	kubegraphInstance.ConnectNodes()
 
 	log.Println("generating graph...")
-	if err := kubegraphInstance.Render("graph.dot", graphviz.XDOT); err != nil {
+	if err := kubegraphInstance.Render("tmp/graph.dot", graphviz.XDOT); err != nil {
 		log.Fatal(err)
 	}
-	if err := kubegraphInstance.Render("graph.svg", graphviz.SVG); err != nil {
+	if err := kubegraphInstance.Render("tmp/graph.svg", graphviz.SVG); err != nil {
 		log.Fatal(err)
 	}
 }
