@@ -74,7 +74,7 @@ func main() {
 
 		obj, _, err := decode([]byte(document), nil, nil)
 		if err != nil {
-			log.Printf("unable to decode document:\n%++v\n", err)
+			log.Printf("unable to decode document: %++v\n", err)
 			continue
 		}
 
@@ -85,9 +85,7 @@ func main() {
 	}
 
 	log.Println("connecting nodes...")
-	if err := kubegraphInstance.ConnectNodes(); err != nil {
-		log.Fatal(err)
-	}
+	kubegraphInstance.ConnectNodes()
 
 	log.Println("generating graph...")
 	if err := kubegraphInstance.Render("graph.dot", graphviz.XDOT); err != nil {

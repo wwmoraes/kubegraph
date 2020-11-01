@@ -4,28 +4,30 @@ import (
 	"fmt"
 	"log"
 	"reflect"
-	"runtime"
+	goRuntime "runtime"
 	"strings"
 
 	"github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
+	"github.com/wwmoraes/kubegraph/internal/adapters"
+	"github.com/wwmoraes/kubegraph/internal/utils"
 	appsV1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	rbacV1 "k8s.io/api/rbac/v1"
 	rbacV1beta1 "k8s.io/api/rbac/v1beta1"
-	apiMachineryRuntime "k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// KubeGraph graphviz helper to create a kubernetes resource graph
+// KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
 	graphviz *graphviz.Graphviz
 	graph    *cgraph.Graph
 	// unknownArea *cgraph.Graph
 	nodes   map[reflect.Type]map[string]*cgraph.Node
-	objects map[reflect.Type]map[string]apiMachineryRuntime.Object
+	objects map[reflect.Type]map[string]runtime.Object
 }
 
-// New creates an instance of KubernetesGraph
+// New creates an instance of KubeGraph
 func New() (KubeGraph, error) {
 	gz := graphviz.New()
 
@@ -59,19 +61,19 @@ func New() (KubeGraph, error) {
 	// 	SetLayout("dot").
 	// 	SetStyle(cgraph.InvisibleGraphStyle)
 
-	runtime.SetFinalizer(graph, closeGraph)
-	runtime.SetFinalizer(gz, closeGraphviz)
+	goRuntime.SetFinalizer(graph, closeGraph)
+	goRuntime.SetFinalizer(gz, closeGraphviz)
 
 	// initialize nodes map with registered adapter types
 	nodes := make(map[reflect.Type]map[string]*cgraph.Node)
-	for adapterType := range adapters {
+	for adapterType := range adapters.GetAdapters() {
 		nodes[adapterType] = make(map[string]*cgraph.Node)
 	}
 
 	// initialize object map with registered adapter types
-	objects := make(map[reflect.Type]map[string]apiMachineryRuntime.Object)
-	for adapterType := range adapters {
-		objects[adapterType] = make(map[string]apiMachineryRuntime.Object)
+	objects := make(map[reflect.Type]map[string]runtime.Object)
+	for adapterType := range adapters.GetAdapters() {
+		objects[adapterType] = make(map[string]runtime.Object)
 	}
 
 	kubegraph := KubeGraph{
@@ -85,7 +87,8 @@ func New() (KubeGraph, error) {
 	return kubegraph, nil
 }
 
-func (kgraph KubeGraph) addStyledNode(resourceType reflect.Type, resourceObject apiMachineryRuntime.Object, nodeName string, resourceName string, icon string) (*cgraph.Node, error) {
+// AddStyledNode creates a new styled node with the given resource
+func (kgraph KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (*cgraph.Node, error) {
 	node, err := kgraph.createStyledNode(nodeName, resourceName, icon)
 	if err != nil {
 		return nil, err
@@ -105,7 +108,7 @@ func (kgraph KubeGraph) createStyledNode(name string, label string, icon string)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
 	// 253 characters long)
-	labelLines := stringChunks(label, 16)
+	labelLines := utils.StringChunks(label, 16)
 	labelLinesCount := len(labelLines)
 	minHeight := 1.9 + 0.4*float64(labelLinesCount)
 	minWidth := 1.9
@@ -126,23 +129,51 @@ func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *cg
 	kgraph.nodes[nodeType][nodeName] = node
 }
 
-func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, object apiMachineryRuntime.Object) {
+// GetNode gets a node by type/name
+func (kgraph KubeGraph) GetNode(nodeType reflect.Type, nodeName string) (*cgraph.Node, error) {
+	typeNodes, typeExists := kgraph.nodes[nodeType]
+	if !typeExists {
+		return nil, fmt.Errorf("no nodes for type %s found", nodeType.String())
+	}
+
+	node, nodeExists := typeNodes[nodeName]
+	if !nodeExists {
+		return nil, fmt.Errorf("node %s/%s not found", nodeType.String(), nodeName)
+	}
+
+	return node, nil
+}
+
+// GetObjects gets all objects in store
+func (kgraph KubeGraph) GetObjects(objectType reflect.Type) (map[string]runtime.Object, error) {
+	typeObjects, typeExists := kgraph.objects[objectType]
+	if !typeExists {
+		return nil, fmt.Errorf("no objects for type %s found", objectType.String())
+	}
+
+	return typeObjects, nil
+}
+
+func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) {
 	kgraph.objects[objectType][objectName] = object
 }
 
-func (kgraph KubeGraph) linkNode(node *cgraph.Node, targetNodeType reflect.Type, targetNodeName string) (*cgraph.Edge, error) {
+// LinkNode links the node to the target node type/name, if it exists
+func (kgraph KubeGraph) LinkNode(node *cgraph.Node, targetNodeType reflect.Type, targetNodeName string) (*cgraph.Edge, error) {
 	targetNode, ok := kgraph.nodes[targetNodeType][targetNodeName]
+	// TODO get or create unknown node and link here
 	if !ok {
 		// log.Printf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
 		return nil, fmt.Errorf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
 	}
 
-	return kgraph.graph.CreateEdge("", node, targetNode)
+	edgeName := fmt.Sprintf("%s-%s", node.Name(), targetNode.Name())
+	return kgraph.graph.CreateEdge(edgeName, node, targetNode)
 }
 
-func (kgraph KubeGraph) createUnknown(obj apiMachineryRuntime.Object) (*cgraph.Node, error) {
+func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*cgraph.Node, error) {
 	obj.GetObjectKind()
-	metadata, _ := apiMachineryRuntime.DefaultUnstructuredConverter.ToUnstructured(obj)
+	metadata, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 	name := fmt.Sprintf(
 		"%s.%s~%s",
 		metadata["apiVersion"].(string),
@@ -208,28 +239,20 @@ func (kgraph KubeGraph) CreateClusterRoleBindingV1beta1(clusterRoleBinding *rbac
 }
 
 // ConnectNodes creates edges between the nodes
-func (kgraph KubeGraph) ConnectNodes() error {
-	for _, adapter := range adapters {
+func (kgraph KubeGraph) ConnectNodes() {
+	for _, adapter := range adapters.GetAdapters() {
 		err := adapter.Configure(kgraph)
 		if err != nil {
-			return err
+			log.Println(err)
 		}
 	}
-
-	return nil
 }
 
 // Transform creates a node on the graph for the resource
-func (kgraph KubeGraph) Transform(obj apiMachineryRuntime.Object) (*cgraph.Node, error) {
-	adapter, ok := adapters[reflect.TypeOf(obj)]
-	if !ok {
-		log.Printf(
-			"Unsupported resource %s.%s\n",
-			obj.GetObjectKind().GroupVersionKind().Version,
-			obj.GetObjectKind().GroupVersionKind().Kind,
-		)
-		// return kgraph.createUnknown(obj), nil
-		return nil, nil
+func (kgraph KubeGraph) Transform(obj runtime.Object) (*cgraph.Node, error) {
+	adapter, err := adapters.GetAdapterFor(reflect.TypeOf(obj))
+	if err != nil {
+		return nil, err
 	}
 
 	return adapter.Create(kgraph, obj)
