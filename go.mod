@@ -7,6 +7,7 @@ require (
 	github.com/Azure/go-autorest/autorest v0.9.6 // indirect
 	github.com/goccy/go-graphviz v0.0.8
 	github.com/gophercloud/gophercloud v0.1.0 // indirect
+	github.com/spf13/cobra v1.1.1
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	k8s.io/api v0.19.3
 	k8s.io/apiextensions-apiserver v0.19.3

@@ -1,101 +1,79 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
-	"regexp"
+	"path"
 	"strings"
 
-	apiExtensionsApiServerScheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
-	"k8s.io/client-go/kubernetes/scheme"
-	aggregatorScheme "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset/scheme"
-
 	"github.com/goccy/go-graphviz"
-	kubegraph "github.com/wwmoraes/kubegraph/internal/kubegraph"
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	"github.com/wwmoraes/kubegraph/internal/loader"
 )
 
+var rootCmd = &cobra.Command{
+	Use:     "kubegraph [file]",
+	Short:   "Kubernetes resource graph generator",
+	Long:    "generates a graph of kubernetes resources and their dependencies/relations",
+	Args:    cobra.ExactArgs(1),
+	PreRunE: preRun,
+	RunE:    run,
+}
+
+var rootFlags = struct {
+	outputPath string
+}{}
+
 func main() {
-	if len(os.Args) != 2 {
-		log.Fatalln(errors.New("usage: kubegraph <file>"))
+	if err := rootCmd.Execute(); err != nil {
+		log.Fatal(err)
 	}
+}
 
-	_ = aggregatorScheme.AddToScheme(scheme.Scheme)
-	_ = apiExtensionsApiServerScheme.AddToScheme(scheme.Scheme)
-	decode := scheme.Codecs.UniversalDeserializer().Decode
+func init() {
+	rootCmd.Flags().StringVarP(&rootFlags.outputPath, "output-path", "o", "", "the output path of the graph dot and svg")
+}
 
-	log.Println("reading file...")
-	fileBytes, err := ioutil.ReadFile(os.Args[1])
+func preRun(cmd *cobra.Command, args []string) error {
+	sourceFileName := args[0]
+
+	// check if file is, uh, a file
+	fileInfo, err := os.Stat(sourceFileName)
 	if err != nil {
-		log.Fatal(err)
+		return err
+	}
+	if !fileInfo.Mode().IsRegular() {
+		return errors.Errorf("%s is not a valid file", sourceFileName)
 	}
 
-	// normalize line breaks
-	log.Println("normalizing linebreaks...")
-	fileString := string(fileBytes[:])
-	fileString = strings.ReplaceAll(fileString, "\r\n", "\n")
-	fileString = strings.ReplaceAll(fileString, "\r", "\n")
+	// ensure the output path exists
+	if err := os.MkdirAll(rootFlags.outputPath, 0755); err != nil {
+		return err
+	}
 
-	// removes all comments from yaml and json
-	log.Println("removing comments and empty lines...")
-	commentLineMatcher, err := regexp.Compile("^[ ]*((#|//).*)?$")
+	return nil
+}
+
+func run(cmd *cobra.Command, args []string) error {
+	sourceFileName := args[0]
+
+	// parse file
+	kubegraphInstance, err := loader.FromYAML(sourceFileName)
 	if err != nil {
-		log.Fatal(err)
-	}
-	fileStringLines := strings.Split(fileString, "\n")
-	var cleanFileString strings.Builder
-	for _, line := range fileStringLines {
-		if commentLineMatcher.MatchString(line) {
-			continue
-		}
-		if line == "\n" || line == "" {
-			continue
-		}
-
-		_, err := cleanFileString.WriteString(fmt.Sprintf("%s\n", line))
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-	fileString = cleanFileString.String()
-	// ioutil.WriteFile("clean.yaml", []byte(fileString), 0644)
-
-	log.Println("splitting documents...")
-	documents := strings.Split(fileString, "---")
-
-	log.Println("initializing kubegraph instance...")
-	kubegraphInstance, err := kubegraph.New()
-	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	for _, document := range documents {
-		if document == "\n" || document == "" {
-			continue
-		}
-
-		obj, _, err := decode([]byte(document), nil, nil)
-		if err != nil {
-			log.Printf("unable to decode document: %++v\n", err)
-			continue
-		}
-
-		_, err = kubegraphInstance.Transform(obj)
-		if err != nil {
-			log.Println(err)
-		}
+	baseFileName := path.Base(strings.TrimSuffix(sourceFileName, path.Ext(sourceFileName)))
+	log.Println("generating dot graph...")
+	if err := kubegraphInstance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "dot")), graphviz.XDOT); err != nil {
+		return err
+	}
+	log.Println("generating svg graph...")
+	if err := kubegraphInstance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "svg")), graphviz.SVG); err != nil {
+		return err
 	}
 
-	log.Println("connecting nodes...")
-	kubegraphInstance.ConnectNodes()
-
-	log.Println("generating graph...")
-	if err := kubegraphInstance.Render("tmp/graph.dot", graphviz.XDOT); err != nil {
-		log.Fatal(err)
-	}
-	if err := kubegraphInstance.Render("tmp/graph.svg", graphviz.SVG); err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
