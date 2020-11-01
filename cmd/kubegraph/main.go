@@ -9,7 +9,9 @@ import (
 	"regexp"
 	"strings"
 
+	apiExtensionsApiServerScheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/client-go/kubernetes/scheme"
+	aggregatorScheme "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset/scheme"
 
 	"github.com/goccy/go-graphviz"
 	kubegraph "github.com/wwmoraes/kubegraph/internal/kubegraph"
@@ -20,6 +22,8 @@ func main() {
 		log.Fatalln(errors.New("usage: kubegraph <file>"))
 	}
 
+	_ = aggregatorScheme.AddToScheme(scheme.Scheme)
+	_ = apiExtensionsApiServerScheme.AddToScheme(scheme.Scheme)
 	decode := scheme.Codecs.UniversalDeserializer().Decode
 
 	log.Println("reading file...")
