@@ -5,8 +5,10 @@ go 1.15
 require (
 	cloud.google.com/go v0.51.0 // indirect
 	github.com/Azure/go-autorest/autorest v0.9.6 // indirect
+	github.com/go-bindata/go-bindata v3.1.2+incompatible // indirect
 	github.com/goccy/go-graphviz v0.0.8
 	github.com/gophercloud/gophercloud v0.1.0 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.1.1
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	k8s.io/api v0.19.3
