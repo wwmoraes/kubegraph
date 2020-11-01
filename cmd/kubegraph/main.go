@@ -48,6 +48,10 @@ func preRun(cmd *cobra.Command, args []string) error {
 		return errors.Errorf("%s is not a valid file", sourceFileName)
 	}
 
+	if rootFlags.outputPath == "" {
+		return nil
+	}
+
 	// ensure the output path exists
 	if err := os.MkdirAll(rootFlags.outputPath, 0755); err != nil {
 		return err

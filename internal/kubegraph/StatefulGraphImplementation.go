@@ -12,6 +12,7 @@ import (
 // AddStyledNode creates a new styled node with the given resource
 func (kgraph KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (*cgraph.Node, error) {
 	iconPath := path.Join(kgraph.iconsPath, icon)
+
 	node, err := kgraph.createStyledNode(nodeName, resourceName, iconPath)
 	if err != nil {
 		return nil, err
