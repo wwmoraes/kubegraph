@@ -23,6 +23,15 @@ func init() {
 	})
 }
 
+func (adapter adapterBatchV1Job) tryCastObject(obj runtime.Object) (*batchV1.Job, error) {
+	casted, ok := obj.(*batchV1.Job)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), adapter.GetType().String())
+	}
+
+	return casted, nil
+}
+
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterBatchV1Job) GetType() reflect.Type {
 	return adapter.resourceType
@@ -30,7 +39,10 @@ func (adapter adapterBatchV1Job) GetType() reflect.Type {
 
 // Create add a graph node for the given object and stores it for further actions
 func (adapter adapterBatchV1Job) Create(statefulGraph StatefulGraph, obj runtime.Object) (*cgraph.Node, error) {
-	resource := obj.(*batchV1.Job)
+	resource, err := adapter.tryCastObject(obj)
+	if err != nil {
+		return nil, err
+	}
 	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
 	resourceNode, err := statefulGraph.AddStyledNode(adapter.GetType(), obj, name, resource.Name, "icons/job.svg")
 	if err != nil {
@@ -70,7 +82,10 @@ func (adapter adapterBatchV1Job) Configure(statefulGraph StatefulGraph) error {
 	}
 
 	for resourceName, resourceObject := range objects {
-		resource := resourceObject.(*batchV1.Job)
+		resource, err := adapter.tryCastObject(resourceObject)
+		if err != nil {
+			return err
+		}
 		resourceNode, err := statefulGraph.GetNode(adapter.GetType(), resourceName)
 		if err != nil {
 			return err

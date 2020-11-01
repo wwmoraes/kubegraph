@@ -21,6 +21,15 @@ func init() {
 	})
 }
 
+func (adapter adapterRbacV1Role) tryCastObject(obj runtime.Object) (*rbacV1.Role, error) {
+	casted, ok := obj.(*rbacV1.Role)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), adapter.GetType().String())
+	}
+
+	return casted, nil
+}
+
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterRbacV1Role) GetType() reflect.Type {
 	return adapter.resourceType
@@ -28,7 +37,10 @@ func (adapter adapterRbacV1Role) GetType() reflect.Type {
 
 // Create add a graph node for the given object and stores it for further actions
 func (adapter adapterRbacV1Role) Create(statefulGraph StatefulGraph, obj runtime.Object) (*cgraph.Node, error) {
-	resource := obj.(*rbacV1.Role)
+	resource, err := adapter.tryCastObject(obj)
+	if err != nil {
+		return nil, err
+	}
 	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
 	return statefulGraph.AddStyledNode(adapter.GetType(), obj, name, resource.Name, "icons/role.svg")
 }

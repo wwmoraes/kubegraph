@@ -23,6 +23,15 @@ func init() {
 	})
 }
 
+func (adapter adapterAppsV1StatefulSet) tryCastObject(obj runtime.Object) (*appsV1.StatefulSet, error) {
+	casted, ok := obj.(*appsV1.StatefulSet)
+	if !ok {
+		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), adapter.GetType().String())
+	}
+
+	return casted, nil
+}
+
 // GetType returns the reflected type of the k8s kind managed by this instance
 func (adapter adapterAppsV1StatefulSet) GetType() reflect.Type {
 	return adapter.resourceType
@@ -30,7 +39,10 @@ func (adapter adapterAppsV1StatefulSet) GetType() reflect.Type {
 
 // Create add a graph node for the given object and stores it for further actions
 func (adapter adapterAppsV1StatefulSet) Create(statefulGraph StatefulGraph, obj runtime.Object) (*cgraph.Node, error) {
-	resource := obj.(*appsV1.StatefulSet)
+	resource, err := adapter.tryCastObject(obj)
+	if err != nil {
+		return nil, err
+	}
 	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
 	resourceNode, err := statefulGraph.AddStyledNode(adapter.GetType(), obj, name, resource.Name, "icons/sts.svg")
 	if err != nil {
@@ -70,7 +82,10 @@ func (adapter adapterAppsV1StatefulSet) Configure(statefulGraph StatefulGraph) e
 	}
 
 	for resourceName, resourceObject := range objects {
-		resource := resourceObject.(*appsV1.StatefulSet)
+		resource, err := adapter.tryCastObject(resourceObject)
+		if err != nil {
+			return err
+		}
 		resourceNode, err := statefulGraph.GetNode(adapter.GetType(), resourceName)
 		if err != nil {
 			return err
