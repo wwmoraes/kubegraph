@@ -71,6 +71,7 @@ func (adapter adapterCoreV1Dummy) Connect(statefulGraph StatefulGraph, source *c
 
 // Configure connects the resources on this adapter with its dependencies
 func (adapter adapterCoreV1Dummy) Configure(statefulGraph StatefulGraph) error {
+	log.Printf("please implement a configuration for %s resources", adapter.GetType().String())
 	objects, err := statefulGraph.GetObjects(adapter.GetType())
 	if err != nil {
 		return err
@@ -86,7 +87,7 @@ func (adapter adapterCoreV1Dummy) Configure(statefulGraph StatefulGraph) error {
 		}
 
 		// do something with each resource
-		log.Printf("%s resource %s, node %s", adapter.GetType().String(), resource.Name, resourceNode.Name())
+		log.Printf("nothing to configure for %s, node %s", resource.Name, resourceNode.Name())
 	}
 	return nil
 }
