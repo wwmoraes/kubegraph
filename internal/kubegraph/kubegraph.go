@@ -17,12 +17,11 @@ import (
 
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
-	graphviz  *graphviz.Graphviz
-	graph     *cgraph.Graph
-	iconsPath string
 	// unknownArea *cgraph.Graph
-	nodes   map[reflect.Type]map[string]*cgraph.Node
-	objects map[reflect.Type]map[string]runtime.Object
+	graphviz *graphviz.Graphviz
+	graph    *cgraph.Graph
+	nodes    map[reflect.Type]map[string]*cgraph.Node
+	objects  map[reflect.Type]map[string]runtime.Object
 }
 
 // New creates an instance of KubeGraph
@@ -62,11 +61,6 @@ func New() (KubeGraph, error) {
 	goRuntime.SetFinalizer(graph, closeGraph)
 	goRuntime.SetFinalizer(gz, closeGraphviz)
 
-	path, err := os.Getwd()
-	if err != nil {
-		return KubeGraph{}, err
-	}
-
 	// initialize nodes map with registered adapter types
 	nodes := make(map[reflect.Type]map[string]*cgraph.Node)
 	for adapterType := range adapters.GetAdapters() {
@@ -80,12 +74,11 @@ func New() (KubeGraph, error) {
 	}
 
 	kubegraph := KubeGraph{
-		graphviz:  gz,
-		graph:     graph,
-		iconsPath: path,
 		// unknownArea: unknownArea,
-		nodes:   nodes,
-		objects: objects,
+		graphviz: gz,
+		graph:    graph,
+		nodes:    nodes,
+		objects:  objects,
 	}
 
 	return kubegraph, nil
