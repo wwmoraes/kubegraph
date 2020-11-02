@@ -17,7 +17,6 @@ import (
 
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
-	// unknownArea *cgraph.Graph
 	graphviz *graphviz.Graphviz
 	graph    *cgraph.Graph
 	nodes    map[reflect.Type]map[string]*cgraph.Node
@@ -45,19 +44,6 @@ func New() (KubeGraph, error) {
 		SetLayout("dot").
 		SetStyle(cgraph.RoundedGraphStyle)
 
-	// unknownArea := graph.SubGraph("unknown", 1)
-	// unknownArea.
-	// 	SetNewRank(true).
-	// 	SetPad(1.0).
-	// 	SetRankDir(cgraph.TBRank).
-	// 	SetRankSeparator(0.75).
-	// 	SetNodeSeparator(0.60).
-	// 	SetMargin(0).
-	// 	SetFontSize(15).
-	// 	SetSplines("ortho").
-	// 	SetLayout("dot").
-	// 	SetStyle(cgraph.InvisibleGraphStyle)
-
 	goRuntime.SetFinalizer(graph, closeGraph)
 	goRuntime.SetFinalizer(gz, closeGraphviz)
 
@@ -74,7 +60,6 @@ func New() (KubeGraph, error) {
 	}
 
 	kubegraph := KubeGraph{
-		// unknownArea: unknownArea,
 		graphviz: gz,
 		graph:    graph,
 		nodes:    nodes,
