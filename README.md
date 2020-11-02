@@ -78,11 +78,44 @@ WIP, there's no tests yet 😞
 kubegraph my-multidoc.yaml
 ```
 
+### How to add support for a single/suite of custom resource definitions
+
+First, import the scheme and add it to client-go's scheme on `internal/loader/getDecoder.go@init`:
+
+```go
+import (
+  "k8s.io/client-go/kubernetes/scheme"
+  // import the target scheme
+  myAwesomeScheme "githost.com/owner/repository/pkg/client/clientset/scheme"
+)
+
+func init() {
+  // add the scheme to client-go's scheme
+  _ = myAwesomeScheme.AddToScheme(scheme.Scheme)
+}
+```
+
+then:
+
+1. vendor it with `go mod vendor` to update `go.mod` and `go.sum`
+
+1. add adapters for the kinds on that scheme at `internal/adapters`. You can
+copy from an existing one, or use the `internal/adapters/adapterDummy.go` as a guide.
+
+1. [optional, recommended] add a SVG icon for the new kinds on `icons/` and
+set it on your adapter's `Create` function, on the call to `statefulGraph.AddStyledNode`
+
+1. regenerate the icons embedded asset module with `make icons`
+
+1. commit and profit :D
+
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [Golang](https://golang.org) - Base language
 - [goccy/go-graphviz](https://github.com/goccy/go-graphviz) - Graphviz C bindings
 - [k8s.io/client-go](https://github.com/kubernetes/client-go) - Kubernetes Go client
+- [kubernetes/community](https://github.com/kubernetes/community) - amazing icons
+- [spf13/cobra](github.com/spf13/cobra) - CLI framework
 
 ## ✍️ Authors <a name = "authors"></a>
 

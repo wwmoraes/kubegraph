@@ -8,8 +8,12 @@ import (
 	aggregatorScheme "k8s.io/kube-aggregator/pkg/client/clientset_generated/clientset/scheme"
 )
 
-func getDecoder() func(data []byte, defaults *runtimeSchema.GroupVersionKind, into runtime.Object) (runtime.Object, *runtimeSchema.GroupVersionKind, error) {
+func init() {
 	_ = aggregatorScheme.AddToScheme(scheme.Scheme)
 	_ = apiExtensionsApiServerScheme.AddToScheme(scheme.Scheme)
+	// add any extra schemes here
+}
+
+func getDecoder() func(data []byte, defaults *runtimeSchema.GroupVersionKind, into runtime.Object) (runtime.Object, *runtimeSchema.GroupVersionKind, error) {
 	return scheme.Codecs.UniversalDeserializer().Decode
 }
