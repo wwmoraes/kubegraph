@@ -1,3 +1,7 @@
+<p align="center">
+ <img width=400px height=279px src="https://raw.githubusercontent.com/wwmoraes/kubegraph/master/sample.png" alt="kubegraph sample"></a>
+</p>
+
 <h3 align="center">Kubegraph</h3>
 
 <div align="center">

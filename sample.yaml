@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: a-pod
+  name: my-pod
 spec:
   containers:
-  - image: a-image
-    name: a-container
+  - image: my-image
+    name: my-container
     resources:
       limits:
         cpu: 100m
@@ -20,36 +20,36 @@ spec:
       type: Directory
   - name: environment
     configMap:
-      name: a-cm
+      name: my-cm
   - name: test
     persistentVolumeClaim:
-      claimName: a-pvc
+      claimName: my-pvc
   - name: environment-secrets
     secret:
-      secretName: a-secret
+      secretName: my-secret
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: a-pvc
+  name: my-pvc
 spec:
   accessModes:
-    - "ReadWriteOnce"
+  - ReadWriteOnce
   resources:
     requests:
-      storage: "10Gi"
+      storage: 1Gi
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: a-cm
+  name: my-cm
 data:
-  test: LOL
+  my-key: my-value
 ---
 apiVersion: v1
 kind: Secret
 type: Opaque
 metadata:
-  name: a-secret
+  name: my-secret
 data:
-  test: TE9MCg==
+  my-key: bXktdmFsdWUK
