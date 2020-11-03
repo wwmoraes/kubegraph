@@ -9,5 +9,6 @@
   ],
   "search.exclude": {
     "**/vendor": true,
-  }
+  },
+  "workspace.isHidden": true
 }
