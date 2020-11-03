@@ -26,4 +26,6 @@ vendor: go.mod go.sum ../go-graphviz
 
 .PHONY: run
 run:
-	go run cmd/kubegraph/main.go sample.yaml
+	go run cmd/kubegraph/main.go sample.yaml.PHONY: image
+image:
+	docker build -t wwmoraes/kubegraph:latest .

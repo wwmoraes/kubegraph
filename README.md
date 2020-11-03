@@ -82,6 +82,12 @@ WIP, there's no tests yet 😞
 kubegraph my-multidoc.yaml
 ```
 
+or using the docker image
+
+```shell
+docker run --rm -it -v ${PWD}:/home/kubegraph wwmoraes/kubegraph:latest resources.yaml
+```
+
 ### How to add support for a single/suite of custom resource definitions
 
 First, import the scheme and add it to client-go's scheme on `internal/loader/getDecoder.go@init`:
