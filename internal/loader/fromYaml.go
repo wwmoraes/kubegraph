@@ -53,7 +53,7 @@ func FromYAML(fileName string) (kubegraph.KubeGraph, error) {
 	documents := strings.Split(fileString, "---")
 
 	log.Println("initializing kubegraph instance...")
-	kubegraphInstance, err := kubegraph.New()
+	instance, err := kubegraph.New()
 	if err != nil {
 		return kubegraph.KubeGraph{}, err
 	}
@@ -69,14 +69,14 @@ func FromYAML(fileName string) (kubegraph.KubeGraph, error) {
 			continue
 		}
 
-		_, err = kubegraphInstance.Transform(obj)
+		_, err = instance.Transform(obj)
 		if err != nil {
 			log.Println(err)
 		}
 	}
 
 	log.Println("connecting nodes...")
-	kubegraphInstance.ConnectNodes()
+	instance.ConnectNodes()
 
-	return kubegraphInstance, nil
+	return instance, nil
 }

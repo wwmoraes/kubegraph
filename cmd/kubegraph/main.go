@@ -69,18 +69,18 @@ func run(cmd *cobra.Command, args []string) error {
 	sourceFileName := args[0]
 
 	// parse file
-	kubegraphInstance, err := loader.FromYAML(sourceFileName)
+	instance, err := loader.FromYAML(sourceFileName)
 	if err != nil {
 		return err
 	}
 
 	baseFileName := path.Base(strings.TrimSuffix(sourceFileName, path.Ext(sourceFileName)))
 	log.Println("generating dot graph...")
-	if err := kubegraphInstance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "dot")), graphviz.XDOT); err != nil {
+	if err := instance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "dot")), graphviz.XDOT); err != nil {
 		return err
 	}
 	log.Println("generating svg graph...")
-	if err := kubegraphInstance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "svg")), graphviz.SVG); err != nil {
+	if err := instance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "svg")), graphviz.SVG); err != nil {
 		return err
 	}
 
