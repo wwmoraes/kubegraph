@@ -4,6 +4,9 @@ ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
 ICONS_FILES := $(ICONS_FOLDER)/*.svg
 SOURCE_FILES := $(wildcard cmd/kubegraph/*.go) $(wildcard internal/*/*.go)
 
+CGO_ENABLED := 1
+CGO_LDFLAGS := -g -O2 -v
+
 .PHONY: icons
 icons: $(ICONS_GO_FILE)
 
@@ -16,16 +19,19 @@ $(ICONS_GO_FILE): $(ICONS_FILES)
 
 build: $(SOURCE_FILES) vendor
 	go build -mod=vendor ./...
-	go build ./...
 
 vendor: go.mod go.sum ../go-graphviz
 	go mod vendor
+	rm -rf vendor/github.com/goccy/*
+	cp -r ../go-graphviz/ vendor/github.com/goccy/go-graphviz/
 
 ../go-graphviz:
 	git clone git@github.com:wwmoraes/go-graphviz.git ../go-graphviz
 
 .PHONY: run
 run:
-	go run cmd/kubegraph/main.go sample.yaml.PHONY: image
+	go run cmd/kubegraph/main.go sample.yaml
+
+.PHONY: image
 image:
 	docker build -t wwmoraes/kubegraph:latest .
