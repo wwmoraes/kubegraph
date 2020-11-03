@@ -10,6 +10,7 @@ import (
 	"github.com/goccy/go-graphviz"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/wwmoraes/kubegraph/icons"
 	"github.com/wwmoraes/kubegraph/internal/loader"
 )
 
@@ -56,6 +57,10 @@ func preRun(cmd *cobra.Command, args []string) error {
 	if err := os.MkdirAll(rootFlags.outputPath, 0755); err != nil {
 		return err
 	}
+
+	// restore icon assets
+	log.Println("restoring assets...")
+	icons.RestoreAssets(rootFlags.outputPath, "icons")
 
 	return nil
 }
