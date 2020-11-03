@@ -99,8 +99,12 @@ then:
 
 1. vendor it with `go mod vendor` to update `go.mod` and `go.sum`
 
-1. add adapters for the kinds on that scheme at `internal/adapters`. You can
-copy from an existing one, or use the `internal/adapters/adapterDummy.go` as a guide.
+1. add adapters for the kinds on that scheme at `internal/adapters/<api-group>/<api-version>`. You can
+copy from an existing one, or use the `internal/adapters/dummy/v1/dummy.go` as a guide.
+
+1. import your API versions on the group level (check `internal/adapters/dummy/dummy.go`)
+
+1. import the group on the top level on `internal/adapters/adapters.go`
 
 1. [optional, recommended] add a SVG icon for the new kinds on `icons/` and
 set it on your adapter's `Create` function, on the call to `statefulGraph.AddStyledNode`
@@ -124,3 +128,4 @@ set it on your adapter's `Create` function, on the call to `statefulGraph.AddSty
 ## 🎉 Acknowledgements <a name = "acknowledgement"></a>
 
 - Kubernetes sigs members for the excellent abstractions and interfaces available on Golang
+- [@damianopetrungaro](https://github.com/damianopetrungaro) for the honest reviews and patience

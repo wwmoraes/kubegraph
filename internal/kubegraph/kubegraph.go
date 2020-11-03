@@ -2,6 +2,7 @@ package kubegraph
 
 import (
 	"fmt"
+	"image/png"
 	"log"
 	"os"
 	"reflect"
@@ -10,7 +11,10 @@ import (
 
 	"github.com/goccy/go-graphviz"
 	"github.com/goccy/go-graphviz/cgraph"
-	"github.com/wwmoraes/kubegraph/internal/adapters"
+	"github.com/wwmoraes/kubegraph/internal/adapter"
+
+	// self-register adapters
+	_ "github.com/wwmoraes/kubegraph/internal/adapters"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -47,15 +51,11 @@ func New() (KubeGraph, error) {
 	goRuntime.SetFinalizer(graph, closeGraph)
 	goRuntime.SetFinalizer(gz, closeGraphviz)
 
-	// initialize nodes map with registered adapter types
+	// initialize nodes and objects maps with registered adapter types
 	nodes := make(map[reflect.Type]map[string]*cgraph.Node)
-	for adapterType := range adapters.GetAdapters() {
-		nodes[adapterType] = make(map[string]*cgraph.Node)
-	}
-
-	// initialize object map with registered adapter types
 	objects := make(map[reflect.Type]map[string]runtime.Object)
-	for adapterType := range adapters.GetAdapters() {
+	for adapterType := range adapter.GetAll() {
+		nodes[adapterType] = make(map[string]*cgraph.Node)
 		objects[adapterType] = make(map[string]runtime.Object)
 	}
 
@@ -156,7 +156,7 @@ func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*cgraph.Node, error) 
 
 // ConnectNodes creates edges between the nodes
 func (kgraph KubeGraph) ConnectNodes() {
-	for _, adapter := range adapters.GetAdapters() {
+	for _, adapter := range adapter.GetAll() {
 		err := adapter.Configure(kgraph)
 		if err != nil {
 			log.Println(err)
@@ -166,15 +166,32 @@ func (kgraph KubeGraph) ConnectNodes() {
 
 // Transform creates a node on the graph for the resource
 func (kgraph KubeGraph) Transform(obj runtime.Object) (*cgraph.Node, error) {
-	adapter, err := adapters.GetAdapterFor(reflect.TypeOf(obj))
+	objectAdapter, err := adapter.Get(reflect.TypeOf(obj))
 	if err != nil {
 		return nil, err
 	}
 
-	return adapter.Create(kgraph, obj)
+	return objectAdapter.Create(kgraph, obj)
 }
 
 // Render generates a graph file
 func (kgraph KubeGraph) Render(fileName string, format graphviz.Format) error {
 	return kgraph.graphviz.RenderFilename(kgraph.graph, format, fileName)
+}
+
+// RenderPNG generates a PNG graph file
+func (kgraph KubeGraph) RenderPNG(fileName string) error {
+	image, err := kgraph.graphviz.RenderImage(kgraph.graph)
+	if err != nil {
+		return err
+	}
+
+	imageFile, err := os.Create(fileName)
+	if err != nil {
+		return err
+	}
+
+	png.Encode(imageFile, image)
+
+	return nil
 }
