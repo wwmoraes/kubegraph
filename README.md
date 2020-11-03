@@ -41,9 +41,7 @@ further customized after generation.
 Fetch the dependencies and build with
 
 ```shell
-git clone git@github.com:wwmoraes/go-graphviz.git ../go-graphviz
-go mod vendor
-go build -mod=vendor ./...
+make build
 ```
 
 ### Prerequisites
