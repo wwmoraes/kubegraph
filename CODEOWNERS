@@ -1,0 +1,3 @@
+.github/* @wwmoraes
+go.mod @wwmoraes @autoapproval[bot]
+go.sum @wwmoraes @autoapproval[bot]
