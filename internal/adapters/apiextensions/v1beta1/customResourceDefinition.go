@@ -2,7 +2,6 @@ package v1beta1
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 
 	"github.com/goccy/go-graphviz/cgraph"
@@ -54,24 +53,5 @@ func (thisAdapter customResourceDefinitionAdapter) Connect(statefulGraph adapter
 
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter customResourceDefinitionAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	log.Printf("please implement a configuration for %s resources", thisAdapter.GetType().String())
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
-	if err != nil {
-		return err
-	}
-
-	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
-		if err != nil {
-			return err
-		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
-		if err != nil {
-			return err
-		}
-
-		// do something with each resource
-		log.Printf("nothing to configure for %s, node %s", resource.Name, resourceNode.Name())
-	}
 	return nil
 }

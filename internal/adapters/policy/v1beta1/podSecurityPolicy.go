@@ -2,7 +2,6 @@ package v1beta1
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 
 	"github.com/goccy/go-graphviz/cgraph"
@@ -54,22 +53,5 @@ func (thisAdapter podSecurityPolicyAdapter) Connect(statefulGraph adapter.Statef
 
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter podSecurityPolicyAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
-	if err != nil {
-		return err
-	}
-	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
-		if err != nil {
-			return err
-		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
-		if err != nil {
-			return err
-		}
-
-		// do something with each resource
-		log.Printf("%s resource %s, node %s", thisAdapter.GetType().String(), resource.Name, resourceNode.Name())
-	}
 	return nil
 }
