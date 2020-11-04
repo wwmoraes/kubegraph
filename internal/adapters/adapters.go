@@ -1,6 +1,7 @@
 package adapters
 
 import (
+	_ "github.com/wwmoraes/kubegraph/internal/adapters/admissionregistration.k8s.io"
 	_ "github.com/wwmoraes/kubegraph/internal/adapters/apiextensions"
 	_ "github.com/wwmoraes/kubegraph/internal/adapters/apiregistration.k8s.io"
 	_ "github.com/wwmoraes/kubegraph/internal/adapters/app.k8s.io"
