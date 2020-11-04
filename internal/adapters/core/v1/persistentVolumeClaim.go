@@ -53,7 +53,7 @@ func (thisAdapter persistentVolumeClaimAdapter) Connect(statefulGraph adapter.St
 
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter persistentVolumeClaimAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	volumeAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Volume{}))
+	persistentVolumeAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.PersistentVolume{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
 	}
@@ -74,7 +74,7 @@ func (thisAdapter persistentVolumeClaimAdapter) Configure(statefulGraph adapter.
 		}
 
 		if resource.Spec.VolumeName != "" {
-			volumeAdapter.Connect(statefulGraph, resourceNode, resource.Spec.VolumeName)
+			persistentVolumeAdapter.Connect(statefulGraph, resourceNode, resource.Spec.VolumeName)
 		}
 	}
 
