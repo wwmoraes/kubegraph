@@ -2,10 +2,11 @@
   "cSpell.words": [
     "cgraph",
     "configurators",
-    "goccy",
+    "emicklei",
     "kgraph",
     "kubegraph",
-    "rbac"
+    "rbac",
+    "sgraph"
   ],
   "search.exclude": {
     "**/vendor": true,

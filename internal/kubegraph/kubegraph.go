@@ -2,15 +2,12 @@ package kubegraph
 
 import (
 	"fmt"
-	"image/png"
+	"io"
 	"log"
-	"os"
 	"reflect"
-	goRuntime "runtime"
 	"strings"
 
-	"github.com/goccy/go-graphviz"
-	"github.com/goccy/go-graphviz/cgraph"
+	"github.com/emicklei/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 
 	// self-register adapters
@@ -21,59 +18,55 @@ import (
 
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
-	graphviz *graphviz.Graphviz
-	graph    *cgraph.Graph
-	nodes    map[reflect.Type]map[string]*cgraph.Node
-	objects  map[reflect.Type]map[string]runtime.Object
+	graph   *dot.Graph
+	nodes   map[reflect.Type]map[string]*dot.Node
+	objects map[reflect.Type]map[string]runtime.Object
 }
 
 // New creates an instance of KubeGraph
-func New() (KubeGraph, error) {
-	gz := graphviz.New()
+func New() (kubegraph KubeGraph, err error) {
+	defer func() {
+		if recoverErr := recover(); recoverErr != nil {
+			kubegraph = KubeGraph{}
+			err = fmt.Errorf("%++v", recoverErr)
+		}
+	}()
 
-	graph, err := gz.Graph(graphviz.Name("kubegraph"))
-	if err != nil {
-		return KubeGraph{}, err
-	}
+	graph := dot.NewGraph(dot.Directed)
+	graph.ID("kubegraph")
 
-	graph.
-		SetNewRank(true).
-		SetPad(1.0).
-		SetRankDir(cgraph.TBRank).
-		SetRankSeparator(0.75).
-		SetNodeSeparator(0.60).
-		SetMargin(0).
-		SetFontSize(15).
-		SetSplines("ortho").
-		SetLayout("dot").
-		SetStyle(cgraph.RoundedGraphStyle)
-
-	goRuntime.SetFinalizer(graph, closeGraph)
-	goRuntime.SetFinalizer(gz, closeGraphviz)
+	graph.Attrs(
+		"rankdir", "TB",
+		"ranksep", "0.75",
+		"newrank", "true",
+		"nodesep", "0.6",
+		"pad", "1.0",
+		"fontsize", "15",
+		"layout", "dot",
+		"margin", "0",
+		"splines", "ortho",
+		"style", "rounded",
+	)
 
 	// initialize nodes and objects maps with registered adapter types
-	nodes := make(map[reflect.Type]map[string]*cgraph.Node)
+	nodes := make(map[reflect.Type]map[string]*dot.Node)
 	objects := make(map[reflect.Type]map[string]runtime.Object)
 	for adapterType := range adapter.GetAll() {
-		nodes[adapterType] = make(map[string]*cgraph.Node)
+		nodes[adapterType] = make(map[string]*dot.Node)
 		objects[adapterType] = make(map[string]runtime.Object)
 	}
 
-	kubegraph := KubeGraph{
-		graphviz: gz,
-		graph:    graph,
-		nodes:    nodes,
-		objects:  objects,
+	kubegraph = KubeGraph{
+		graph:   graph,
+		nodes:   nodes,
+		objects: objects,
 	}
 
 	return kubegraph, nil
 }
 
-func (kgraph KubeGraph) createStyledNode(name string, label string, icon string) (*cgraph.Node, error) {
-	node, err := kgraph.graph.CreateNode(name)
-	if err != nil {
-		return nil, err
-	}
+func (kgraph KubeGraph) createStyledNode(name string, label string, icon string) (*dot.Node, error) {
+	node := kgraph.graph.Node(name)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
 	// 253 characters long)
@@ -81,20 +74,22 @@ func (kgraph KubeGraph) createStyledNode(name string, label string, icon string)
 	labelLinesCount := len(labelLines)
 	minHeight := 1.9 + 0.4*float64(labelLinesCount)
 	minWidth := 1.9
-	node.SetShape(cgraph.NoneShape)
-	node.SetImage(icon)
-	node.SetLabelLocation(cgraph.BottomLocation)
-	node.SetHeight(minHeight)
-	node.SetWidth(minWidth)
-	node.SetFontSize(13)
-	node.SetFixedSize(true)
-	node.SetImageScale(true)
-	node.SetLabel(strings.Join(labelLines, "\n"))
+	node.Attrs(
+		"shape", "none",
+		"image", icon,
+		"labelloc", "b",
+		"height", fmt.Sprintf("%f", minHeight),
+		"width", fmt.Sprintf("%f", minWidth),
+		"fontsize", "13",
+		"fixedsize", "true",
+		"imagescale", "true",
+		"label", strings.Join(labelLines, "\n"),
+	)
 
 	return node, nil
 }
 
-func (kgraph KubeGraph) getNodes(objectType reflect.Type) (map[string]*cgraph.Node, error) {
+func (kgraph KubeGraph) getNodes(objectType reflect.Type) (map[string]*dot.Node, error) {
 	typeNodes, typeExists := kgraph.nodes[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
@@ -103,7 +98,7 @@ func (kgraph KubeGraph) getNodes(objectType reflect.Type) (map[string]*cgraph.No
 	return typeNodes, nil
 }
 
-func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *cgraph.Node) error {
+func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *dot.Node) error {
 	nodes, err := kgraph.getNodes(nodeType)
 	if err != nil {
 		return err
@@ -123,7 +118,7 @@ func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, ob
 	return nil
 }
 
-func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*cgraph.Node, error) {
+func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*dot.Node, error) {
 	obj.GetObjectKind()
 	metadata, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 	name := fmt.Sprintf(
@@ -165,7 +160,7 @@ func (kgraph KubeGraph) ConnectNodes() {
 }
 
 // Transform creates a node on the graph for the resource
-func (kgraph KubeGraph) Transform(obj runtime.Object) (*cgraph.Node, error) {
+func (kgraph KubeGraph) Transform(obj runtime.Object) (*dot.Node, error) {
 	objectAdapter, err := adapter.Get(reflect.TypeOf(obj))
 	if err != nil {
 		return nil, err
@@ -174,24 +169,7 @@ func (kgraph KubeGraph) Transform(obj runtime.Object) (*cgraph.Node, error) {
 	return objectAdapter.Create(kgraph, obj)
 }
 
-// Render generates a graph file
-func (kgraph KubeGraph) Render(fileName string, format graphviz.Format) error {
-	return kgraph.graphviz.RenderFilename(kgraph.graph, format, fileName)
-}
-
-// RenderPNG generates a PNG graph file
-func (kgraph KubeGraph) RenderPNG(fileName string) error {
-	image, err := kgraph.graphviz.RenderImage(kgraph.graph)
-	if err != nil {
-		return err
-	}
-
-	imageFile, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-
-	png.Encode(imageFile, image)
-
-	return nil
+// Write write the graph contents to a writer using simple TAB indentation
+func (kgraph KubeGraph) Write(target io.Writer) {
+	kgraph.graph.Write(target)
 }

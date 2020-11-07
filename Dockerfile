@@ -1,14 +1,5 @@
 FROM golang:1.15-alpine AS build
 
-WORKDIR /go/src/go-graphviz
-RUN apk add --no-cache --update git
-RUN git clone https://github.com/wwmoraes/go-graphviz.git .
-
-RUN apk add --no-cache --update \
-  gcc \
-  libc-dev \
-  ;
-
 WORKDIR /go/src/kubegraph
 
 COPY go.mod go.sum ./

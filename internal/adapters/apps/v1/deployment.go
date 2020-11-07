@@ -5,7 +5,7 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/goccy/go-graphviz/cgraph"
+	"github.com/emicklei/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	appsV1 "k8s.io/api/apps/v1"
@@ -40,7 +40,7 @@ func (thisAdapter deploymentAdapter) GetType() reflect.Type {
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter deploymentAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*cgraph.Node, error) {
+func (thisAdapter deploymentAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (thisAdapter deploymentAdapter) Create(statefulGraph adapter.StatefulGraph,
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter deploymentAdapter) Connect(statefulGraph adapter.StatefulGraph, source *cgraph.Node, targetName string) (*cgraph.Edge, error) {
+func (thisAdapter deploymentAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 

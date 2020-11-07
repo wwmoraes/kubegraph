@@ -22,13 +22,8 @@ $(ICONS_GO_FILE): $(ICONS_FILES)
 build: $(SOURCE_FILES) vendor
 	go build -mod=vendor ./...
 
-vendor: go.mod go.sum ../go-graphviz
+vendor: go.mod go.sum
 	go mod vendor
-	rm -rf vendor/github.com/goccy/*
-	cp -r ../go-graphviz/ vendor/github.com/goccy/go-graphviz/
-
-../go-graphviz:
-	git clone git@github.com:wwmoraes/go-graphviz.git ../go-graphviz
 
 .PHONY: run
 run:

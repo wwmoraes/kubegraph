@@ -46,19 +46,10 @@ make build
 
 ### Prerequisites
 
-KubeGraph is done using Golang 1.15, and also depends on a modified version of
-[goccy/go-graphviz](https://github.com/goccy/go-graphviz), [wwmoraes/go-graphviz](github.com/wwmoraes/go-graphviz),
-while it is not merged into the former. This can be seen on the `go.mod` file as
+KubeGraph is done using Golang 1.15, using a pure Go graphviz implementation to
+generate the graph.
 
-```text
-replace github.com/goccy/go-graphviz => ../go-graphviz
-```
-
-Thus why you need to explicitly clone the latter repository before vendoring or
-building.
-
-Everything else is set as a direct dependency, and `go mod vendor` will install
-for you.
+Everything is set as a direct dependency, and `go mod vendor` will install for you.
 
 ### Installing
 
@@ -124,7 +115,7 @@ set it on your adapter's `Create` function, on the call to `statefulGraph.AddSty
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [Golang](https://golang.org) - Base language
-- [goccy/go-graphviz](https://github.com/goccy/go-graphviz) - Graphviz C bindings
+- [emicklei/dot](https://github.com/emicklei/dot) - plain Go Graphviz package
 - [k8s.io/client-go](https://github.com/kubernetes/client-go) - Kubernetes Go client
 - [kubernetes/community](https://github.com/kubernetes/community) - amazing icons
 - [spf13/cobra](github.com/spf13/cobra) - CLI framework

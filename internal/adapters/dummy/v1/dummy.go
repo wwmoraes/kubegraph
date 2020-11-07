@@ -5,7 +5,7 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/goccy/go-graphviz/cgraph"
+	"github.com/emicklei/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -56,7 +56,7 @@ func (thisAdapter dummyAdapter) GetType() reflect.Type {
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter dummyAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*cgraph.Node, error) {
+func (thisAdapter dummyAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (thisAdapter dummyAdapter) Create(statefulGraph adapter.StatefulGraph, obj 
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter dummyAdapter) Connect(statefulGraph adapter.StatefulGraph, source *cgraph.Node, targetName string) (*cgraph.Edge, error) {
+func (thisAdapter dummyAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
@@ -88,7 +88,7 @@ func (thisAdapter dummyAdapter) Configure(statefulGraph adapter.StatefulGraph) e
 		}
 
 		// do something with each resource
-		log.Printf("nothing to configure for %s, node %s", resource.Name, resourceNode.Name())
+		log.Printf("nothing to configure for %s, node %s", resource.Name, resourceNode.Value("label"))
 	}
 	return nil
 }

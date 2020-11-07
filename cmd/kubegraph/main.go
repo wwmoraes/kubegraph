@@ -7,7 +7,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/goccy/go-graphviz"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/wwmoraes/kubegraph/icons"
@@ -50,7 +49,8 @@ func preRun(cmd *cobra.Command, args []string) error {
 	}
 
 	if rootFlags.outputPath == "" {
-		return nil
+		// return nil
+		rootFlags.outputPath = path.Dir(sourceFileName)
 	}
 
 	// ensure the output path exists
@@ -75,12 +75,17 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	baseFileName := path.Base(strings.TrimSuffix(sourceFileName, path.Ext(sourceFileName)))
-	log.Println("generating dot graph...")
-	if err := instance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "dot")), graphviz.XDOT); err != nil {
+	targetFileName := path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "dot"))
+	file, err := os.Create(targetFileName)
+	if err != nil {
 		return err
 	}
-	log.Println("generating svg graph...")
-	if err := instance.Render(path.Join(rootFlags.outputPath, fmt.Sprintf("%s.%s", baseFileName, "svg")), graphviz.SVG); err != nil {
+	defer file.Close()
+
+	log.Println("generating dot graph...")
+	instance.Write(file)
+	file.Sync()
+	if err != nil {
 		return err
 	}
 
