@@ -7,6 +7,8 @@ SOURCE_FILES := $(wildcard cmd/kubegraph/*.go) $(wildcard internal/*/*.go)
 CGO_ENABLED := 1
 CGO_LDFLAGS := -g -O2 -v
 
+.DEFAULT_GOAL := build
+
 .PHONY: icons
 icons: $(ICONS_GO_FILE)
 
