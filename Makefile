@@ -17,7 +17,7 @@ $(ICONS_GO_FILE): $(ICONS_FILES)
 	$(info removing old icons package file...)
 	-@rm $(ICONS_GO_FILE)
 	$(info regenerating icons package file...)
-	@go-bindata -o $(ICONS_GO_FILE) -pkg $(ICONS_PKG) -nometadata -nomemcopy $(ICONS_FOLDER)
+	@go-bindata -o $(ICONS_GO_FILE) -pkg $(ICONS_PKG) -nometadata -mode 0664 -nomemcopy $(ICONS_FOLDER)
 
 build: $(SOURCE_FILES) vendor
 	go build -mod=vendor ./...

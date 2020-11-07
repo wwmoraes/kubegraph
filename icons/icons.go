@@ -123,7 +123,7 @@ func iconsCRoleSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/c-role.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/c-role.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -143,7 +143,7 @@ func iconsCmSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/cm.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/cm.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -163,7 +163,7 @@ func iconsCrbSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/crb.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/crb.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -183,7 +183,7 @@ func iconsCrdSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/crd.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/crd.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -203,7 +203,7 @@ func iconsCronjobSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/cronjob.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/cronjob.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -223,7 +223,7 @@ func iconsDeploySvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/deploy.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/deploy.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -243,7 +243,7 @@ func iconsDsSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/ds.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/ds.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -263,7 +263,7 @@ func iconsEpSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/ep.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/ep.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -283,7 +283,7 @@ func iconsGroupSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/group.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/group.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -303,7 +303,7 @@ func iconsHpaSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/hpa.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/hpa.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -323,7 +323,7 @@ func iconsIngSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/ing.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/ing.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -343,7 +343,7 @@ func iconsJobSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/job.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/job.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -363,7 +363,7 @@ func iconsLimitsSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/limits.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/limits.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -383,7 +383,7 @@ func iconsNetpolSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/netpol.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/netpol.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -403,7 +403,7 @@ func iconsNsSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/ns.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/ns.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -423,7 +423,7 @@ func iconsPdbSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/pdb.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/pdb.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -443,7 +443,7 @@ func iconsPodSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/pod.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/pod.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -463,7 +463,7 @@ func iconsPspSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/psp.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/psp.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -483,7 +483,7 @@ func iconsPvSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/pv.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/pv.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -503,7 +503,7 @@ func iconsPvcSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/pvc.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/pvc.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -523,7 +523,7 @@ func iconsQuotaSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/quota.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/quota.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -543,7 +543,7 @@ func iconsRbSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/rb.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/rb.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -563,7 +563,7 @@ func iconsRoleSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/role.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/role.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -583,7 +583,7 @@ func iconsRsSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/rs.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/rs.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -603,7 +603,7 @@ func iconsSaSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/sa.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/sa.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -623,7 +623,7 @@ func iconsScSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/sc.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/sc.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -643,7 +643,7 @@ func iconsSecretSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/secret.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/secret.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -663,7 +663,7 @@ func iconsStsSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/sts.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/sts.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -683,7 +683,7 @@ func iconsSvcSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/svc.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/svc.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -703,7 +703,7 @@ func iconsUnknownSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/unknown.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/unknown.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -723,7 +723,7 @@ func iconsUserSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/user.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/user.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -743,7 +743,7 @@ func iconsVolSvg() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "icons/vol.svg", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "icons/vol.svg", size: 0, mode: os.FileMode(436), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
