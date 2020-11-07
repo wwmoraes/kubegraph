@@ -11,6 +11,22 @@
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
+[![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/wwmoraes/kubegraph)](https://hub.docker.com/r/wwmoraes/kubegraph)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/wwmoraes/kubegraph?label=image%20version)](https://hub.docker.com/r/wwmoraes/kubegraph)
+[![Docker Pulls](https://img.shields.io/docker/pulls/wwmoraes/kubegraph)](https://hub.docker.com/r/wwmoraes/kubegraph)
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=alert_status)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=bugs)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=security_rating)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=coverage)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=code_smells)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=sqale_index)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
+
+
 </div>
 
 ---
