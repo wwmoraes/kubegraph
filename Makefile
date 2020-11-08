@@ -49,6 +49,7 @@ vendor: go.mod go.sum
 .PHONY: run
 run:
 	go run cmd/kubegraph/main.go sample.yaml
+	dot -Tsvg -o sample.svg sample.dot
 
 .PHONY: image
 image:

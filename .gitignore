@@ -27,3 +27,7 @@ dist/
 golangci-lint-report.xml
 test-report.json
 coverage.html
+
+# sample file conversions
+sample.*
+!sample.yaml
