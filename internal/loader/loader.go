@@ -11,13 +11,13 @@ import (
 )
 
 // FromYAML creates a KubeGraph instance from a YAML file contents
-func FromYAML(fileName string) (kubegraph.KubeGraph, error) {
+func FromYAML(fileName string) (*kubegraph.KubeGraph, error) {
 	decode := getDecoder()
 
 	log.Println("reading file...")
 	fileBytes, err := ioutil.ReadFile(fileName)
 	if err != nil {
-		return kubegraph.KubeGraph{}, err
+		return nil, err
 	}
 
 	// normalize line breaks
@@ -30,7 +30,7 @@ func FromYAML(fileName string) (kubegraph.KubeGraph, error) {
 	log.Println("removing comments and empty lines...")
 	commentLineMatcher, err := regexp.Compile("^[ ]*((#|//).*)?$")
 	if err != nil {
-		return kubegraph.KubeGraph{}, err
+		return nil, err
 	}
 	fileStringLines := strings.Split(fileString, "\n")
 	var cleanFileString strings.Builder
@@ -44,7 +44,7 @@ func FromYAML(fileName string) (kubegraph.KubeGraph, error) {
 
 		_, err := cleanFileString.WriteString(fmt.Sprintf("%s\n", line))
 		if err != nil {
-			return kubegraph.KubeGraph{}, err
+			return nil, err
 		}
 	}
 	fileString = cleanFileString.String()
@@ -55,7 +55,7 @@ func FromYAML(fileName string) (kubegraph.KubeGraph, error) {
 	log.Println("initializing kubegraph instance...")
 	instance, err := kubegraph.New()
 	if err != nil {
-		return kubegraph.KubeGraph{}, err
+		return nil, err
 	}
 
 	for _, document := range documents {

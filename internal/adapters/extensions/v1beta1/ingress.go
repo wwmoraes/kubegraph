@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func (thisAdapter IngressAdapter) tryCastObject(obj runtime.Object) (*extensionsV1beta1.Ingress, error) {
+func (thisAdapter *IngressAdapter) tryCastObject(obj runtime.Object) (*extensionsV1beta1.Ingress, error) {
 	casted, ok := obj.(*extensionsV1beta1.Ingress)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -33,12 +33,12 @@ func (thisAdapter IngressAdapter) tryCastObject(obj runtime.Object) (*extensions
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter IngressAdapter) GetType() reflect.Type {
+func (thisAdapter *IngressAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter IngressAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *IngressAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -48,12 +48,12 @@ func (thisAdapter IngressAdapter) Create(statefulGraph adapter.StatefulGraph, ob
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter IngressAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *IngressAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter IngressAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *IngressAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	serviceAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Service{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func (thisAdapter persistentVolumeClaimAdapter) tryCastObject(obj runtime.Object) (*coreV1.PersistentVolumeClaim, error) {
+func (thisAdapter *persistentVolumeClaimAdapter) tryCastObject(obj runtime.Object) (*coreV1.PersistentVolumeClaim, error) {
 	casted, ok := obj.(*coreV1.PersistentVolumeClaim)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -32,12 +32,12 @@ func (thisAdapter persistentVolumeClaimAdapter) tryCastObject(obj runtime.Object
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter persistentVolumeClaimAdapter) GetType() reflect.Type {
+func (thisAdapter *persistentVolumeClaimAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter persistentVolumeClaimAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *persistentVolumeClaimAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -47,12 +47,12 @@ func (thisAdapter persistentVolumeClaimAdapter) Create(statefulGraph adapter.Sta
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter persistentVolumeClaimAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *persistentVolumeClaimAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter persistentVolumeClaimAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *persistentVolumeClaimAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	persistentVolumeAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.PersistentVolume{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

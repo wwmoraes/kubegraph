@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func (thisAdapter configMapAdapter) tryCastObject(obj runtime.Object) (*coreV1.ConfigMap, error) {
+func (thisAdapter *configMapAdapter) tryCastObject(obj runtime.Object) (*coreV1.ConfigMap, error) {
 	casted, ok := obj.(*coreV1.ConfigMap)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -32,12 +32,12 @@ func (thisAdapter configMapAdapter) tryCastObject(obj runtime.Object) (*coreV1.C
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter configMapAdapter) GetType() reflect.Type {
+func (thisAdapter *configMapAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter configMapAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *configMapAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -47,11 +47,11 @@ func (thisAdapter configMapAdapter) Create(statefulGraph adapter.StatefulGraph, 
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter configMapAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *configMapAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter configMapAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *configMapAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	return nil
 }

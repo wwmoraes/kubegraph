@@ -24,7 +24,7 @@ func init() {
 	})
 }
 
-func (thisAdapter horizontalPodAutoscalerAdapter) tryCastObject(obj runtime.Object) (*autoscalingV2beta1.HorizontalPodAutoscaler, error) {
+func (thisAdapter *horizontalPodAutoscalerAdapter) tryCastObject(obj runtime.Object) (*autoscalingV2beta1.HorizontalPodAutoscaler, error) {
 	casted, ok := obj.(*autoscalingV2beta1.HorizontalPodAutoscaler)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -34,12 +34,12 @@ func (thisAdapter horizontalPodAutoscalerAdapter) tryCastObject(obj runtime.Obje
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter horizontalPodAutoscalerAdapter) GetType() reflect.Type {
+func (thisAdapter *horizontalPodAutoscalerAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter horizontalPodAutoscalerAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *horizontalPodAutoscalerAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -49,12 +49,12 @@ func (thisAdapter horizontalPodAutoscalerAdapter) Create(statefulGraph adapter.S
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter horizontalPodAutoscalerAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *horizontalPodAutoscalerAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter horizontalPodAutoscalerAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *horizontalPodAutoscalerAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	deploymentAdapter, err := adapter.Get(reflect.TypeOf(&appsV1.Deployment{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

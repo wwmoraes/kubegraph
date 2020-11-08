@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func (thisAdapter deploymentAdapter) tryCastObject(obj runtime.Object) (*appsV1.Deployment, error) {
+func (thisAdapter *deploymentAdapter) tryCastObject(obj runtime.Object) (*appsV1.Deployment, error) {
 	casted, ok := obj.(*appsV1.Deployment)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -35,12 +35,12 @@ func (thisAdapter deploymentAdapter) tryCastObject(obj runtime.Object) (*appsV1.
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter deploymentAdapter) GetType() reflect.Type {
+func (thisAdapter *deploymentAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter deploymentAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *deploymentAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -70,12 +70,12 @@ func (thisAdapter deploymentAdapter) Create(statefulGraph adapter.StatefulGraph,
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter deploymentAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *deploymentAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter deploymentAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *deploymentAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	podAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

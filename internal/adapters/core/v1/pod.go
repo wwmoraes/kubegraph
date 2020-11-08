@@ -23,7 +23,7 @@ func init() {
 	})
 }
 
-func (thisAdapter podAdapter) tryCastObject(obj runtime.Object) (*coreV1.Pod, error) {
+func (thisAdapter *podAdapter) tryCastObject(obj runtime.Object) (*coreV1.Pod, error) {
 	casted, ok := obj.(*coreV1.Pod)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -33,12 +33,12 @@ func (thisAdapter podAdapter) tryCastObject(obj runtime.Object) (*coreV1.Pod, er
 }
 
 // GetType returns the reflected type of the k8s kind managed by thisAdapter instance
-func (thisAdapter podAdapter) GetType() reflect.Type {
+func (thisAdapter *podAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter podAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *podAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -48,12 +48,12 @@ func (thisAdapter podAdapter) Create(statefulGraph adapter.StatefulGraph, obj ru
 }
 
 // Connect creates and edge between the given node and an object on thisAdapter adapter
-func (thisAdapter podAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *podAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on thisAdapter adapter with its dependencies
-func (thisAdapter podAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *podAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	configMapAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.ConfigMap{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))

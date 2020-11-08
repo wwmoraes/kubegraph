@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func (thisAdapter customResourceDefinitionAdapter) tryCastObject(obj runtime.Object) (*apiExtensionsV1beta1.CustomResourceDefinition, error) {
+func (thisAdapter *customResourceDefinitionAdapter) tryCastObject(obj runtime.Object) (*apiExtensionsV1beta1.CustomResourceDefinition, error) {
 	casted, ok := obj.(*apiExtensionsV1beta1.CustomResourceDefinition)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -32,12 +32,12 @@ func (thisAdapter customResourceDefinitionAdapter) tryCastObject(obj runtime.Obj
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter customResourceDefinitionAdapter) GetType() reflect.Type {
+func (thisAdapter *customResourceDefinitionAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter customResourceDefinitionAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *customResourceDefinitionAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -47,11 +47,11 @@ func (thisAdapter customResourceDefinitionAdapter) Create(statefulGraph adapter.
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter customResourceDefinitionAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *customResourceDefinitionAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter customResourceDefinitionAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *customResourceDefinitionAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	return nil
 }

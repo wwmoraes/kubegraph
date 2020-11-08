@@ -24,10 +24,10 @@ type KubeGraph struct {
 }
 
 // New creates an instance of KubeGraph
-func New() (kubegraph KubeGraph, err error) {
+func New() (kubegraph *KubeGraph, err error) {
 	defer func() {
 		if recoverErr := recover(); recoverErr != nil {
-			kubegraph = KubeGraph{}
+			kubegraph = nil
 			err = fmt.Errorf("%++v", recoverErr)
 		}
 	}()
@@ -56,16 +56,14 @@ func New() (kubegraph KubeGraph, err error) {
 		objects[adapterType] = make(map[string]runtime.Object)
 	}
 
-	kubegraph = KubeGraph{
+	return &KubeGraph{
 		graph:   graph,
 		nodes:   nodes,
 		objects: objects,
-	}
-
-	return kubegraph, nil
+	}, nil
 }
 
-func (kgraph KubeGraph) createStyledNode(name string, label string, icon string) (*dot.Node, error) {
+func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string) (*dot.Node, error) {
 	node := kgraph.graph.Node(name)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
@@ -89,7 +87,7 @@ func (kgraph KubeGraph) createStyledNode(name string, label string, icon string)
 	return node, nil
 }
 
-func (kgraph KubeGraph) getNodes(objectType reflect.Type) (map[string]*dot.Node, error) {
+func (kgraph *KubeGraph) getNodes(objectType reflect.Type) (map[string]*dot.Node, error) {
 	typeNodes, typeExists := kgraph.nodes[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
@@ -98,7 +96,7 @@ func (kgraph KubeGraph) getNodes(objectType reflect.Type) (map[string]*dot.Node,
 	return typeNodes, nil
 }
 
-func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *dot.Node) error {
+func (kgraph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *dot.Node) error {
 	nodes, err := kgraph.getNodes(nodeType)
 	if err != nil {
 		return err
@@ -108,7 +106,7 @@ func (kgraph KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *do
 	return nil
 }
 
-func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
+func (kgraph *KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
 	objects, err := kgraph.GetObjects(objectType)
 	if err != nil {
 		return err
@@ -119,7 +117,7 @@ func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, ob
 }
 
 // nolint:unused // future implementation of not found nodes
-func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*dot.Node, error) {
+func (kgraph *KubeGraph) createUnknown(obj runtime.Object) (*dot.Node, error) {
 	obj.GetObjectKind()
 	metadata, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 	name := fmt.Sprintf(
@@ -151,7 +149,7 @@ func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*dot.Node, error) {
 }
 
 // ConnectNodes creates edges between the nodes
-func (kgraph KubeGraph) ConnectNodes() {
+func (kgraph *KubeGraph) ConnectNodes() {
 	for _, adapter := range adapter.GetAll() {
 		err := adapter.Configure(kgraph)
 		if err != nil {
@@ -161,7 +159,7 @@ func (kgraph KubeGraph) ConnectNodes() {
 }
 
 // Transform creates a node on the graph for the resource
-func (kgraph KubeGraph) Transform(obj runtime.Object) (*dot.Node, error) {
+func (kgraph *KubeGraph) Transform(obj runtime.Object) (*dot.Node, error) {
 	objectAdapter, err := adapter.Get(reflect.TypeOf(obj))
 	if err != nil {
 		return nil, err
@@ -171,6 +169,6 @@ func (kgraph KubeGraph) Transform(obj runtime.Object) (*dot.Node, error) {
 }
 
 // Write write the graph contents to a writer using simple TAB indentation
-func (kgraph KubeGraph) Write(target io.Writer) {
+func (kgraph *KubeGraph) Write(target io.Writer) {
 	kgraph.graph.Write(target)
 }

@@ -25,7 +25,7 @@ func init() {
 	})
 }
 
-func (thisAdapter roleAdapter) tryCastObject(obj runtime.Object) (*rbacV1beta1.Role, error) {
+func (thisAdapter *roleAdapter) tryCastObject(obj runtime.Object) (*rbacV1beta1.Role, error) {
 	casted, ok := obj.(*rbacV1beta1.Role)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -35,12 +35,12 @@ func (thisAdapter roleAdapter) tryCastObject(obj runtime.Object) (*rbacV1beta1.R
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter roleAdapter) GetType() reflect.Type {
+func (thisAdapter *roleAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter roleAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *roleAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -50,12 +50,12 @@ func (thisAdapter roleAdapter) Create(statefulGraph adapter.StatefulGraph, obj r
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter roleAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *roleAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter roleAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *roleAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	podSecurityPolicyV1beta1Adapter, err := adapter.Get(reflect.TypeOf(&policyV1beta1.PodSecurityPolicy{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))

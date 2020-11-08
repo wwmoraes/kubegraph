@@ -22,7 +22,7 @@ func init() {
 	})
 }
 
-func (thisAdapter persistentVolumeAdapter) tryCastObject(obj runtime.Object) (*coreV1.PersistentVolume, error) {
+func (thisAdapter *persistentVolumeAdapter) tryCastObject(obj runtime.Object) (*coreV1.PersistentVolume, error) {
 	casted, ok := obj.(*coreV1.PersistentVolume)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -32,12 +32,12 @@ func (thisAdapter persistentVolumeAdapter) tryCastObject(obj runtime.Object) (*c
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter persistentVolumeAdapter) GetType() reflect.Type {
+func (thisAdapter *persistentVolumeAdapter) GetType() reflect.Type {
 	return thisAdapter.ResourceType
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter persistentVolumeAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *persistentVolumeAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -47,11 +47,11 @@ func (thisAdapter persistentVolumeAdapter) Create(statefulGraph adapter.Stateful
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter persistentVolumeAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *persistentVolumeAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter persistentVolumeAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *persistentVolumeAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
 	return nil
 }
