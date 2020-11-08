@@ -20,6 +20,7 @@ func (kgraph KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject 
 		return nil, err
 	}
 	if err := kgraph.addObject(resourceType, resourceName, resourceObject); err != nil {
+		// TODO remove node added previously
 		return nil, err
 	}
 
