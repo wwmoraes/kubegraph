@@ -24,6 +24,6 @@ dist/
 .scannerwork/
 
 # lint, test and coverage reports
-golangci-lint-report.json
+golangci-lint-report.xml
 test-report.json
 coverage.html

@@ -28,7 +28,8 @@ test:
 	go test -race -v ./...
 
 .PHONY: coverage
-coverage: coverage.out
+coverage:
+	go test -race -cover -coverprofile=coverage.out -v ./...
 
 .PHONY: coverage-html
 coverage-html: coverage.html
@@ -37,7 +38,7 @@ coverage.html: coverage.out
 	go tool cover -html=$< -o $@
 
 coverage.out: $(SOURCE_FILES)
-	go test -race -cover -coverprofile=coverage.out -v ./...
+	-go test -race -cover -coverprofile=coverage.out -v ./...
 
 build: $(SOURCE_FILES) vendor
 	go build -mod=vendor ./...
