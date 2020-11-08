@@ -1,12 +1,19 @@
 run:
   modules-download-mode: vendor
   issues-exit-code: 0
-  timeout: 1m30s
+  timeout: 2m
 output:
   format: colored-line-number
 linters-settings:
   enable:
   - stylecheck
-  - golint
   - unconvert
   - gosec
+  - errorlint
+  - maligned
+  - interfacer
+  - unparam
+  - whitespace
+  - wrapcheck
+  - prealloc
+  - nolintlint

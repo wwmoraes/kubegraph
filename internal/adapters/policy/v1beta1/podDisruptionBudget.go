@@ -83,7 +83,10 @@ func (thisAdapter podDisruptionBudgetAdapter) Configure(statefulGraph adapter.St
 			pod := podObject.(*coreV1.Pod)
 
 			if utils.MatchLabels(resource.Spec.Selector.MatchLabels, pod.Labels) {
-				podAdapter.Connect(statefulGraph, resourceNode, podName)
+				_, err := podAdapter.Connect(statefulGraph, resourceNode, podName)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			}
 		}
 	}

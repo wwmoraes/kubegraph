@@ -74,7 +74,10 @@ func (thisAdapter persistentVolumeClaimAdapter) Configure(statefulGraph adapter.
 		}
 
 		if resource.Spec.VolumeName != "" {
-			persistentVolumeAdapter.Connect(statefulGraph, resourceNode, resource.Spec.VolumeName)
+			_, err := persistentVolumeAdapter.Connect(statefulGraph, resourceNode, resource.Spec.VolumeName)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+			}
 		}
 	}
 

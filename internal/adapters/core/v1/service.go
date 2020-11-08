@@ -82,7 +82,10 @@ func (thisAdapter serviceAdapter) Configure(statefulGraph adapter.StatefulGraph)
 			pod := podObject.(*coreV1.Pod)
 
 			if utils.MatchLabels(resource.Spec.Selector, pod.Labels) {
-				podAdapter.Connect(statefulGraph, resourceNode, podName)
+				_, err := podAdapter.Connect(statefulGraph, resourceNode, podName)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			}
 		}
 	}

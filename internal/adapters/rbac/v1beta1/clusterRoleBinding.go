@@ -80,10 +80,16 @@ func (thisAdapter clusterRoleBindingAdapter) Configure(statefulGraph adapter.Sta
 		}
 
 		if clusterRoleV1Adapter != nil {
-			clusterRoleV1Adapter.Connect(statefulGraph, resourceNode, resource.RoleRef.Name)
+			_, err := clusterRoleV1Adapter.Connect(statefulGraph, resourceNode, resource.RoleRef.Name)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+			}
 		}
 		if clusterRoleV1beta1Adapter != nil {
-			clusterRoleV1beta1Adapter.Connect(statefulGraph, resourceNode, resource.RoleRef.Name)
+			_, err := clusterRoleV1beta1Adapter.Connect(statefulGraph, resourceNode, resource.RoleRef.Name)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+			}
 		}
 
 		for _, subject := range resource.Subjects {
@@ -92,7 +98,10 @@ func (thisAdapter clusterRoleBindingAdapter) Configure(statefulGraph adapter.Sta
 				if err != nil {
 					return err
 				}
-				thisAdapter.Connect(statefulGraph, saNode, resourceName)
+				_, err = thisAdapter.Connect(statefulGraph, saNode, resourceName)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			}
 		}
 	}

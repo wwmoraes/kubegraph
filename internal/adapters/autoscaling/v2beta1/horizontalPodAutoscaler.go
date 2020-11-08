@@ -75,7 +75,10 @@ func (thisAdapter horizontalPodAutoscalerAdapter) Configure(statefulGraph adapte
 		}
 
 		if resource.Spec.ScaleTargetRef.Kind == "Deployment" && resource.Spec.ScaleTargetRef.APIVersion == "apps/v1" {
-			deploymentAdapter.Connect(statefulGraph, resourceNode, resource.Spec.ScaleTargetRef.Name)
+			_, err := deploymentAdapter.Connect(statefulGraph, resourceNode, resource.Spec.ScaleTargetRef.Name)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+			}
 		} else {
 			fmt.Fprintf(os.Stderr, "unknown scaleRef %s.%s\n", resource.Spec.ScaleTargetRef.APIVersion, resource.Spec.ScaleTargetRef.Kind)
 		}

@@ -91,24 +91,42 @@ func (thisAdapter podAdapter) Configure(statefulGraph adapter.StatefulGraph) err
 
 		for _, volume := range resource.Spec.Volumes {
 			if volume.ConfigMap != nil && configMapAdapter != nil {
-				configMapAdapter.Connect(statefulGraph, resourceNode, volume.ConfigMap.Name)
+				_, err := configMapAdapter.Connect(statefulGraph, resourceNode, volume.ConfigMap.Name)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			} else if volume.Secret != nil && secretAdapter != nil {
-				secretAdapter.Connect(statefulGraph, resourceNode, volume.Secret.SecretName)
+				_, err := secretAdapter.Connect(statefulGraph, resourceNode, volume.Secret.SecretName)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			} else if volume.PersistentVolumeClaim != nil && pvcAdapter != nil {
-				pvcAdapter.Connect(statefulGraph, resourceNode, volume.PersistentVolumeClaim.ClaimName)
+				_, err := pvcAdapter.Connect(statefulGraph, resourceNode, volume.PersistentVolumeClaim.ClaimName)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			} else if projectedVolume := volume.Projected; projectedVolume != nil {
 				for _, projectionSource := range projectedVolume.Sources {
 					if projectionSource.ConfigMap != nil && configMapAdapter != nil {
-						configMapAdapter.Connect(statefulGraph, resourceNode, projectionSource.ConfigMap.Name)
+						_, err := configMapAdapter.Connect(statefulGraph, resourceNode, projectionSource.ConfigMap.Name)
+						if err != nil {
+							fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+						}
 					} else if projectionSource.Secret != nil && secretAdapter != nil {
-						secretAdapter.Connect(statefulGraph, resourceNode, projectionSource.Secret.Name)
+						_, err := secretAdapter.Connect(statefulGraph, resourceNode, projectionSource.Secret.Name)
+						if err != nil {
+							fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+						}
 					}
 				}
 			}
 		}
 
 		if resource.Spec.ServiceAccountName != "" && saAdapter != nil {
-			saAdapter.Connect(statefulGraph, resourceNode, resource.Spec.ServiceAccountName)
+			_, err := saAdapter.Connect(statefulGraph, resourceNode, resource.Spec.ServiceAccountName)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+			}
 		}
 	}
 

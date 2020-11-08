@@ -57,10 +57,13 @@ func (thisAdapter deploymentAdapter) Create(statefulGraph adapter.StatefulGraph,
 	} else {
 		podMetadata := resource.Spec.Template.ObjectMeta
 		podMetadata.Name = resource.Name
-		podAdapter.Create(statefulGraph, &coreV1.Pod{
+		_, err := podAdapter.Create(statefulGraph, &coreV1.Pod{
 			ObjectMeta: podMetadata,
 			Spec:       resource.Spec.Template.Spec,
 		})
+		if err != nil {
+			fmt.Println(fmt.Errorf("%s create error: %w", thisAdapter.GetType().String(), err))
+		}
 	}
 
 	return resourceNode, nil
@@ -101,7 +104,10 @@ func (thisAdapter deploymentAdapter) Configure(statefulGraph adapter.StatefulGra
 			pod := podObject.(*coreV1.Pod)
 
 			if utils.MatchLabels(resource.Spec.Selector.MatchLabels, pod.Labels) {
-				podAdapter.Connect(statefulGraph, resourceNode, podName)
+				_, err := podAdapter.Connect(statefulGraph, resourceNode, podName)
+				if err != nil {
+					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				}
 			}
 		}
 	}

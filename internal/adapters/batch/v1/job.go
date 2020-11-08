@@ -56,10 +56,13 @@ func (thisAdapter jobAdapter) Create(statefulGraph adapter.StatefulGraph, obj ru
 	} else {
 		podMetadata := resource.Spec.Template.ObjectMeta
 		podMetadata.Name = resource.Name
-		podAdapter.Create(statefulGraph, &coreV1.Pod{
+		_, err := podAdapter.Create(statefulGraph, &coreV1.Pod{
 			ObjectMeta: podMetadata,
 			Spec:       resource.Spec.Template.Spec,
 		})
+		if err != nil {
+			fmt.Println(fmt.Errorf("%s create error: %w", thisAdapter.GetType().String(), err))
+		}
 	}
 
 	return resourceNode, nil
@@ -92,7 +95,10 @@ func (thisAdapter jobAdapter) Configure(statefulGraph adapter.StatefulGraph) err
 			return err
 		}
 
-		podAdapter.Connect(statefulGraph, resourceNode, resource.Name)
+		_, err = podAdapter.Connect(statefulGraph, resourceNode, resource.Name)
+		if err != nil {
+			fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+		}
 	}
 	return nil
 }

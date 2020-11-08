@@ -80,7 +80,10 @@ func (thisAdapter roleAdapter) Configure(statefulGraph adapter.StatefulGraph) er
 				utils.ContainsString(rule.Verbs, "use") {
 				for _, podSecurityPolicyResourceName := range rule.ResourceNames {
 					if utils.ContainsString(rule.APIGroups, "policy") {
-						podSecurityPolicyV1beta1Adapter.Connect(statefulGraph, resourceNode, podSecurityPolicyResourceName)
+						_, err := podSecurityPolicyV1beta1Adapter.Connect(statefulGraph, resourceNode, podSecurityPolicyResourceName)
+						if err != nil {
+							fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+						}
 					}
 				}
 			}

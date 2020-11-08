@@ -76,14 +76,20 @@ func (thisAdapter IngressAdapter) Configure(statefulGraph adapter.StatefulGraph)
 
 		// connects default backend service
 		if resource.Spec.Backend != nil && resource.Spec.Backend.ServiceName != "" {
-			serviceAdapter.Connect(statefulGraph, resourceNode, resource.Spec.Backend.ServiceName)
+			_, err := serviceAdapter.Connect(statefulGraph, resourceNode, resource.Spec.Backend.ServiceName)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+			}
 		}
 
 		// connects rule backends
 		for _, rule := range resource.Spec.Rules {
 			for _, path := range rule.HTTP.Paths {
 				if path.Backend.ServiceName != "" {
-					serviceAdapter.Connect(statefulGraph, resourceNode, path.Backend.ServiceName)
+					_, err := serviceAdapter.Connect(statefulGraph, resourceNode, path.Backend.ServiceName)
+					if err != nil {
+						fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+					}
 				}
 			}
 		}

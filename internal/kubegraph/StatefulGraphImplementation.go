@@ -16,7 +16,9 @@ func (kgraph KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject 
 		return nil, err
 	}
 
-	kgraph.addNode(resourceType, resourceName, node)
+	if err := kgraph.addNode(resourceType, resourceName, node); err != nil {
+		return nil, err
+	}
 	if err := kgraph.addObject(resourceType, resourceName, resourceObject); err != nil {
 		return nil, err
 	}

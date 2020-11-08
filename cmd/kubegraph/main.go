@@ -60,7 +60,9 @@ func preRun(cmd *cobra.Command, args []string) error {
 
 	// restore icon assets
 	log.Println("restoring assets...")
-	icons.RestoreAssets(rootFlags.outputPath, "icons")
+	if err := icons.RestoreAssets(rootFlags.outputPath, "icons"); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -84,8 +86,7 @@ func run(cmd *cobra.Command, args []string) error {
 
 	log.Println("generating dot graph...")
 	instance.Write(file)
-	file.Sync()
-	if err != nil {
+	if err := file.Sync(); err != nil {
 		return err
 	}
 
