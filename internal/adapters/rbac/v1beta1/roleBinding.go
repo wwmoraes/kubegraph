@@ -5,7 +5,6 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/emicklei/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	coreV1 "k8s.io/api/core/v1"
 	rbacV1 "k8s.io/api/rbac/v1"
@@ -40,7 +39,7 @@ func (thisAdapter *roleBindingAdapter) GetType() reflect.Type {
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *roleBindingAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (*dot.Node, error) {
+func (thisAdapter *roleBindingAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -50,7 +49,7 @@ func (thisAdapter *roleBindingAdapter) Create(statefulGraph adapter.StatefulGrap
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *roleBindingAdapter) Connect(statefulGraph adapter.StatefulGraph, source *dot.Node, targetName string) (*dot.Edge, error) {
+func (thisAdapter *roleBindingAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
 	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
 }
 

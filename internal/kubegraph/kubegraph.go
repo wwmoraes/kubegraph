@@ -7,7 +7,6 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/emicklei/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 
 	// self-register adapters
@@ -18,8 +17,8 @@ import (
 
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
-	graph   *dot.Graph
-	nodes   map[reflect.Type]map[string]*dot.Node
+	graph   adapter.Graph
+	nodes   map[reflect.Type]map[string]adapter.Node
 	objects map[reflect.Type]map[string]runtime.Object
 }
 
@@ -32,8 +31,8 @@ func New() (kubegraph *KubeGraph, err error) {
 		}
 	}()
 
-	graph := dot.NewGraph(dot.Directed)
-	graph.ID("kubegraph")
+	// graph := dot.NewGraph(dot.Directed)
+	graph := adapter.NewGraph()
 
 	graph.Attrs(
 		"rankdir", "TB",
@@ -49,10 +48,10 @@ func New() (kubegraph *KubeGraph, err error) {
 	)
 
 	// initialize nodes and objects maps with registered adapter types
-	nodes := make(map[reflect.Type]map[string]*dot.Node)
+	nodes := make(map[reflect.Type]map[string]adapter.Node)
 	objects := make(map[reflect.Type]map[string]runtime.Object)
 	for adapterType := range adapter.GetAll() {
-		nodes[adapterType] = make(map[string]*dot.Node)
+		nodes[adapterType] = make(map[string]adapter.Node)
 		objects[adapterType] = make(map[string]runtime.Object)
 	}
 
@@ -63,7 +62,7 @@ func New() (kubegraph *KubeGraph, err error) {
 	}, nil
 }
 
-func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string) (*dot.Node, error) {
+func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string) (adapter.Node, error) {
 	node := kgraph.graph.Node(name)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
@@ -87,7 +86,7 @@ func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string
 	return node, nil
 }
 
-func (kgraph *KubeGraph) getNodes(objectType reflect.Type) (map[string]*dot.Node, error) {
+func (kgraph *KubeGraph) getNodes(objectType reflect.Type) (map[string]adapter.Node, error) {
 	typeNodes, typeExists := kgraph.nodes[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
@@ -96,7 +95,7 @@ func (kgraph *KubeGraph) getNodes(objectType reflect.Type) (map[string]*dot.Node
 	return typeNodes, nil
 }
 
-func (kgraph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node *dot.Node) error {
+func (kgraph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node adapter.Node) error {
 	nodes, err := kgraph.getNodes(nodeType)
 	if err != nil {
 		return err
@@ -117,7 +116,7 @@ func (kgraph *KubeGraph) addObject(objectType reflect.Type, objectName string, o
 }
 
 // nolint:unused // future implementation of not found nodes
-func (kgraph *KubeGraph) createUnknown(obj runtime.Object) (*dot.Node, error) {
+func (kgraph *KubeGraph) createUnknown(obj runtime.Object) (adapter.Node, error) {
 	obj.GetObjectKind()
 	metadata, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
 	name := fmt.Sprintf(
@@ -159,7 +158,7 @@ func (kgraph *KubeGraph) ConnectNodes() {
 }
 
 // Transform creates a node on the graph for the resource
-func (kgraph *KubeGraph) Transform(obj runtime.Object) (*dot.Node, error) {
+func (kgraph *KubeGraph) Transform(obj runtime.Object) (adapter.Node, error) {
 	objectAdapter, err := adapter.Get(reflect.TypeOf(obj))
 	if err != nil {
 		return nil, err
