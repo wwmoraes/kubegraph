@@ -118,6 +118,7 @@ func (kgraph KubeGraph) addObject(objectType reflect.Type, objectName string, ob
 	return nil
 }
 
+// nolint:unused // future implementation of not found nodes
 func (kgraph KubeGraph) createUnknown(obj runtime.Object) (*dot.Node, error) {
 	obj.GetObjectKind()
 	metadata, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
