@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.1.1
-	github.com/wwmoraes/dot v0.1.0
+	github.com/wwmoraes/dot v0.1.1
 	istio.io/client-go v1.8.0-alpha.2
 	k8s.io/api v0.19.3
 	k8s.io/apiextensions-apiserver v0.19.3
