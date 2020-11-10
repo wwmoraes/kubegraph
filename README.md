@@ -26,7 +26,6 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=code_smells)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=sqale_index)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
 
-
 </div>
 
 ---
@@ -92,6 +91,19 @@ or using the docker image
 ```shell
 docker run --rm -it -v ${PWD}:/home/kubegraph wwmoraes/kubegraph:latest resources.yaml
 ```
+
+On this example, a `my-multidoc.dot` file will be generated, alongside with an
+`icons` folder used by the graph. You can convert it to an image using `dot`, e.g.
+
+```shell
+dot -Tsvg -o my-multidoc.svg my-multidoc.dot
+```
+
+If your graphviz installation has been compiled with pango, cairo and rsvg, you'll
+also be able to generate static formats as png or jpeg. Do note that currently
+kubegraph uses svg icons, and cairo mess up when generating raster images with
+those (namely they'll either look blurred or won't be drawed at all). A future
+version will address this by using raster icons.
 
 ### How to add support for a single/suite of custom resource definitions
 
