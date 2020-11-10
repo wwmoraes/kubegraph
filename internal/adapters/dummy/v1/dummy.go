@@ -87,7 +87,7 @@ func (thisAdapter *dummyAdapter) Configure(statefulGraph adapter.StatefulGraph) 
 		}
 
 		// do something with each resource
-		log.Printf("nothing to configure for %s, node %s", resource.Name, resourceNode.Value("label"))
+		log.Printf("nothing to configure for %s, node %s", resource.Name, resourceNode.GetAttributeString("label"))
 	}
 	return nil
 }

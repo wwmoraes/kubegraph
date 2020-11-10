@@ -1,6 +1,7 @@
 package adapter
 
+import "github.com/wwmoraes/dot"
+
 type Edge interface {
-	Attrs(labelvalues ...interface{})
-	Value(label string) interface{}
+	dot.Edge
 }

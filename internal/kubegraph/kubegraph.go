@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/wwmoraes/dot/attributes"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 
 	// self-register adapters
@@ -34,18 +35,18 @@ func New() (kubegraph *KubeGraph, err error) {
 	// graph := dot.NewGraph(dot.Directed)
 	graph := adapter.NewGraph()
 
-	graph.Attrs(
-		"rankdir", "TB",
-		"ranksep", "0.75",
-		"newrank", "true",
-		"nodesep", "0.6",
-		"pad", "1.0",
-		"fontsize", "15",
-		"layout", "dot",
-		"margin", "0",
-		"splines", "ortho",
-		"style", "rounded",
-	)
+	graph.SetAttributes(attributes.Map{
+		attributes.KeyRankDir:  attributes.NewString("TB"),
+		attributes.KeyRankSep:  attributes.NewString("0.75"),
+		attributes.KeyNewRank:  attributes.NewString("true"),
+		attributes.KeyNodeSep:  attributes.NewString("0.6"),
+		attributes.KeyPad:      attributes.NewString("1.0"),
+		attributes.KeyFontSize: attributes.NewString("15"),
+		attributes.KeyLayout:   attributes.NewString("dot"),
+		attributes.KeyMargin:   attributes.NewString("0"),
+		attributes.KeySplines:  attributes.NewString("ortho"),
+		attributes.KeyStyle:    attributes.NewString("rounded"),
+	})
 
 	// initialize nodes and objects maps with registered adapter types
 	nodes := make(map[reflect.Type]map[string]adapter.Node)
@@ -71,17 +72,17 @@ func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string
 	labelLinesCount := len(labelLines)
 	minHeight := 1.9 + 0.4*float64(labelLinesCount)
 	minWidth := 1.9
-	node.Attrs(
-		"shape", "none",
-		"image", icon,
-		"labelloc", "b",
-		"height", fmt.Sprintf("%f", minHeight),
-		"width", fmt.Sprintf("%f", minWidth),
-		"fontsize", "13",
-		"fixedsize", "true",
-		"imagescale", "true",
-		"label", strings.Join(labelLines, "\n"),
-	)
+	node.SetAttributes(attributes.Map{
+		attributes.KeyShape:      attributes.NewString("none"),
+		attributes.KeyImage:      attributes.NewString(icon),
+		attributes.KeyLabelLoc:   attributes.NewString("b"),
+		attributes.KeyHeight:     attributes.NewString(fmt.Sprintf("%f", minHeight)),
+		attributes.KeyWidth:      attributes.NewString(fmt.Sprintf("%f", minWidth)),
+		attributes.KeyFontSize:   attributes.NewString("13"),
+		attributes.KeyFixedSize:  attributes.NewString("true"),
+		attributes.KeyImageScale: attributes.NewString("true"),
+		attributes.KeyLabel:      attributes.NewString(strings.Join(labelLines, "\n")),
+	})
 
 	return node, nil
 }

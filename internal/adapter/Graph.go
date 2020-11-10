@@ -1,22 +1,19 @@
 package adapter
 
 import (
-	"io"
-
-	"github.com/emicklei/dot"
+	"github.com/wwmoraes/dot"
+	"github.com/wwmoraes/dot/attributes"
 )
 
 type Graph interface {
-	Node(id string) *dot.Node
-	Edge(fromNode, toNode *dot.Node, labels ...string) *dot.Edge
-	Attrs(labelvalues ...interface{})
-	Write(w io.Writer)
+	dot.Graph
 }
 
 func NewGraph() Graph {
-	dotGraph := dot.NewGraph(dot.Directed)
-
-	dotGraph.ID("kubegraph")
+	dotGraph := dot.NewGraph(&dot.GraphOptions{
+		ID:   "kubegraph",
+		Type: attributes.GraphTypeDirected,
+	})
 
 	return dotGraph
 }

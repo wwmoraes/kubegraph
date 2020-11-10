@@ -131,7 +131,7 @@ set it on your adapter's `Create` function, on the call to `statefulGraph.AddSty
 ## ⛏️ Built Using <a name = "built_using"></a>
 
 - [Golang](https://golang.org) - Base language
-- [emicklei/dot](https://github.com/emicklei/dot) - plain Go Graphviz package
+- [wwmoraes/dot](https://github.com/wwmoraes/dot) - plain Go Graphviz package
 - [k8s.io/client-go](https://github.com/kubernetes/client-go) - Kubernetes Go client
 - [kubernetes/community](https://github.com/kubernetes/community) - amazing icons
 - [spf13/cobra](github.com/spf13/cobra) - CLI framework

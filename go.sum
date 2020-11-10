@@ -419,9 +419,8 @@ github.com/ugorji/go v1.1.4/go.mod h1:uQMGLiO92mf5W77hV/PUCpI3pbzQx3CRekS0kk+RGr
 github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8/go.mod h1:VFNgLljTbGfSG7qAOspJ7OScBnGdDN/yBr0sguwnwf0=
 github.com/urfave/cli v1.20.0/go.mod h1:70zkFmudgCuE/ngEzBv17Jvp/497gISqfk5gWijbERA=
 github.com/vektah/gqlparser v1.1.2/go.mod h1:1ycwN7Ij5njmMkPPAOaRFY4rET2Enx7IkVv3vaXspKw=
-github.com/wwmoraes/dot v0.15.0 h1:obC1R1D72A8sSleKJFP6uS/PUoe+0h9gA2cjI4nwhIo=
-github.com/wwmoraes/dot v0.15.0/go.mod h1:DeV7GvQtIw4h2u73RKBkkFdvVAz0D9fzeJrgPW6gy/s=
-github.com/wwmoraes/dot v0.15.1-0.20201107152930-203731997226 h1:STNKIqNihO9F/tVqpt3+cZyyKSJrBbjOxJeYFfkokXc=
+github.com/wwmoraes/dot v0.1.0 h1:r0Hlb0rbJcfYCMlqCEAggm8tuHM2iKicpm+zKhVFMRk=
+github.com/wwmoraes/dot v0.1.0/go.mod h1:hcFbXG1ZToP6M9Rd1evZtlbjKVZTqX8/7x49ZiyFk90=
 github.com/wwmoraes/dot v0.15.1-0.20201107152930-203731997226/go.mod h1:DeV7GvQtIw4h2u73RKBkkFdvVAz0D9fzeJrgPW6gy/s=
 github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=

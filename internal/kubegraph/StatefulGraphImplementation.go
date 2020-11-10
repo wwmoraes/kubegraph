@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/wwmoraes/dot/attributes"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -43,21 +44,8 @@ func (kgraph *KubeGraph) LinkNode(node adapter.Node, targetNodeType reflect.Type
 		return nil, fmt.Errorf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
 	}
 
-	edgeName := fmt.Sprintf("%s-%s", node.ID(), targetNode.ID())
-	// TODO remove conversion after the dot pkg uses interfaces
-	dotNode, err := adapter.TryGetDotNode(node)
-	if err != nil {
-		return nil, err
-	}
-
-	targetDotNode, err := adapter.TryGetDotNode(targetNode)
-	if err != nil {
-		return nil, err
-	}
-
-	edge = kgraph.graph.Edge(dotNode, targetDotNode, edgeName)
-	edge.Attrs("label", "")
-	// edge.Label("")
+	edge = kgraph.graph.Edge(node, targetNode)
+	edge.SetAttribute(attributes.KeyLabel, attributes.NewString(""))
 	return edge, nil
 }
 
