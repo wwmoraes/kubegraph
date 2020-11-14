@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/wwmoraes/dot/attributes"
+	"github.com/wwmoraes/dot/constants"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 
 	// self-register adapters
@@ -32,20 +33,22 @@ func New() (kubegraph *KubeGraph, err error) {
 		}
 	}()
 
-	// graph := dot.NewGraph(dot.Directed)
-	graph := adapter.NewGraph()
+	graph, err := adapter.NewGraph()
+	if err != nil {
+		return nil, err
+	}
 
 	graph.SetAttributes(attributes.Map{
-		attributes.KeyRankDir:  attributes.NewString("TB"),
-		attributes.KeyRankSep:  attributes.NewString("0.75"),
-		attributes.KeyNewRank:  attributes.NewString("true"),
-		attributes.KeyNodeSep:  attributes.NewString("0.6"),
-		attributes.KeyPad:      attributes.NewString("1.0"),
-		attributes.KeyFontSize: attributes.NewString("15"),
-		attributes.KeyLayout:   attributes.NewString("dot"),
-		attributes.KeyMargin:   attributes.NewString("0"),
-		attributes.KeySplines:  attributes.NewString("ortho"),
-		attributes.KeyStyle:    attributes.NewString("rounded"),
+		constants.KeyRankDir:  attributes.NewString("TB"),
+		constants.KeyRankSep:  attributes.NewString("0.75"),
+		constants.KeyNewRank:  attributes.NewString("true"),
+		constants.KeyNodeSep:  attributes.NewString("0.6"),
+		constants.KeyPad:      attributes.NewString("1.0"),
+		constants.KeyFontSize: attributes.NewString("15"),
+		constants.KeyLayout:   attributes.NewString("dot"),
+		constants.KeyMargin:   attributes.NewString("0"),
+		constants.KeySplines:  attributes.NewString("ortho"),
+		constants.KeyStyle:    attributes.NewString("rounded"),
 	})
 
 	// initialize nodes and objects maps with registered adapter types
@@ -73,15 +76,15 @@ func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string
 	minHeight := 1.9 + 0.4*float64(labelLinesCount)
 	minWidth := 1.9
 	node.SetAttributes(attributes.Map{
-		attributes.KeyShape:      attributes.NewString("none"),
-		attributes.KeyImage:      attributes.NewString(icon),
-		attributes.KeyLabelLoc:   attributes.NewString("b"),
-		attributes.KeyHeight:     attributes.NewString(fmt.Sprintf("%f", minHeight)),
-		attributes.KeyWidth:      attributes.NewString(fmt.Sprintf("%f", minWidth)),
-		attributes.KeyFontSize:   attributes.NewString("13"),
-		attributes.KeyFixedSize:  attributes.NewString("true"),
-		attributes.KeyImageScale: attributes.NewString("true"),
-		attributes.KeyLabel:      attributes.NewString(strings.Join(labelLines, "\n")),
+		constants.KeyShape:      attributes.NewString("none"),
+		constants.KeyImage:      attributes.NewString(icon),
+		constants.KeyLabelLoc:   attributes.NewString("b"),
+		constants.KeyHeight:     attributes.NewString(fmt.Sprintf("%f", minHeight)),
+		constants.KeyWidth:      attributes.NewString(fmt.Sprintf("%f", minWidth)),
+		constants.KeyFontSize:   attributes.NewString("13"),
+		constants.KeyFixedSize:  attributes.NewString("true"),
+		constants.KeyImageScale: attributes.NewString("true"),
+		constants.KeyLabel:      attributes.NewString(strings.Join(labelLines, "\n")),
 	})
 
 	return node, nil
@@ -169,6 +172,6 @@ func (kgraph *KubeGraph) Transform(obj runtime.Object) (adapter.Node, error) {
 }
 
 // Write write the graph contents to a writer using simple TAB indentation
-func (kgraph *KubeGraph) Write(target io.Writer) {
-	kgraph.graph.Write(target)
+func (kgraph *KubeGraph) WriteTo(target io.Writer) (int64, error) {
+	return kgraph.graph.WriteTo(target)
 }

@@ -85,8 +85,8 @@ func run(cmd *cobra.Command, args []string) error {
 	defer file.Close()
 
 	log.Println("generating dot graph...")
-	instance.Write(file)
-	if err := file.Sync(); err != nil {
+	_, err = instance.WriteTo(file)
+	if err != nil {
 		return err
 	}
 

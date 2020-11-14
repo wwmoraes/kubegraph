@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/dot/attributes"
+	"github.com/wwmoraes/dot/constants"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -45,7 +45,7 @@ func (kgraph *KubeGraph) LinkNode(node adapter.Node, targetNodeType reflect.Type
 	}
 
 	edge = kgraph.graph.Edge(node, targetNode)
-	edge.SetAttribute(attributes.KeyLabel, attributes.NewString(""))
+	edge.SetAttributeString(constants.KeyLabel, "")
 	return edge, nil
 }
 

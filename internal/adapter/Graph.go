@@ -1,19 +1,24 @@
 package adapter
 
 import (
+	"fmt"
+
 	"github.com/wwmoraes/dot"
-	"github.com/wwmoraes/dot/attributes"
 )
 
 type Graph interface {
 	dot.Graph
 }
 
-func NewGraph() Graph {
-	dotGraph := dot.NewGraph(&dot.GraphOptions{
-		ID:   "kubegraph",
-		Type: attributes.GraphTypeDirected,
-	})
+func NewGraph() (Graph, error) {
+	graph, err := dot.NewGraph(
+		dot.WithID("kubegraph"),
+		dot.WithType(dot.GraphTypeDirected),
+	)
 
-	return dotGraph
+	if err != nil {
+		return nil, fmt.Errorf("unable to initialize graph: %w", err)
+	}
+
+	return graph, nil
 }
