@@ -48,36 +48,30 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${GOMODCACHE}
-        key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-modules-${{ env.cache-name }}-
+          ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
           ${{ runner.os }}-modules-
-          ${{ runner.os }}-
     - name: download dependencies
       run: go mod download
     - name: cache vendor
       uses: actions/cache@v2
       with:
         path: vendor
-        key: ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-
+          ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
           ${{ runner.os }}-vendor-
-          ${{ runner.os }}-
     - name: vendor dependencies
       run: go mod vendor
     - name: cache build
       uses: actions/cache@v2
       with:
         path: ${GOCACHE}
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
           ${{ runner.os }}-build-
-          ${{ runner.os }}-
     - name: build
       run: go build -mod=vendor ./...
   lint:
@@ -100,42 +94,34 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${GOMODCACHE}
-        key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-modules-${{ env.cache-name }}-
+          ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
           ${{ runner.os }}-modules-
-          ${{ runner.os }}-
     - name: cache vendor
       uses: actions/cache@v2
       with:
         path: vendor
-        key: ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-
+          ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
           ${{ runner.os }}-vendor-
-          ${{ runner.os }}-
     - name: cache build
       uses: actions/cache@v2
       with:
         path: ${GOCACHE}
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
           ${{ runner.os }}-build-
-          ${{ runner.os }}-
     - name: cache lint
       uses: actions/cache@v2
       with:
         path: ${HOME}/.cache/golangci-lint
-        key: ${{ runner.os }}-lint-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-lint-${{ hashFiles('.golangci.yaml') }}
         restore-keys: |
-          ${{ runner.os }}-lint-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-lint-${{ env.cache-name }}-
+          ${{ runner.os }}-lint-${{ hashFiles('.golangci.yaml') }}
           ${{ runner.os }}-lint-
-          ${{ runner.os }}-
     - name: lint
       run: >
         mkdir -p ${GOMODCACHE};
@@ -174,32 +160,26 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${GOMODCACHE}
-        key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-modules-${{ env.cache-name }}-
+          ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
           ${{ runner.os }}-modules-
-          ${{ runner.os }}-
     - name: cache vendor
       uses: actions/cache@v2
       with:
         path: vendor
-        key: ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-
+          ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
           ${{ runner.os }}-vendor-
-          ${{ runner.os }}-
     - name: cache build
       uses: actions/cache@v2
       with:
-        path: ${HOME}/.cache/go-build
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        path: ${GOCACHE}
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
           ${{ runner.os }}-build-
-          ${{ runner.os }}-
     - name: test
       run: |
         go test -race -cover -coverprofile=coverage.out -json -v ./... > test-report.json
@@ -271,32 +251,26 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${GOMODCACHE}
-        key: ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-modules-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-modules-${{ env.cache-name }}-
+          ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
           ${{ runner.os }}-modules-
-          ${{ runner.os }}-
     - name: cache vendor
       uses: actions/cache@v2
       with:
         path: vendor
-        key: ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        key: ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
         restore-keys: |
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-vendor-${{ env.cache-name }}-
+          ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
           ${{ runner.os }}-vendor-
-          ${{ runner.os }}-
     - name: cache build
       uses: actions/cache@v2
       with:
-        path: ${HOME}/.cache/go-build
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
+        path: ${GOCACHE}
+        key: ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
         restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('go.sum') }}
-          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
           ${{ runner.os }}-build-
-          ${{ runner.os }}-
     - name: run goreleaser
       uses: goreleaser/goreleaser-action@v2
       if: startsWith(github.ref, 'refs/tags/')
