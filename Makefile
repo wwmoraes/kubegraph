@@ -2,7 +2,7 @@ ICONS_FOLDER := icons
 ICONS_PKG := icons
 ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
 ICONS_FILES := $(ICONS_FOLDER)/*.svg
-SOURCE_FILES := $(wildcard cmd/kubegraph/*.go) $(wildcard internal/*/*.go) $(wildcard icons/*)
+SOURCE_FILES := $(wildcard */*.go)
 
 CGO_ENABLED := 1
 CGO_LDFLAGS := -g -O2 -v
@@ -52,8 +52,12 @@ run:
 	dot -Tsvg -o sample.svg sample.dot
 
 .PHONY: image
-image:
+image: Dockerfile $(SOURCE_FILES)
 	docker build -t wwmoraes/kubegraph:latest .
+
+.PHONY: image-sh
+image-sh: image
+	docker run --rm -it --entrypoint=ash wwmoraes/kubegraph:latest
 
 .PHONY: release
 release:
