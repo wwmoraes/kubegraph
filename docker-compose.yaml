@@ -1,0 +1,48 @@
+version: "3.8"
+services:
+
+  kubegraph:
+    image: wwmoraes/kubegraph:latest
+    volumes:
+    - type: bind
+      source: $PWD
+      target: /home/kubegraph
+      consistency: cached
+
+  sh:
+    extends: kubegraph
+    entrypoint: ash
+
+  sample-dot:
+    extends: kubegraph
+    command: sample.yaml
+
+  extras:
+    build:
+      context: .
+      dockerfile: extras.Dockerfile
+    image: wwmoraes/kubegraph-extras:latest
+    working_dir: /home/kubegraph
+    volumes:
+    - type: bind
+      source: $PWD
+      target: /home/kubegraph
+      consistency: cached
+
+  dot:
+    extends: extras
+    entrypoint: dot
+
+  rsvg-convert:
+    extends: extras
+    entrypoint: rsvg-convert
+
+  sample-svg:
+    extends: dot
+    command: -Tsvg -o sample.svg sample.dot
+    depends_on:
+    - sample-dot
+
+  sample-png:
+    extends: rsvg-convert
+    command: sample.svg -o sample.png

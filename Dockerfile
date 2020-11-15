@@ -15,14 +15,14 @@ FROM alpine:latest
 COPY --from=build /go/src/kubegraph/kubegraph /usr/local/bin
 
 ### Prepare user
-RUN addgroup --gid 1001 kubegraph \
+RUN addgroup --gid 10001 kubegraph \
   && adduser \
   --home /home/kubegraph \
   --gecos "" \
   --shell /bin/ash \
   --ingroup kubegraph \
   --disabled-password \
-  --uid 1001 \
+  --uid 10001 \
   kubegraph
 
 WORKDIR /home/kubegraph
