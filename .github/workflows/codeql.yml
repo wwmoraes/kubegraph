@@ -1,0 +1,24 @@
+name: "CodeQL"
+
+on:
+  schedule:
+  - cron: '0 9 * * 1'
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: setup golang
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.15
+    - name: initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: go
+    - name: build
+      run: go build -race ./...
+    - name: CodeQL analysis
+      uses: github/codeql-action/analyze@v1
