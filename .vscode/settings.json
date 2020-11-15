@@ -1,12 +1,27 @@
 {
   "cSpell.words": [
+    "BUILDKIT",
+    "Dsonar",
+    "GOCACHE",
+    "GOMODCACHE",
+    "QEMU",
+    "buildx",
     "cgraph",
+    "checkstyle",
     "configurators",
+    "coverprofile",
+    "dockerignore",
+    "ghaction",
+    "golangci",
+    "goreleaser",
     "graphviz",
     "kgraph",
     "kubegraph",
+    "mkdir",
+    "opencontainers",
     "rbac",
-    "sgraph"
+    "sgraph",
+    "sonarsource"
   ],
   "search.exclude": {
     "**/vendor": true,
