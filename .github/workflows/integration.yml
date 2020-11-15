@@ -72,14 +72,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-build-${{ hashFiles('**/*.go') }}
           ${{ runner.os }}-build-
-    - name: initialize CodeQL
-      uses: github/codeql-action/init@v1
-      with:
-        languages: go
     - name: build
       run: go build -mod=vendor ./...
-    - name: CodeQL analysis
-      uses: github/codeql-action/analyze@v1
   lint:
     runs-on: ubuntu-latest
     steps:
