@@ -1,14 +1,14 @@
+# syntax = docker/dockerfile:experimental
 FROM golang:1.15-alpine AS build
 
 WORKDIR /go/src/kubegraph
 
 COPY go.mod go.sum ./
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
-COPY cmd cmd
-COPY internal internal
-COPY icons/icons.go icons/icons.go
-RUN go build -o kubegraph cmd/kubegraph/main.go
+COPY . .
+RUN --mount=type=cache,target=/go/src/kubegraph/vendor go mod vendor
+RUN --mount=type=cache,target=/root/.cache/go-build go build -mod=vendor -o kubegraph cmd/kubegraph/main.go
 
 FROM alpine:latest
 

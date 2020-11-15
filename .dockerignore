@@ -1,3 +1,25 @@
+.dockerignore
+Dockerfile
+
+.git
+.gitignore
+
+.github
+.vscode
+
+.golangci.yaml
+.goreleaser.yml
+sonar-project.properties
+CODEOWNERS
+LICENSE
+Makefile
+
+# repo markdown files
+/*.md
+
+icons/
+!icons/*.go
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -26,11 +48,10 @@ dist/
 # lint, test and coverage reports
 golangci-lint-report.xml
 test-report.json
-coverage.html
+coverage*.html
 
 # sample file conversions
 sample.*
-!sample.yaml
 
 # General
 .DS_Store
@@ -38,7 +59,8 @@ sample.*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -58,3 +80,5 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+.wakatime-project
