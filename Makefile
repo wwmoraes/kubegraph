@@ -100,7 +100,7 @@ ifneq ($(shell git status --porcelain | wc -l | xargs), 0)
 endif
 	@docker buildx inspect --builder multi || docker buildx create --name multi --use
 	@docker buildx build --builder multi \
-  --platform linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64 \
+  --platform linux/amd64,linux/arm/v7,linux/arm64 \
   --cache-to type=inline \
   --label org.opencontainers.image.title=$(OCI_TITLE) \
   --label org.opencontainers.image.description="$(OCI_DESCRIPTION)" \
