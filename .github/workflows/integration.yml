@@ -314,11 +314,18 @@ jobs:
         BUILDKIT_INLINE_CACHE: 1
       with:
         cache-to: type=inline
-        cache-from: ${{ steps.docker_meta.outputs.tags }}
+        cache-from: |
+          ${{ steps.docker_meta.outputs.tags }}
+          ${{ github.repository }}:master
+          ${{ github.repository }}:latest
         push: ${{ github.event_name != 'pull_request' }}
         platforms: linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64
         tags: ${{ steps.docker_meta.outputs.tags }}
-        labels: ${{ steps.docker_meta.outputs.labels }}
+        labels: |
+          ${{ steps.docker_meta.outputs.labels }}
+          org.opencontainers.image.authors=${{ secrets.OCI_AUTHORS }}
+          org.opencontainers.image.documentation=https://github.com/${{ github.repository }}
+          org.opencontainers.image.vendor=${{ secrets.OCI_AUTHORS }}
     - name: update DockerHub description
       uses: meeDamian/sync-readme@v1.0.6
       with:

@@ -10,6 +10,8 @@ GIT_REV = $(shell git log -n 1 --format="%H")
 DATE = $(shell date -u +"%Y-%m-%dT%TZ")
 
 REPO := wwmoraes/kubegraph
+USERNAME = $(shell git config user.name)
+EMAIL = $(shell git config user.email)
 OCI_TITLE = kubegraph
 OCI_DESCRIPTION = Kubernetes resource graph generator
 OCI_URL = https://github.com/$(REPO)
@@ -18,6 +20,10 @@ OCI_VERSION = $(GIT_BRANCH)
 OCI_CREATED = $(DATE)
 OCI_REVISION = $(GIT_REV)
 OCI_LICENSES = MIT
+OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
+OCI_DOCUMENTATION = https://github.com/$(REPO)
+OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
+
 
 .DEFAULT_GOAL := build
 
@@ -74,6 +80,9 @@ image: Dockerfile $(SOURCE_FILES)
 		--label org.opencontainers.image.created=$(OCI_CREATED) \
 		--label org.opencontainers.image.revision=$(OCI_REVISION) \
 		--label org.opencontainers.image.licenses=$(OCI_LICENSES) \
+		--label org.opencontainers.image.authors="$(OCI_AUTHORS)" \
+		--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
+		--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
 		--cache-from $(REPO):single-$(GIT_SHA) \
 		--cache-from $(REPO):single-$(GIT_BRANCH) \
 		--cache-from $(REPO):single-master \
@@ -101,6 +110,9 @@ endif
   --label org.opencontainers.image.created=$(OCI_CREATED) \
   --label org.opencontainers.image.revision=$(OCI_REVISION) \
   --label org.opencontainers.image.licenses=$(OCI_LICENSES) \
+	--label org.opencontainers.image.authors="$(OCI_AUTHORS)" \
+	--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
+	--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
   --cache-from $(REPO):$(GIT_SHA) \
   --cache-from $(REPO):$(GIT_BRANCH) \
 	--cache-from $(REPO):master \
