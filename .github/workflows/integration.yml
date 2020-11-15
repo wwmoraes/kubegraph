@@ -89,6 +89,26 @@ jobs:
       run: |
         echo "GOCACHE=$(go env GOCACHE)" >> $GITHUB_ENV
         echo "GOMODCACHE=$(go env GOMODCACHE)" >> $GITHUB_ENV
+    - name: cache modules
+      uses: actions/cache@v2
+      with:
+        path: ${GOMODCACHE}
+        key: ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-modules-${{ hashFiles('go.sum') }}
+          ${{ runner.os }}-modules-
+    - name: download dependencies
+      run: go mod download
+    - name: cache vendor
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-vendor-${{ hashFiles('go.mod', 'go.sum') }}
+          ${{ runner.os }}-vendor-
+    - name: vendor dependencies
+      run: go mod vendor
     - name: cache lint
       uses: actions/cache@v2
       with:
