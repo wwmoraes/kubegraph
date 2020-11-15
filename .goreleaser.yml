@@ -1,13 +1,9 @@
-# This is an example goreleaser.yaml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
 before:
   hooks:
   - go mod download
 builds:
 - id: kubegraph
   main: cmd/kubegraph/main.go
-  env:
-  - CGO_ENABLED=0
   goos:
   - linux
   - windows
@@ -20,10 +16,6 @@ builds:
   goarm:
   - 6
   - 7
-  ignore:
-  - goos: linux
-    goarch: arm
-    goarm: 8
 archives:
 - replacements:
     darwin: Darwin
