@@ -7,7 +7,7 @@ COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
 COPY . .
-RUN --mount=type=cache,target=/go/src/kubegraph/vendor go mod vendor
+RUN go mod vendor
 RUN --mount=type=cache,target=/root/.cache/go-build go build -mod=vendor -o kubegraph cmd/kubegraph/main.go
 
 FROM alpine:latest
