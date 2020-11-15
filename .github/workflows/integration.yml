@@ -290,6 +290,7 @@ jobs:
       with:
         images: ${{ github.repository }}
         tag-sha: true
+        github-token: ${{ github.token }}
     - name: set up QEMU
       uses: docker/setup-qemu-action@v1
     - name: set up docker buildx
