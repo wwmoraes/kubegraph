@@ -54,3 +54,11 @@ run:
 .PHONY: image
 image:
 	docker build -t wwmoraes/kubegraph:latest .
+
+.PHONY: release
+release:
+	env -u GITLAB_TOKEN goreleaser release --rm-dist
+
+.PHONY: test-release
+test-release:
+	env -u GITLAB_TOKEN goreleaser release --rm-dist --snapshot
