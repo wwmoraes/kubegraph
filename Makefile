@@ -4,8 +4,6 @@ ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
 ICONS_FILES := $(ICONS_FOLDER)/*.svg
 SOURCE_FILES := $(wildcard */*.go)
 
-CGO_ENABLED := 1
-CGO_LDFLAGS := -g -O2 -v
 GIT_SHA = sha-$(shell git log -n 1 --format="%h")
 GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
 GIT_REV = $(shell git log -n 1 --format="%H")
