@@ -89,7 +89,7 @@ kubegraph my-multidoc.yaml
 or using the docker image
 
 ```shell
-docker run --rm -it -v ${PWD}:/home/kubegraph wwmoraes/kubegraph:latest resources.yaml
+docker run --rm -it -v ${PWD}:/home/kubegraph wwmoraes/kubegraph:latest my-multidoc.yaml
 ```
 
 On this example, a `my-multidoc.dot` file will be generated, alongside with an
@@ -102,7 +102,7 @@ dot -Tsvg -o my-multidoc.svg my-multidoc.dot
 If your graphviz installation has been compiled with pango, cairo and rsvg, you'll
 also be able to generate static formats as png or jpeg. Do note that currently
 kubegraph uses svg icons, and cairo mess up when generating raster images with
-those (namely they'll either look blurred or won't be drawed at all). A future
+those (namely they'll either look blurred or won't be drawn at all). A future
 version will address this by using raster icons.
 
 ### How to add support for a single/suite of custom resource definitions
