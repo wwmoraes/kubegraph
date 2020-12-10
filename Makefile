@@ -2,7 +2,7 @@ ICONS_FOLDER := icons
 ICONS_PKG := icons
 ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
 ICONS_FILES := $(ICONS_FOLDER)/*.svg
-SOURCE_FILES := $(wildcard */*.go)
+SOURCE_FILES := $(wildcard cmd/*/*.go) $(wildcard internal/*/*.go) $(wildcard icons/*.go)
 
 GIT_SHA = sha-$(shell git log -n 1 --format="%h")
 GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
@@ -46,20 +46,22 @@ test:
 	go test -race -v ./...
 
 .PHONY: coverage
-coverage:
-	go test -race -cover -coverprofile=coverage.out -v ./...
+coverage: coverage.out
+	@go tool cover -func=$<
 
 .PHONY: coverage-html
 coverage-html: coverage.html
 
-coverage.html: coverage.out
+%.html: %.out
 	go tool cover -html=$< -o $@
 
-coverage.out: $(SOURCE_FILES)
-	-go test -race -cover -coverprofile=coverage.out -v ./...
+%.out: $(SOURCE_FILES)
+	@go test -race -cover -coverprofile=$@ -v ./...
 
-build: $(SOURCE_FILES) vendor
-	go build -mod=vendor ./...
+build: kubegraph
+
+kubegraph: $(SOURCE_FILES) vendor
+	go build -mod=vendor -o ./ ./...
 
 vendor: go.mod go.sum
 	go mod vendor
