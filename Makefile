@@ -2,7 +2,10 @@ ICONS_FOLDER := icons
 ICONS_PKG := icons
 ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
 ICONS_FILES := $(ICONS_FOLDER)/*.svg
-SOURCE_FILES := $(wildcard cmd/*/*.go) $(wildcard internal/*/*.go) $(wildcard icons/*.go)
+CMD_SOURCE_FILES := $(shell find cmd -type f -name '*.go')
+INTERNAL_SOURCE_FILES := $(shell find internal -type f -name '*.go')
+ICONS_SOURCE_FILES := $(wildcard icons/*.go)
+SOURCE_FILES := $(CMD_SOURCE_FILES) $(INTERNAL_SOURCE_FILES) $(ICONS_SOURCE_FILES)
 
 GIT_SHA = sha-$(shell git log -n 1 --format="%h")
 GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
