@@ -5,6 +5,7 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/wwmoraes/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	batchV1 "k8s.io/api/batch/v1"
 	coreV1 "k8s.io/api/core/v1"
@@ -16,10 +17,11 @@ type jobAdapter struct {
 }
 
 func init() {
-	adapter.Register(&jobAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&batchV1.Job{}),
-		},
+	adapter.MustRegister(&jobAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&batchV1.Job{}),
+			"icons/job.svg",
+		),
 	})
 }
 
@@ -32,13 +34,8 @@ func (thisAdapter *jobAdapter) tryCastObject(obj runtime.Object) (*batchV1.Job, 
 	return casted, nil
 }
 
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *jobAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *jobAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
+func (thisAdapter *jobAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -49,7 +46,7 @@ func (thisAdapter *jobAdapter) Create(statefulGraph adapter.StatefulGraph, obj r
 		return nil, err
 	}
 
-	podAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Pod{}))
+	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
 	} else {
@@ -67,14 +64,9 @@ func (thisAdapter *jobAdapter) Create(statefulGraph adapter.StatefulGraph, obj r
 	return resourceNode, nil
 }
 
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *jobAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter *jobAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	podAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Pod{}))
+	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
 	}

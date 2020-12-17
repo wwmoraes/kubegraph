@@ -2,42 +2,40 @@ package kubegraph
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"reflect"
 	"strings"
 
+	"github.com/wwmoraes/dot"
 	"github.com/wwmoraes/dot/attributes"
 	"github.com/wwmoraes/dot/constants"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/utils"
+	"k8s.io/apimachinery/pkg/runtime"
 
 	// self-register adapters
 	_ "github.com/wwmoraes/kubegraph/internal/adapters"
-	"github.com/wwmoraes/kubegraph/internal/utils"
-	"k8s.io/apimachinery/pkg/runtime"
 )
+
+// New creates an instance of KubeGraph
+func New() (*KubeGraph, error) {
+	return InitializeKubegraph(
+		dot.WithID("kubegraph"),
+		dot.WithType(dot.GraphTypeDirected),
+	)
+}
 
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
-	graph   adapter.Graph
-	nodes   map[reflect.Type]map[string]adapter.Node
-	objects map[reflect.Type]map[string]runtime.Object
+	dot.Graph
+	k8sNodes   adapter.TypeNodesMap
+	k8sObjects adapter.TypeObjectsMap
+	registry   adapter.Registry
 }
 
-// New creates an instance of KubeGraph
-func New() (kubegraph *KubeGraph, err error) {
-	defer func() {
-		if recoverErr := recover(); recoverErr != nil {
-			kubegraph = nil
-			err = fmt.Errorf("%++v", recoverErr)
-		}
-	}()
-
-	graph, err := adapter.NewGraph()
-	if err != nil {
-		return nil, err
-	}
-
+// NewKubegraph creates an instance of KubeGraph with the provided dot Graph
+// and Registry instance
+func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry) *KubeGraph {
 	graph.SetAttributes(attributes.Map{
 		constants.KeyRankDir:  attributes.NewString("TB"),
 		constants.KeyRankSep:  attributes.NewString("0.75"),
@@ -51,23 +49,59 @@ func New() (kubegraph *KubeGraph, err error) {
 		constants.KeyStyle:    attributes.NewString("rounded"),
 	})
 
-	// initialize nodes and objects maps with registered adapter types
-	nodes := make(map[reflect.Type]map[string]adapter.Node)
-	objects := make(map[reflect.Type]map[string]runtime.Object)
-	for adapterType := range adapter.GetAll() {
-		nodes[adapterType] = make(map[string]adapter.Node)
-		objects[adapterType] = make(map[string]runtime.Object)
+	nodes := make(adapter.TypeNodesMap)
+	objects := make(adapter.TypeObjectsMap)
+
+	for adapterType := range registryInstance.GetAll() {
+		nodes[adapterType] = make(adapter.NodesMap)
+		objects[adapterType] = make(adapter.ObjectsMap)
 	}
 
 	return &KubeGraph{
-		graph:   graph,
-		nodes:   nodes,
-		objects: objects,
-	}, nil
+		graph,
+		nodes,
+		objects,
+		registryInstance,
+	}
 }
 
-func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string) (adapter.Node, error) {
-	node := kgraph.graph.Node(name)
+// ConnectNodes creates edges between the nodes
+func (kgraph *KubeGraph) ConnectNodes() {
+	for _, adapter := range adapter.RegistryInstance().GetAll() {
+		err := adapter.Configure(kgraph)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+}
+
+// Transform creates a node on the graph for the resource
+func (kgraph *KubeGraph) Transform(obj runtime.Object) (dot.Node, error) {
+	objectAdapter, err := kgraph.registry.Get(reflect.TypeOf(obj))
+	if err != nil {
+		return nil, err
+	}
+
+	return objectAdapter.Create(kgraph, obj)
+}
+
+func (kgraph *KubeGraph) CreateNode(nodeType reflect.Type, iconPath string, obj runtime.Object) (dot.Node, error) {
+	accessor := kgraph.registry.GetAccessor()
+	apiVersion, _ := accessor.APIVersion(obj)
+	kind, _ := accessor.Kind(obj)
+	name, _ := accessor.Name(obj)
+
+	nodeName := fmt.Sprintf("%s.%s~%s", apiVersion, kind, name)
+	resourceNode, err := kgraph.AddStyledNode(nodeType, obj, nodeName, name, iconPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return resourceNode, nil
+}
+
+func (graph *KubeGraph) createStyledNode(name string, label string, icon string) (dot.Node, error) {
+	node := graph.Node(name)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
 	// 253 characters long)
@@ -90,17 +124,8 @@ func (kgraph *KubeGraph) createStyledNode(name string, label string, icon string
 	return node, nil
 }
 
-func (kgraph *KubeGraph) getNodes(objectType reflect.Type) (map[string]adapter.Node, error) {
-	typeNodes, typeExists := kgraph.nodes[objectType]
-	if !typeExists {
-		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
-	}
-
-	return typeNodes, nil
-}
-
-func (kgraph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node adapter.Node) error {
-	nodes, err := kgraph.getNodes(nodeType)
+func (graph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node dot.Node) error {
+	nodes, err := graph.getNodes(nodeType)
 	if err != nil {
 		return err
 	}
@@ -109,8 +134,17 @@ func (kgraph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node ad
 	return nil
 }
 
-func (kgraph *KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
-	objects, err := kgraph.GetObjects(objectType)
+func (graph *KubeGraph) getNodes(objectType reflect.Type) (adapter.NodesMap, error) {
+	typeNodes, typeExists := graph.k8sNodes[objectType]
+	if !typeExists {
+		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
+	}
+
+	return typeNodes, nil
+}
+
+func (graph *KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
+	objects, err := graph.GetObjects(objectType)
 	if err != nil {
 		return err
 	}
@@ -119,59 +153,67 @@ func (kgraph *KubeGraph) addObject(objectType reflect.Type, objectName string, o
 	return nil
 }
 
-// nolint:unused // future implementation of not found nodes
-func (kgraph *KubeGraph) createUnknown(obj runtime.Object) (adapter.Node, error) {
-	obj.GetObjectKind()
-	metadata, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
-	name := fmt.Sprintf(
-		"%s.%s~%s",
-		metadata["apiVersion"].(string),
-		metadata["kind"].(string),
-		metadata["metadata"].(map[string]interface{})["name"].(string),
-	)
+// AddStyledNode creates a new styled node with the given resource
+func (graph *KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (dot.Node, error) {
 
-	label := fmt.Sprintf(
-		"%s.%s\n%s",
-		metadata["apiVersion"].(string),
-		metadata["kind"].(string),
-		metadata["metadata"].(map[string]interface{})["name"].(string),
-	)
-
-	// node, err := kgraph.unknownArea.CreateNode(name)
-	// node.SetLabel(label)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	node, err := kgraph.createStyledNode(name, label, "icons/unknown.svg")
+	node, err := graph.createStyledNode(nodeName, resourceName, icon)
 	if err != nil {
 		return nil, err
 	}
 
-	return node, err
+	if err := graph.addNode(resourceType, resourceName, node); err != nil {
+		return nil, err
+	}
+	if err := graph.addObject(resourceType, resourceName, resourceObject); err != nil {
+		// TODO remove node added previously
+		return nil, err
+	}
+
+	return node, nil
 }
 
-// ConnectNodes creates edges between the nodes
-func (kgraph *KubeGraph) ConnectNodes() {
-	for _, adapter := range adapter.GetAll() {
-		err := adapter.Configure(kgraph)
-		if err != nil {
-			log.Println(err)
+// LinkNode links the node to the target node type/name, if it exists
+func (graph *KubeGraph) LinkNode(node dot.Node, targetNodeType reflect.Type, targetNodeName string) (edge dot.Edge, err error) {
+	defer func() {
+		if recoverErr := recover(); recoverErr != nil {
+			edge = nil
+			err = fmt.Errorf("%++v", recoverErr)
 		}
+	}()
+
+	targetNode, ok := graph.k8sNodes[targetNodeType][targetNodeName]
+	// TODO get or create unknown node and link here
+	if !ok {
+		// log.Printf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
+		return nil, fmt.Errorf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
 	}
+
+	edge = graph.Edge(node, targetNode)
+	edge.SetAttributeString(constants.KeyLabel, "")
+	return edge, nil
 }
 
-// Transform creates a node on the graph for the resource
-func (kgraph *KubeGraph) Transform(obj runtime.Object) (adapter.Node, error) {
-	objectAdapter, err := adapter.Get(reflect.TypeOf(obj))
-	if err != nil {
-		return nil, err
+// GetObjects gets all objects in store
+func (graph *KubeGraph) GetObjects(objectType reflect.Type) (adapter.ObjectsMap, error) {
+	typeObjects, typeExists := graph.k8sObjects[objectType]
+	if !typeExists {
+		return nil, fmt.Errorf("no objects for type %s found", objectType.String())
 	}
 
-	return objectAdapter.Create(kgraph, obj)
+	return typeObjects, nil
 }
 
-// Write write the graph contents to a writer using simple TAB indentation
-func (kgraph *KubeGraph) WriteTo(target io.Writer) (int64, error) {
-	return kgraph.graph.WriteTo(target)
+// GetNode gets a node by type/name
+func (graph *KubeGraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Node, error) {
+	typeNodes, typeExists := graph.k8sNodes[nodeType]
+	if !typeExists {
+		return nil, fmt.Errorf("no nodes for type %s found", nodeType.String())
+	}
+
+	node, nodeExists := typeNodes[nodeName]
+	if !nodeExists {
+		return nil, fmt.Errorf("node %s/%s not found", nodeType.String(), nodeName)
+	}
+
+	return node, nil
 }

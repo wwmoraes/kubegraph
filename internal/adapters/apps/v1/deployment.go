@@ -5,6 +5,7 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/wwmoraes/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	appsV1 "k8s.io/api/apps/v1"
@@ -17,10 +18,11 @@ type deploymentAdapter struct {
 }
 
 func init() {
-	adapter.Register(&deploymentAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&appsV1.Deployment{}),
-		},
+	adapter.MustRegister(&deploymentAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&appsV1.Deployment{}),
+			"icons/deploy.svg",
+		),
 	})
 }
 
@@ -33,13 +35,8 @@ func (thisAdapter *deploymentAdapter) tryCastObject(obj runtime.Object) (*appsV1
 	return casted, nil
 }
 
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *deploymentAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *deploymentAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
+func (thisAdapter *deploymentAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -50,7 +47,7 @@ func (thisAdapter *deploymentAdapter) Create(statefulGraph adapter.StatefulGraph
 		return nil, err
 	}
 
-	podAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Pod{}))
+	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
 	} else {
@@ -68,14 +65,9 @@ func (thisAdapter *deploymentAdapter) Create(statefulGraph adapter.StatefulGraph
 	return resourceNode, nil
 }
 
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *deploymentAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter *deploymentAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	podAdapter, err := adapter.Get(reflect.TypeOf(&coreV1.Pod{}))
+	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
 	}

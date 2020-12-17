@@ -14,10 +14,11 @@ type virtualServiceAdapter struct {
 }
 
 func init() {
-	adapter.Register(&virtualServiceAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&networkV1alpha3.VirtualService{}),
-		},
+	adapter.MustRegister(&virtualServiceAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&networkV1alpha3.VirtualService{}),
+			"icons/unknown.svg",
+		),
 	})
 }
 
@@ -28,29 +29,4 @@ func (thisAdapter *virtualServiceAdapter) tryCastObject(obj runtime.Object) (*ne
 	}
 
 	return casted, nil
-}
-
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *virtualServiceAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *virtualServiceAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/unknown.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *virtualServiceAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
-// Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *virtualServiceAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	return nil
 }

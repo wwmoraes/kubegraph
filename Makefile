@@ -4,6 +4,8 @@ ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
 ICONS_FILES := $(ICONS_FOLDER)/*.svg
 CMD_SOURCE_FILES := $(shell find cmd -type f -name '*.go')
 INTERNAL_SOURCE_FILES := $(shell find internal -type f -name '*.go')
+WIRE_SRC_FILES := $(shell find internal -type f -name 'wire*.go' -not -name '*_gen.go')
+WIRE_GEN_FILES := $(patsubst %.go,%_gen.go,$(WIRE_SRC_FILES))
 ICONS_SOURCE_FILES := $(wildcard icons/*.go)
 SOURCE_FILES := $(CMD_SOURCE_FILES) $(INTERNAL_SOURCE_FILES) $(ICONS_SOURCE_FILES)
 
@@ -61,7 +63,11 @@ coverage-html: coverage.html
 %.out: $(SOURCE_FILES)
 	@go test -race -cover -coverprofile=$@ -v ./...
 
+.PHONY: build
 build: kubegraph
+
+.PHONY: wire
+wire: $(WIRE_GEN_FILES)
 
 kubegraph: $(SOURCE_FILES) vendor
 	go build -mod=vendor -race -o ./ ./...
@@ -70,7 +76,7 @@ vendor: go.mod go.sum
 	go mod vendor
 
 .PHONY: run
-run:
+run: vendor
 	go run cmd/kubegraph/main.go sample.yaml
 	dot -Tsvg -o sample.svg sample.dot
 
@@ -138,3 +144,6 @@ release:
 .PHONY: test-release
 test-release:
 	env -u GITLAB_TOKEN goreleaser release --rm-dist --snapshot
+
+%_gen.go: %.go
+	wire ./...
