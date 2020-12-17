@@ -14,10 +14,11 @@ type mutatingWebhookConfigurationAdapter struct {
 }
 
 func init() {
-	adapter.Register(&mutatingWebhookConfigurationAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&admissionregistrationV1beta1.MutatingWebhookConfiguration{}),
-		},
+	adapter.MustRegister(&mutatingWebhookConfigurationAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&admissionregistrationV1beta1.MutatingWebhookConfiguration{}),
+			"icons/unknown.svg",
+		),
 	})
 }
 
@@ -28,29 +29,4 @@ func (thisAdapter *mutatingWebhookConfigurationAdapter) tryCastObject(obj runtim
 	}
 
 	return casted, nil
-}
-
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *mutatingWebhookConfigurationAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *mutatingWebhookConfigurationAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/unknown.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *mutatingWebhookConfigurationAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
-// Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *mutatingWebhookConfigurationAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	return nil
 }

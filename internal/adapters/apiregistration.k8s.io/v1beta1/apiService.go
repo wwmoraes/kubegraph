@@ -14,10 +14,11 @@ type apiServiceAdapter struct {
 }
 
 func init() {
-	adapter.Register(&apiServiceAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&apiregistrationV1beta1.APIService{}),
-		},
+	adapter.MustRegister(&apiServiceAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&apiregistrationV1beta1.APIService{}),
+			"icons/unknown.svg",
+		),
 	})
 }
 
@@ -28,29 +29,4 @@ func (thisAdapter *apiServiceAdapter) tryCastObject(obj runtime.Object) (*apireg
 	}
 
 	return casted, nil
-}
-
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *apiServiceAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *apiServiceAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/unknown.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *apiServiceAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
-// Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *apiServiceAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	return nil
 }

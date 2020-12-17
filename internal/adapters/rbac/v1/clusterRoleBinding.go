@@ -17,10 +17,11 @@ type clusterRoleBindingAdapter struct {
 }
 
 func init() {
-	adapter.Register(&clusterRoleBindingAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&rbacV1.ClusterRoleBinding{}),
-		},
+	adapter.MustRegister(&clusterRoleBindingAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&rbacV1.ClusterRoleBinding{}),
+			"icons/crb.svg",
+		),
 	})
 }
 
@@ -33,33 +34,13 @@ func (thisAdapter *clusterRoleBindingAdapter) tryCastObject(obj runtime.Object) 
 	return casted, nil
 }
 
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *clusterRoleBindingAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *clusterRoleBindingAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/crb.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *clusterRoleBindingAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter *clusterRoleBindingAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	clusterRoleV1beta1Adapter, err := adapter.Get(reflect.TypeOf(&rbacV1beta1.ClusterRole{}))
+	clusterRoleV1beta1Adapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&rbacV1beta1.ClusterRole{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
 	}
-	clusterRoleV1Adapter, err := adapter.Get(reflect.TypeOf(&rbacV1.ClusterRole{}))
+	clusterRoleV1Adapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&rbacV1.ClusterRole{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
 	}

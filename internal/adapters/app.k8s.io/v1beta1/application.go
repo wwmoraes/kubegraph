@@ -15,10 +15,11 @@ type applicationAdapter struct {
 }
 
 func init() {
-	adapter.Register(&applicationAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&applicationV1beta1.Application{}),
-		},
+	adapter.MustRegister(&applicationAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&applicationV1beta1.Application{}),
+			"icons/unknown.svg",
+		),
 	})
 }
 
@@ -29,29 +30,4 @@ func (thisAdapter *applicationAdapter) tryCastObject(obj runtime.Object) (*appli
 	}
 
 	return casted, nil
-}
-
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *applicationAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *applicationAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/unknown.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *applicationAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
-// Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *applicationAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	return nil
 }

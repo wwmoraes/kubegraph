@@ -16,10 +16,11 @@ type horizontalPodAutoscalerAdapter struct {
 }
 
 func init() {
-	adapter.Register(&horizontalPodAutoscalerAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&autoscalingV2beta1.HorizontalPodAutoscaler{}),
-		},
+	adapter.MustRegister(&horizontalPodAutoscalerAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&autoscalingV2beta1.HorizontalPodAutoscaler{}),
+			"icons/hpa.svg",
+		),
 	})
 }
 
@@ -32,29 +33,9 @@ func (thisAdapter *horizontalPodAutoscalerAdapter) tryCastObject(obj runtime.Obj
 	return casted, nil
 }
 
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *horizontalPodAutoscalerAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *horizontalPodAutoscalerAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/hpa.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *horizontalPodAutoscalerAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
 // Configure connects the resources on this adapter with its dependencies
 func (thisAdapter *horizontalPodAutoscalerAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	deploymentAdapter, err := adapter.Get(reflect.TypeOf(&appsV1.Deployment{}))
+	deploymentAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&appsV1.Deployment{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
 	}

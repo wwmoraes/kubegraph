@@ -14,11 +14,16 @@ type persistentVolumeAdapter struct {
 }
 
 func init() {
-	adapter.Register(&persistentVolumeAdapter{
-		adapter.ResourceData{
-			ResourceType: reflect.TypeOf(&coreV1.PersistentVolume{}),
-		},
-	})
+	adapter.MustRegister(NewPersistentVolumeAdapter())
+}
+
+func NewPersistentVolumeAdapter() adapter.ResourceTransformer {
+	return &persistentVolumeAdapter{
+		adapter.NewResourceData(
+			reflect.TypeOf(&coreV1.PersistentVolume{}),
+			"icons/persistentVolume.svg",
+		),
+	}
 }
 
 func (thisAdapter *persistentVolumeAdapter) tryCastObject(obj runtime.Object) (*coreV1.PersistentVolume, error) {
@@ -28,29 +33,4 @@ func (thisAdapter *persistentVolumeAdapter) tryCastObject(obj runtime.Object) (*
 	}
 
 	return casted, nil
-}
-
-// GetType returns the reflected type of the k8s kind managed by this instance
-func (thisAdapter *persistentVolumeAdapter) GetType() reflect.Type {
-	return thisAdapter.ResourceType
-}
-
-// Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *persistentVolumeAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (adapter.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	return statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/persistentVolume.svg")
-}
-
-// Connect creates and edge between the given node and an object on this adapter
-func (thisAdapter *persistentVolumeAdapter) Connect(statefulGraph adapter.StatefulGraph, source adapter.Node, targetName string) (adapter.Edge, error) {
-	return statefulGraph.LinkNode(source, thisAdapter.GetType(), targetName)
-}
-
-// Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *persistentVolumeAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	return nil
 }
