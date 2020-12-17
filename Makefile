@@ -61,7 +61,7 @@ coverage-html: coverage.html
 build: kubegraph
 
 kubegraph: $(SOURCE_FILES) vendor
-	go build -mod=vendor -o ./ ./...
+	go build -mod=vendor -race -o ./ ./...
 
 vendor: go.mod go.sum
 	go mod vendor
