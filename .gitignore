@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+kubegraph
 
 # Test binary, built with `go test -c`
 *.test
@@ -38,7 +39,8 @@ sample.*
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
