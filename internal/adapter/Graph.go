@@ -6,10 +6,13 @@ import (
 	"github.com/wwmoraes/dot"
 )
 
+// Graph implements the external package-specific Graph interface
 type Graph interface {
 	dot.Graph
 }
 
+// NewGraph creates a new instance of a Graph, and returns an error if any
+// happens on the underlying dot constructor
 func NewGraph() (Graph, error) {
 	graph, err := dot.NewGraph(
 		dot.WithID("kubegraph"),
