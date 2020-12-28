@@ -14,7 +14,7 @@ type Graph interface {
 // NewGraph creates a new instance of a Graph, and returns an error if any
 // happens on the underlying dot constructor
 func NewGraph() (Graph, error) {
-	graph, err := dot.NewGraph(
+	graph, err := dot.New(
 		dot.WithID("kubegraph"),
 		dot.WithType(dot.GraphTypeDirected),
 	)
