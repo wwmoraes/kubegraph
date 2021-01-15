@@ -9,7 +9,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"github.com/wwmoraes/kubegraph/icons"
 	"github.com/wwmoraes/kubegraph/internal/kubegraph"
 )
 
@@ -44,6 +43,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+
 	if !fileInfo.Mode().IsRegular() {
 		return errors.Errorf("%s is not a valid file", sourceFileName)
 	}
@@ -59,8 +59,8 @@ func preRun(cmd *cobra.Command, args []string) error {
 	}
 
 	// restore icon assets
-	log.Println("restoring assets...")
-	if err := icons.RestoreAssets(rootFlags.outputPath, "icons"); err != nil {
+	log.Println("[main] restoring assets...")
+	if err := kubegraph.RestoreIcons(rootFlags.outputPath); err != nil {
 		return err
 	}
 
