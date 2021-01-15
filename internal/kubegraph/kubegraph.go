@@ -2,8 +2,11 @@ package kubegraph
 
 import (
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/wwmoraes/dot"
@@ -219,4 +222,67 @@ func (graph *KubeGraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Nod
 	}
 
 	return node, nil
+}
+
+// LoadFromData normalizes input data, decodes resources and transform them
+func (instance *KubeGraph) LoadFromData(data io.Reader) error {
+	log.Println("[kubegraph] reading all data...")
+	fileBytes, err := ioutil.ReadAll(data)
+	if err != nil {
+		return err
+	}
+
+	// normalize line breaks
+	log.Println("[kubegraph] normalizing linebreaks...")
+	fileString := string(fileBytes[:])
+	fileString = strings.ReplaceAll(fileString, "\r\n", "\n")
+	fileString = strings.ReplaceAll(fileString, "\r", "\n")
+
+	// removes all comments from yaml and json
+	log.Println("[kubegraph] removing comments and empty lines...")
+	commentLineMatcher, err := regexp.Compile("^[ ]*((#|//).*)?$")
+	if err != nil {
+		return err
+	}
+	fileStringLines := strings.Split(fileString, "\n")
+	var cleanFileString strings.Builder
+	for _, line := range fileStringLines {
+		if commentLineMatcher.MatchString(line) {
+			continue
+		}
+		if line == "\n" || line == "" {
+			continue
+		}
+
+		_, err := cleanFileString.WriteString(fmt.Sprintf("%s\n", line))
+		if err != nil {
+			return err
+		}
+	}
+	fileString = cleanFileString.String()
+
+	log.Println("[kubegraph] splitting documents...")
+	documents := strings.Split(fileString, "---")
+
+	for _, document := range documents {
+		if document == "\n" || document == "" {
+			continue
+		}
+
+		obj, _, err := instance.decode([]byte(document), nil, nil)
+		if err != nil {
+			log.Printf("unable to decode document: %++v\n", err)
+			continue
+		}
+
+		_, err = instance.Transform(obj)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
+	log.Println("[kubegraph] connecting nodes...")
+	instance.ConnectNodes()
+
+	return nil
 }
