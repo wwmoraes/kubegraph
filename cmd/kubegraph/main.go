@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/wwmoraes/kubegraph/icons"
-	"github.com/wwmoraes/kubegraph/internal/loader"
+	"github.com/wwmoraes/kubegraph/internal/kubegraph"
 )
 
 var rootCmd = &cobra.Command{
@@ -70,8 +70,21 @@ func preRun(cmd *cobra.Command, args []string) error {
 func run(cmd *cobra.Command, args []string) error {
 	sourceFileName := args[0]
 
-	// parse file
-	instance, err := loader.FromYAML(sourceFileName)
+	log.Println("[main] opening file...")
+	sourceFile, err := os.Open(sourceFileName)
+	if err != nil {
+		return err
+	}
+	defer sourceFile.Close()
+
+	log.Println("[main] initializing kubegraph instance...")
+	instance, err := kubegraph.New()
+	if err != nil {
+		return err
+	}
+
+	log.Println("[main] loading from data...")
+	err = instance.LoadFromData(sourceFile)
 	if err != nil {
 		return err
 	}
@@ -84,7 +97,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 	defer file.Close()
 
-	log.Println("generating dot graph...")
+	log.Println("[main] generating dot graph...")
 	_, err = instance.WriteTo(file)
 	if err != nil {
 		return err
