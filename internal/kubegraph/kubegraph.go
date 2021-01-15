@@ -10,6 +10,7 @@ import (
 	"github.com/wwmoraes/dot/attributes"
 	"github.com/wwmoraes/dot/constants"
 	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/adapters"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -31,11 +32,12 @@ type KubeGraph struct {
 	k8sNodes   adapter.TypeNodesMap
 	k8sObjects adapter.TypeObjectsMap
 	registry   adapter.Registry
+	decode     adapters.DecodeFn
 }
 
 // NewKubegraph creates an instance of KubeGraph with the provided dot Graph
 // and Registry instance
-func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry) *KubeGraph {
+func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry, decode adapters.DecodeFn) *KubeGraph {
 	graph.SetAttributes(attributes.Map{
 		constants.KeyRankDir:  attributes.NewString("TB"),
 		constants.KeyRankSep:  attributes.NewString("0.75"),
@@ -62,6 +64,7 @@ func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry) *KubeGraph
 		nodes,
 		objects,
 		registryInstance,
+		decode,
 	}
 }
 
