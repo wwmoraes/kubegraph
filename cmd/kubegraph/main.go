@@ -59,7 +59,7 @@ func preRun(cmd *cobra.Command, args []string) error {
 	}
 
 	// restore icon assets
-	log.Println("[main] restoring assets...")
+	log.Println("restoring assets...")
 	if err := kubegraph.RestoreIcons(rootFlags.outputPath); err != nil {
 		return err
 	}
@@ -70,20 +70,20 @@ func preRun(cmd *cobra.Command, args []string) error {
 func run(cmd *cobra.Command, args []string) error {
 	sourceFileName := args[0]
 
-	log.Println("[main] opening file...")
+	log.Println("opening file...")
 	sourceFile, err := os.Open(sourceFileName)
 	if err != nil {
 		return err
 	}
 	defer sourceFile.Close()
 
-	log.Println("[main] initializing kubegraph instance...")
+	log.Println("initializing kubegraph instance...")
 	instance, err := kubegraph.New()
 	if err != nil {
 		return err
 	}
 
-	log.Println("[main] loading from data...")
+	log.Println("loading from data...")
 	err = instance.LoadFromData(sourceFile)
 	if err != nil {
 		return err
@@ -97,7 +97,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 	defer file.Close()
 
-	log.Println("[main] generating dot graph...")
+	log.Println("generating dot graph...")
 	_, err = instance.WriteTo(file)
 	if err != nil {
 		return err
