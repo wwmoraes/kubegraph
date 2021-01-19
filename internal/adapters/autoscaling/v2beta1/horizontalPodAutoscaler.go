@@ -5,19 +5,19 @@ import (
 	"os"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	appsV1 "k8s.io/api/apps/v1"
 	autoscalingV2beta1 "k8s.io/api/autoscaling/v2beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type horizontalPodAutoscalerAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&horizontalPodAutoscalerAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&horizontalPodAutoscalerAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&autoscalingV2beta1.HorizontalPodAutoscaler{}),
 			"icons/hpa.svg",
 		),
@@ -34,7 +34,7 @@ func (thisAdapter *horizontalPodAutoscalerAdapter) tryCastObject(obj runtime.Obj
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *horizontalPodAutoscalerAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *horizontalPodAutoscalerAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	deploymentAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&appsV1.Deployment{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

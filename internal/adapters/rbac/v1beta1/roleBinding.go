@@ -5,7 +5,7 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	coreV1 "k8s.io/api/core/v1"
 	rbacV1 "k8s.io/api/rbac/v1"
 	rbacV1beta1 "k8s.io/api/rbac/v1beta1"
@@ -13,12 +13,12 @@ import (
 )
 
 type roleBindingAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&roleBindingAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&roleBindingAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&rbacV1beta1.RoleBinding{}),
 			"icons/rb.svg",
 		),
@@ -35,7 +35,7 @@ func (thisAdapter *roleBindingAdapter) tryCastObject(obj runtime.Object) (*rbacV
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *roleBindingAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *roleBindingAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	roleV1Adapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&rbacV1.Role{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))

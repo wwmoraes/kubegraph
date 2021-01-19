@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	coreV1 "k8s.io/api/core/v1"
 	policyV1beta1 "k8s.io/api/policy/v1beta1"
@@ -12,12 +12,12 @@ import (
 )
 
 type podDisruptionBudgetAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&podDisruptionBudgetAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&podDisruptionBudgetAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&policyV1beta1.PodDisruptionBudget{}),
 			"icons/pdb.svg",
 		),
@@ -34,8 +34,8 @@ func (thisAdapter *podDisruptionBudgetAdapter) tryCastObject(obj runtime.Object)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *podDisruptionBudgetAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
-	podAdapter, err := adapter.RegistryInstance().Get(reflect.TypeOf(&coreV1.Pod{}))
+func (thisAdapter *podDisruptionBudgetAdapter) Configure(statefulGraph registry.StatefulGraph) error {
+	podAdapter, err := registry.Instance().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
 	}

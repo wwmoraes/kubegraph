@@ -1,4 +1,4 @@
-package adapter
+package registry
 
 import (
 	"fmt"
@@ -9,9 +9,9 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// Resource is implemented by values that can transform a kubernetes object
+// Adapter is implemented by values that can transform a kubernetes object
 // kind information into nodes and create edges between them
-type Resource interface {
+type Adapter interface {
 	// IconPath returns the type icon file path
 	IconPath() string
 	// GetType returns the reflected type of the k8s kind managed by this instance
@@ -30,46 +30,46 @@ type Resource interface {
 	GetAccessor() meta.MetadataAccessor
 }
 
-// resourceData data used by kubernetes adapters
-type resourceData struct {
+// adapterData data used by kubernetes adapters
+type adapterData struct {
 	resourceType reflect.Type
 	iconPath     string
 	registry     Registry
 }
 
-func NewResource(resourceType reflect.Type, iconPath string) Resource {
-	return &resourceData{
+func NewAdapter(resourceType reflect.Type, iconPath string) Adapter {
+	return &adapterData{
 		resourceType: resourceType,
 		iconPath:     iconPath,
 	}
 }
 
 // IconPath returns the type icon file path
-func (data *resourceData) IconPath() string {
+func (data *adapterData) IconPath() string {
 	return data.iconPath
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (data *resourceData) GetType() reflect.Type {
+func (data *adapterData) GetType() reflect.Type {
 	return data.resourceType
 }
 
 // GetRegistry returns registry this adapter is registered to
-func (data *resourceData) GetRegistry() Registry {
+func (data *adapterData) GetRegistry() Registry {
 	return data.registry
 }
 
 // GetAccessor returns a global instance of a kubernetes metadata accessor
-func (data *resourceData) GetAccessor() meta.MetadataAccessor {
+func (data *adapterData) GetAccessor() meta.MetadataAccessor {
 	return data.registry.GetAccessor()
 }
 
-func (data *resourceData) SetRegistry(registry Registry) {
+func (data *adapterData) SetRegistry(registry Registry) {
 	data.registry = registry
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (data *resourceData) Create(graph StatefulGraph, obj runtime.Object) (dot.Node, error) {
+func (data *adapterData) Create(graph StatefulGraph, obj runtime.Object) (dot.Node, error) {
 	accessor := data.GetAccessor()
 	apiVersion, _ := accessor.APIVersion(obj)
 	kind, _ := accessor.Kind(obj)
@@ -85,11 +85,11 @@ func (data *resourceData) Create(graph StatefulGraph, obj runtime.Object) (dot.N
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (data *resourceData) Connect(graph StatefulGraph, source dot.Node, targetName string) (dot.Edge, error) {
+func (data *adapterData) Connect(graph StatefulGraph, source dot.Node, targetName string) (dot.Edge, error) {
 	return graph.LinkNode(source, data.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (data *resourceData) Configure(graph StatefulGraph) error {
+func (data *adapterData) Configure(graph StatefulGraph) error {
 	return nil
 }

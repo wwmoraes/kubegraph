@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	admissionregistrationV1beta1 "k8s.io/api/admissionregistration/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type mutatingWebhookConfigurationAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&mutatingWebhookConfigurationAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&mutatingWebhookConfigurationAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&admissionregistrationV1beta1.MutatingWebhookConfiguration{}),
 			"icons/unknown.svg",
 		),

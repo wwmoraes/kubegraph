@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	coreV1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type secretAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&secretAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&secretAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&coreV1.Secret{}),
 			"icons/secret.svg",
 		),

@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	policyV1beta1 "k8s.io/api/policy/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type podSecurityPolicyAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&podSecurityPolicyAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&podSecurityPolicyAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&policyV1beta1.PodSecurityPolicy{}),
 			"icons/psp.svg",
 		),

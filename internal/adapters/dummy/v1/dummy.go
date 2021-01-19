@@ -5,7 +5,7 @@ import (
 	"log"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -29,12 +29,12 @@ func (d dummyResource) DeepCopyObject() runtime.Object {
 
 // dummyAdapter a kubegraph adapter to render an specific kubernetes resource
 type dummyAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&dummyAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&dummyAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&dummyResource{}),
 			"icons/unknown.svg",
 		),
@@ -51,7 +51,7 @@ func (thisAdapter *dummyAdapter) tryCastObject(obj runtime.Object) (*dummyResour
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *dummyAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *dummyAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	log.Printf("please implement a configuration for %s resources", thisAdapter.GetType().String())
 	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
 	if err != nil {

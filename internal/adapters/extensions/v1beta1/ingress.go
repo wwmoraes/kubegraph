@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	coreV1 "k8s.io/api/core/v1"
 	extensionsV1beta1 "k8s.io/api/extensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type IngressAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&IngressAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&IngressAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&extensionsV1beta1.Ingress{}),
 			"icons/ing.svg",
 		),
@@ -33,7 +33,7 @@ func (thisAdapter *IngressAdapter) tryCastObject(obj runtime.Object) (*extension
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *IngressAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *IngressAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	serviceAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Service{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

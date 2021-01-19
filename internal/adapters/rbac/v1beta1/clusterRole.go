@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	rbacV1beta1 "k8s.io/api/rbac/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type clusterRoleAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&clusterRoleAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&clusterRoleAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&rbacV1beta1.ClusterRole{}),
 			"icons/c-role.svg",
 		),

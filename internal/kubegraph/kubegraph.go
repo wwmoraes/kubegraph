@@ -12,8 +12,8 @@ import (
 	"github.com/wwmoraes/dot"
 	"github.com/wwmoraes/dot/attributes"
 	"github.com/wwmoraes/dot/constants"
-	"github.com/wwmoraes/kubegraph/internal/adapter"
 	"github.com/wwmoraes/kubegraph/internal/adapters"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	"k8s.io/apimachinery/pkg/runtime"
 
@@ -32,15 +32,15 @@ func New() (*KubeGraph, error) {
 // KubeGraph graphviz wrapper that creates kubernetes resource graphs
 type KubeGraph struct {
 	dot.Graph
-	k8sNodes   adapter.TypeNodesMap
-	k8sObjects adapter.TypeObjectsMap
-	registry   adapter.Registry
+	k8sNodes   registry.TypeNodesMap
+	k8sObjects registry.TypeObjectsMap
+	registry   registry.Registry
 	decode     adapters.DecodeFn
 }
 
 // NewKubegraph creates an instance of KubeGraph with the provided dot Graph
 // and Registry instance
-func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry, decode adapters.DecodeFn) *KubeGraph {
+func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode adapters.DecodeFn) *KubeGraph {
 	graph.SetAttributes(attributes.Map{
 		constants.KeyRankDir:  attributes.NewString("TB"),
 		constants.KeyRankSep:  attributes.NewString("0.75"),
@@ -54,12 +54,12 @@ func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry, decode ada
 		constants.KeyStyle:    attributes.NewString("rounded"),
 	})
 
-	nodes := make(adapter.TypeNodesMap)
-	objects := make(adapter.TypeObjectsMap)
+	nodes := make(registry.TypeNodesMap)
+	objects := make(registry.TypeObjectsMap)
 
 	for adapterType := range registryInstance.GetAll() {
-		nodes[adapterType] = make(adapter.NodesMap)
-		objects[adapterType] = make(adapter.ObjectsMap)
+		nodes[adapterType] = make(registry.NodesMap)
+		objects[adapterType] = make(registry.ObjectsMap)
 	}
 
 	return &KubeGraph{
@@ -73,8 +73,8 @@ func NewKubegraph(graph dot.Graph, registryInstance adapter.Registry, decode ada
 
 // ConnectNodes creates edges between the nodes
 func (kgraph *KubeGraph) ConnectNodes() {
-	for _, adapter := range adapter.RegistryInstance().GetAll() {
-		err := adapter.Configure(kgraph)
+	for _, registryAdapter := range registry.Instance().GetAll() {
+		err := registryAdapter.Configure(kgraph)
 		if err != nil {
 			log.Println(err)
 		}
@@ -140,7 +140,7 @@ func (graph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node dot
 	return nil
 }
 
-func (graph *KubeGraph) getNodes(objectType reflect.Type) (adapter.NodesMap, error) {
+func (graph *KubeGraph) getNodes(objectType reflect.Type) (registry.NodesMap, error) {
 	typeNodes, typeExists := graph.k8sNodes[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
@@ -200,7 +200,7 @@ func (graph *KubeGraph) LinkNode(node dot.Node, targetNodeType reflect.Type, tar
 }
 
 // GetObjects gets all objects in store
-func (graph *KubeGraph) GetObjects(objectType reflect.Type) (adapter.ObjectsMap, error) {
+func (graph *KubeGraph) GetObjects(objectType reflect.Type) (registry.ObjectsMap, error) {
 	typeObjects, typeExists := graph.k8sObjects[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no objects for type %s found", objectType.String())
