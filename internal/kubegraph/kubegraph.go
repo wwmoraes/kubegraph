@@ -91,21 +91,6 @@ func (kgraph *KubeGraph) Transform(obj runtime.Object) (dot.Node, error) {
 	return objectAdapter.Create(kgraph, obj)
 }
 
-func (kgraph *KubeGraph) CreateNode(nodeType reflect.Type, iconPath string, obj runtime.Object) (dot.Node, error) {
-	accessor := kgraph.registry.GetAccessor()
-	apiVersion, _ := accessor.APIVersion(obj)
-	kind, _ := accessor.Kind(obj)
-	name, _ := accessor.Name(obj)
-
-	nodeName := fmt.Sprintf("%s.%s~%s", apiVersion, kind, name)
-	resourceNode, err := kgraph.AddStyledNode(nodeType, obj, nodeName, name, iconPath)
-	if err != nil {
-		return nil, err
-	}
-
-	return resourceNode, nil
-}
-
 func (graph *KubeGraph) createStyledNode(name string, label string, icon string) (dot.Node, error) {
 	node := graph.Node(name)
 
