@@ -211,20 +211,20 @@ func (graph *Kubegraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Nod
 
 // LoadFromData normalizes input data, decodes resources and transform them
 func (instance *Kubegraph) LoadFromData(data io.Reader) error {
-	log.Println("[kubegraph] reading all data...")
+	log.Println("reading all data...")
 	fileBytes, err := ioutil.ReadAll(data)
 	if err != nil {
 		return err
 	}
 
 	// normalize line breaks
-	log.Println("[kubegraph] normalizing linebreaks...")
+	log.Println("normalizing linebreaks...")
 	fileString := string(fileBytes[:])
 	fileString = strings.ReplaceAll(fileString, "\r\n", "\n")
 	fileString = strings.ReplaceAll(fileString, "\r", "\n")
 
 	// removes all comments from yaml and json
-	log.Println("[kubegraph] removing comments and empty lines...")
+	log.Println("removing comments and empty lines...")
 	commentLineMatcher, err := regexp.Compile("^[ ]*((#|//).*)?$")
 	if err != nil {
 		return err
@@ -246,7 +246,7 @@ func (instance *Kubegraph) LoadFromData(data io.Reader) error {
 	}
 	fileString = cleanFileString.String()
 
-	log.Println("[kubegraph] splitting documents...")
+	log.Println("splitting documents...")
 	documents := strings.Split(fileString, "---")
 
 	for _, document := range documents {
@@ -266,7 +266,7 @@ func (instance *Kubegraph) LoadFromData(data io.Reader) error {
 		}
 	}
 
-	log.Println("[kubegraph] connecting nodes...")
+	log.Println("connecting nodes...")
 	instance.ConnectNodes()
 
 	return nil
