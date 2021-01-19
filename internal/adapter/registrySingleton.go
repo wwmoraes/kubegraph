@@ -10,7 +10,7 @@ import (
 type ResourceMap map[reflect.Type]Resource
 
 type registrySingleton struct {
-	adapters ResourceAdapterMap
+	adapters ResourceMap
 	accessor meta.MetadataAccessor
 }
 
@@ -21,7 +21,7 @@ var registryInstance *registrySingleton
 func RegistryInstance() Registry {
 	once.Do(func() {
 		registryInstance = &registrySingleton{
-			adapters: make(ResourceAdapterMap),
+			adapters: make(ResourceMap),
 			accessor: meta.NewAccessor(),
 		}
 	})
@@ -65,8 +65,8 @@ func (thisInstance *registrySingleton) Get(resourceType reflect.Type) (Resource,
 }
 
 // GetMultiple returns a map of adapters with only the requested types
-func (thisInstance *registrySingleton) GetMultiple(resourceTypes ...reflect.Type) ResourceAdapterMap {
-	var resourceAdapters = make(ResourceAdapterMap, len(resourceTypes))
+func (thisInstance *registrySingleton) GetMultiple(resourceTypes ...reflect.Type) ResourceMap {
+	var resourceAdapters = make(ResourceMap, len(resourceTypes))
 
 	for _, resourceType := range resourceTypes {
 		resourceAdapters[resourceType] = thisInstance.adapters[resourceType]
@@ -76,7 +76,7 @@ func (thisInstance *registrySingleton) GetMultiple(resourceTypes ...reflect.Type
 }
 
 // GetAll returns all adapters registered
-func (thisInstance *registrySingleton) GetAll() ResourceAdapterMap {
+func (thisInstance *registrySingleton) GetAll() ResourceMap {
 	return thisInstance.adapters
 }
 
