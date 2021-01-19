@@ -1,0 +1,97 @@
+@startuml
+autoactivate on
+
+!include components-v2.iuml
+
+== import ==
+!include import-v2.puml
+
+== init ==
+!include init-v2.puml
+
+== main ==
+
+?-> Main : args
+
+ref over Main : stat source file
+ref over Main : make output path
+' ref over Main : create target file
+Main -> Kubegraph : RestoreIcons
+Kubegraph -> Icons : RestoreAssets
+return error
+return error
+
+== Load and parse input ==
+
+Main -> Main : open source file
+return file, error
+
+Main -> Kubegraph : New
+$RegistryInstance(Kubegraph)
+Kubegraph --> Main : kubegraph, error
+
+Main -> Kubegraph : LoadFromData
+  Kubegraph -> Kubegraph : ReadAll
+  return
+  ref over Kubegraph
+    normalize linebreaks
+    remove comments
+    remove empty lines
+    split documents
+  end ref
+  loop YAML documents
+    Kubegraph -> Kubegraph : decode
+    return runtime object
+    Kubegraph -> Kubegraph : Transform
+    Kubegraph -> Registry : get adapter
+    return adapter
+    Kubegraph -> Adapters : create object node
+    Adapters -> Kubegraph : AddStyledNode
+    return node, error
+    return node, error
+    return node, error
+  end
+
+  Kubegraph -> Kubegraph : connect nodes
+  Kubegraph -> Registry : get adapters
+  return adapters
+  loop adapters
+    Kubegraph -> Adapters : Configure
+    loop referenced types
+      opt referenced adapter
+        Adapters -> Registry : get adapter
+        return adapter
+      end
+    end
+    Adapters -> Kubegraph : get objects
+    return objects
+    loop objects
+      Adapters -> Kubegraph : get node
+      return node
+      loop referenced adapters
+        Adapters -> Adapters : Connect
+        Adapters -> Kubegraph : LinkNode
+        return edge, error
+        return edge, error
+      end
+    end
+    return error
+  end
+  return error
+return error
+
+' Main --> Main -- :  kubegraph, error
+
+== phase 3: serialize graph ==
+
+Main -> Main : create target file
+return file, error
+
+Main -> Kubegraph : WriteTo file
+return error
+
+?<-- Main -- : error
+
+title Kubegraph CLI v2
+
+@enduml
