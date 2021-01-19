@@ -9,6 +9,6 @@ import (
 	"github.com/wwmoraes/kubegraph/internal/registry"
 )
 
-func InitializeKubegraph(optionsFn ...dot.GraphOptionFn) (*KubeGraph, error) {
+func InitializeKubegraph(optionsFn ...dot.GraphOptionFn) (*Kubegraph, error) {
 	panic(wire.Build(NewKubegraph, dot.New, registry.Instance, adapters.GetDecoder))
 }

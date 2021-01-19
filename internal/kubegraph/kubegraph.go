@@ -21,16 +21,16 @@ import (
 	_ "github.com/wwmoraes/kubegraph/internal/adapters"
 )
 
-// New creates an instance of KubeGraph
-func New() (*KubeGraph, error) {
+// New creates an instance of Kubegraph
+func New() (*Kubegraph, error) {
 	return InitializeKubegraph(
 		dot.WithID("kubegraph"),
 		dot.WithType(dot.GraphTypeDirected),
 	)
 }
 
-// KubeGraph graphviz wrapper that creates kubernetes resource graphs
-type KubeGraph struct {
+// Kubegraph graphviz wrapper that creates kubernetes resource graphs
+type Kubegraph struct {
 	dot.Graph
 	k8sNodes   registry.TypeNodesMap
 	k8sObjects registry.TypeObjectsMap
@@ -38,9 +38,9 @@ type KubeGraph struct {
 	decode     adapters.DecodeFn
 }
 
-// NewKubegraph creates an instance of KubeGraph with the provided dot Graph
+// NewKubegraph creates an instance of Kubegraph with the provided dot Graph
 // and Registry instance
-func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode adapters.DecodeFn) *KubeGraph {
+func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode adapters.DecodeFn) *Kubegraph {
 	graph.SetAttributes(attributes.Map{
 		constants.KeyRankDir:  attributes.NewString("TB"),
 		constants.KeyRankSep:  attributes.NewString("0.75"),
@@ -62,7 +62,7 @@ func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode ad
 		objects[adapterType] = make(registry.ObjectsMap)
 	}
 
-	return &KubeGraph{
+	return &Kubegraph{
 		graph,
 		nodes,
 		objects,
@@ -72,7 +72,7 @@ func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode ad
 }
 
 // ConnectNodes creates edges between the nodes
-func (kgraph *KubeGraph) ConnectNodes() {
+func (kgraph *Kubegraph) ConnectNodes() {
 	for _, registryAdapter := range registry.Instance().GetAll() {
 		err := registryAdapter.Configure(kgraph)
 		if err != nil {
@@ -82,7 +82,7 @@ func (kgraph *KubeGraph) ConnectNodes() {
 }
 
 // Transform creates a node on the graph for the resource
-func (kgraph *KubeGraph) Transform(obj runtime.Object) (dot.Node, error) {
+func (kgraph *Kubegraph) Transform(obj runtime.Object) (dot.Node, error) {
 	objectAdapter, err := kgraph.registry.Get(reflect.TypeOf(obj))
 	if err != nil {
 		return nil, err
@@ -91,7 +91,7 @@ func (kgraph *KubeGraph) Transform(obj runtime.Object) (dot.Node, error) {
 	return objectAdapter.Create(kgraph, obj)
 }
 
-func (graph *KubeGraph) createStyledNode(name string, label string, icon string) (dot.Node, error) {
+func (graph *Kubegraph) createStyledNode(name string, label string, icon string) (dot.Node, error) {
 	node := graph.Node(name)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
@@ -115,7 +115,7 @@ func (graph *KubeGraph) createStyledNode(name string, label string, icon string)
 	return node, nil
 }
 
-func (graph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node dot.Node) error {
+func (graph *Kubegraph) addNode(nodeType reflect.Type, nodeName string, node dot.Node) error {
 	nodes, err := graph.getNodes(nodeType)
 	if err != nil {
 		return err
@@ -125,7 +125,7 @@ func (graph *KubeGraph) addNode(nodeType reflect.Type, nodeName string, node dot
 	return nil
 }
 
-func (graph *KubeGraph) getNodes(objectType reflect.Type) (registry.NodesMap, error) {
+func (graph *Kubegraph) getNodes(objectType reflect.Type) (registry.NodesMap, error) {
 	typeNodes, typeExists := graph.k8sNodes[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
@@ -134,7 +134,7 @@ func (graph *KubeGraph) getNodes(objectType reflect.Type) (registry.NodesMap, er
 	return typeNodes, nil
 }
 
-func (graph *KubeGraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
+func (graph *Kubegraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
 	objects, err := graph.GetObjects(objectType)
 	if err != nil {
 		return err
@@ -145,7 +145,7 @@ func (graph *KubeGraph) addObject(objectType reflect.Type, objectName string, ob
 }
 
 // AddStyledNode creates a new styled node with the given resource
-func (graph *KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (dot.Node, error) {
+func (graph *Kubegraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (dot.Node, error) {
 
 	node, err := graph.createStyledNode(nodeName, resourceName, icon)
 	if err != nil {
@@ -164,7 +164,7 @@ func (graph *KubeGraph) AddStyledNode(resourceType reflect.Type, resourceObject 
 }
 
 // LinkNode links the node to the target node type/name, if it exists
-func (graph *KubeGraph) LinkNode(node dot.Node, targetNodeType reflect.Type, targetNodeName string) (edge dot.Edge, err error) {
+func (graph *Kubegraph) LinkNode(node dot.Node, targetNodeType reflect.Type, targetNodeName string) (edge dot.Edge, err error) {
 	defer func() {
 		if recoverErr := recover(); recoverErr != nil {
 			edge = nil
@@ -185,7 +185,7 @@ func (graph *KubeGraph) LinkNode(node dot.Node, targetNodeType reflect.Type, tar
 }
 
 // GetObjects gets all objects in store
-func (graph *KubeGraph) GetObjects(objectType reflect.Type) (registry.ObjectsMap, error) {
+func (graph *Kubegraph) GetObjects(objectType reflect.Type) (registry.ObjectsMap, error) {
 	typeObjects, typeExists := graph.k8sObjects[objectType]
 	if !typeExists {
 		return nil, fmt.Errorf("no objects for type %s found", objectType.String())
@@ -195,7 +195,7 @@ func (graph *KubeGraph) GetObjects(objectType reflect.Type) (registry.ObjectsMap
 }
 
 // GetNode gets a node by type/name
-func (graph *KubeGraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Node, error) {
+func (graph *Kubegraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Node, error) {
 	typeNodes, typeExists := graph.k8sNodes[nodeType]
 	if !typeExists {
 		return nil, fmt.Errorf("no nodes for type %s found", nodeType.String())
@@ -210,7 +210,7 @@ func (graph *KubeGraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Nod
 }
 
 // LoadFromData normalizes input data, decodes resources and transform them
-func (instance *KubeGraph) LoadFromData(data io.Reader) error {
+func (instance *Kubegraph) LoadFromData(data io.Reader) error {
 	log.Println("[kubegraph] reading all data...")
 	fileBytes, err := ioutil.ReadAll(data)
 	if err != nil {

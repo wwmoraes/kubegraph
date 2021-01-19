@@ -47,7 +47,7 @@
 
 ## 🧐 About <a name = "about"></a>
 
-KubeGraph is a CLI tool that parses kubernetes resources and generates a graph
+Kubegraph is a CLI tool that parses kubernetes resources and generates a graph
 with the relations between those. The graph is done using Graphviz, and can be
 further customized after generation.
 
@@ -61,7 +61,7 @@ make build
 
 ### Prerequisites
 
-KubeGraph is done using Golang 1.15, using a pure Go graphviz implementation to
+Kubegraph is done using Golang 1.15, using a pure Go graphviz implementation to
 generate the graph.
 
 Everything is set as a direct dependency, and `go mod vendor` will install for you.
