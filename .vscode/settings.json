@@ -15,12 +15,15 @@
     "golangci",
     "goreleaser",
     "graphviz",
+    "istio",
     "kgraph",
+    "kube",
     "kubegraph",
     "mkdir",
     "opencontainers",
     "rbac",
     "sgraph",
+    "sigs",
     "sonarsource"
   ],
   "search.exclude": {
