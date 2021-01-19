@@ -17,13 +17,13 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeKubegraph(optionsFn ...dot.GraphOptionFn) (*KubeGraph, error) {
+func InitializeKubegraph(optionsFn ...dot.GraphOptionFn) (*Kubegraph, error) {
 	graph, err := dot.New(optionsFn...)
 	if err != nil {
 		return nil, err
 	}
 	registryRegistry := registry.Instance()
 	decodeFn := adapters.GetDecoder()
-	kubeGraph := NewKubegraph(graph, registryRegistry, decodeFn)
-	return kubeGraph, nil
+	kubegraph := NewKubegraph(graph, registryRegistry, decodeFn)
+	return kubegraph, nil
 }
