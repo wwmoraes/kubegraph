@@ -8,6 +8,10 @@ WIRE_SRC_FILES := $(shell find internal -type f -name 'wire*.go' -not -name '*_g
 WIRE_GEN_FILES := $(patsubst %.go,%_gen.go,$(WIRE_SRC_FILES))
 ICONS_SOURCE_FILES := $(wildcard icons/*.go)
 SOURCE_FILES := $(CMD_SOURCE_FILES) $(INTERNAL_SOURCE_FILES) $(ICONS_SOURCE_FILES)
+GRAPHS_FOLDER := docs
+GRAPHS_SRC_FILES := $(wildcard $(GRAPHS_FOLDER)/*.puml)
+GRAPHS_SVG_FILES := $(patsubst %.puml,%.svg,$(GRAPHS_SRC_FILES))
+GRAPHS_PNG_FILES := $(patsubst %.puml,%.png,$(GRAPHS_SRC_FILES))
 
 GIT_SHA = sha-$(shell git log -n 1 --format="%h")
 GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
@@ -28,7 +32,6 @@ OCI_LICENSES = MIT
 OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
 OCI_DOCUMENTATION = https://github.com/$(REPO)
 OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
-
 
 .DEFAULT_GOAL := build
 
@@ -72,7 +75,9 @@ wire: $(WIRE_GEN_FILES)
 kubegraph: $(SOURCE_FILES) vendor
 	go build -mod=vendor -race -o ./ ./...
 
-vendor: go.mod go.sum
+vendor: go.sum
+
+go.sum: go.mod
 	go mod vendor
 
 .PHONY: run
@@ -133,6 +138,13 @@ endif
   --tag $(REPO):latest \
   --file ./Dockerfile .
 
+.PHONY: docs
+docs: $(GRAPHS_SVG_FILES) $(GRAPHS_PNG_FILES)
+
+.PHONY: graphs
+graphs: $(GRAPHS_FOLDER)/full-gen.puml $(GRAPHS_FOLDER)/core-gen.puml
+	@$(MAKE) docs
+
 .PHONY: image-sh
 image-sh: image
 	docker run --rm -it --entrypoint=ash wwmoraes/kubegraph:single-latest
@@ -147,3 +159,19 @@ test-release:
 
 %_gen.go: %.go
 	wire ./...
+
+$(GRAPHS_FOLDER)/full-gen.puml: cmd internal icons
+	$(info generating $@...)
+	@goplantuml -recursive $^ > $@
+
+$(GRAPHS_FOLDER)/core-gen.puml: internal/adapter internal/kubegraph internal/loader internal/utils
+	$(info generating $@...)
+	@goplantuml -recursive $^ > $@
+
+$(GRAPHS_FOLDER)/%.svg: $(GRAPHS_FOLDER)/%.puml
+	$(info generating $@ from $<...)
+	@plantuml -tsvg $<
+
+$(GRAPHS_FOLDER)/%.png: $(GRAPHS_FOLDER)/%.puml
+	$(info generating $@ from $<...)
+	@plantuml -tpng $<

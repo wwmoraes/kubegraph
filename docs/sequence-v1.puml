@@ -1,0 +1,98 @@
+@startuml
+autoactivate on
+
+!include components-v1.iuml
+
+== 1. imports and init ==
+!include init-v1.puml
+
+?-> Main : args
+
+== 2. preflight sanity checks ==
+
+ref over Main : stat source file
+ref over Main : make output path
+
+== 3. restore assets to disk ==
+
+Main -> Icons : RestoreAssets
+return error
+
+== 4. load and parse input ==
+
+Main -> Main : fromYAML
+ref over Main : 4. load and parse input
+ref over Main
+  read file
+  normalize linebreaks
+  remove comments
+  remove empty lines
+  split documents
+end ref
+
+== 5. load kubegraph ==
+
+Main -> Kubegraph : Initialize
+Kubegraph -> Registry : get registry
+Registry -> Registry : get instance
+return instance
+return registry
+Kubegraph --> Main : kubegraph, error
+
+== 6. create nodes ==
+
+loop YAML documents
+  Main -> Main : decode document
+  return runtime object
+  Main -> Kubegraph : transform object
+  Kubegraph -> Registry : get adapter
+  return adapter
+  Kubegraph -> Adapters : create object node
+  Adapters -> Kubegraph : AddStyledNode
+  return node, error
+  return node, error
+  return node, error
+end
+
+Main --> Main -- :  kubegraph, error
+
+== 7. connect nodes ==
+
+Main -> Kubegraph : connect nodes
+Kubegraph -> Registry : get adapters
+return adapters
+loop adapters
+  Kubegraph -> Adapters : Configure
+  loop referenced types
+    opt referenced adapter
+      Adapters -> Registry : get adapter
+      return adapter
+    end
+  end
+  Adapters -> Kubegraph : get objects
+  return objects
+  loop objects
+    Adapters -> Kubegraph : get node
+    return node
+    loop referenced adapters
+      Adapters -> Adapters : Connect
+      Adapters -> Kubegraph : LinkNode
+      return edge, error
+      return edge, error
+    end
+  end
+  return error
+end
+return error
+
+== 8. serialize graph ==
+
+ref over Main : create target file
+Main -> Kubegraph : WriteTo file
+return error
+
+?<-- Main -- : error
+
+title Kubegraph CLI v1
+
+@enduml

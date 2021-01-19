@@ -1,0 +1,27 @@
+@startuml
+autoactivate on
+
+!include components-v2.iuml
+
+Registry -> Registry : init
+Registry -> Registry : once.Do
+Registry -> Registry : New
+return instance
+return
+return
+
+Adapters -> Adapters : init
+Adapters -> Adapters : New
+return adapter
+Adapters -> Registry : MustRegister
+$RegistryInstance(Registry)
+Registry -> Adapters : set registry
+return
+Registry -> Registry : append adapter
+return
+return
+return
+
+title Kubegraph CLI init v2
+
+@enduml

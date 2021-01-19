@@ -1,3 +1,7 @@
+docs/*
+!docs/*.puml
+docs/*-gen.puml
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

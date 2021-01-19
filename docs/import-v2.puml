@@ -1,0 +1,14 @@
+@startuml
+autoactivate on
+
+!include components-v2.iuml
+
+Main o-->> Kubegraph : import
+Kubegraph o-->> Icons : import
+Kubegraph o-->> Adapters : import
+Kubegraph o-->> Registry : import
+Adapters o-->> Registry : import
+
+title Kubegraph CLI init v2
+
+@enduml
