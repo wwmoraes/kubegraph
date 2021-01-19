@@ -6,19 +6,19 @@ import (
 	"reflect"
 
 	"github.com/wwmoraes/dot"
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	appsV1 "k8s.io/api/apps/v1"
 	coreV1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type statefulSetAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&statefulSetAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&statefulSetAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&appsV1.StatefulSet{}),
 			"icons/sts.svg",
 		),
@@ -35,7 +35,7 @@ func (thisAdapter *statefulSetAdapter) tryCastObject(obj runtime.Object) (*appsV
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *statefulSetAdapter) Create(statefulGraph adapter.StatefulGraph, obj runtime.Object) (dot.Node, error) {
+func (thisAdapter *statefulSetAdapter) Create(statefulGraph registry.StatefulGraph, obj runtime.Object) (dot.Node, error) {
 	resource, err := thisAdapter.tryCastObject(obj)
 	if err != nil {
 		return nil, err
@@ -65,7 +65,7 @@ func (thisAdapter *statefulSetAdapter) Create(statefulGraph adapter.StatefulGrap
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *statefulSetAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *statefulSetAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

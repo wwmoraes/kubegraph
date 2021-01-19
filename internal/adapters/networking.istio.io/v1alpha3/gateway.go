@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	networkV1alpha3 "istio.io/client-go/pkg/apis/networking/v1alpha3"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type gatewayAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&gatewayAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&gatewayAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&networkV1alpha3.Gateway{}),
 			"icons/unknown.svg",
 		),

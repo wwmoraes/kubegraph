@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	"k8s.io/apimachinery/pkg/runtime"
 	apiregistrationV1beta1 "k8s.io/kube-aggregator/pkg/apis/apiregistration/v1beta1"
 )
 
 type apiServiceAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&apiServiceAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&apiServiceAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&apiregistrationV1beta1.APIService{}),
 			"icons/unknown.svg",
 		),

@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	coreV1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type persistentVolumeAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(NewPersistentVolumeAdapter())
+	registry.MustRegister(NewPersistentVolumeAdapter())
 }
 
-func NewPersistentVolumeAdapter() adapter.Resource {
+func NewPersistentVolumeAdapter() registry.Adapter {
 	return &persistentVolumeAdapter{
-		adapter.NewResource(
+		registry.NewAdapter(
 			reflect.TypeOf(&coreV1.PersistentVolume{}),
 			"icons/persistentVolume.svg",
 		),

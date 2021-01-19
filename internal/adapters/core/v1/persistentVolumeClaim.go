@@ -4,22 +4,22 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	coreV1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type persistentVolumeClaimAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(NewPersistentVolumeClaimAdapter())
+	registry.MustRegister(NewPersistentVolumeClaimAdapter())
 }
 
-func NewPersistentVolumeClaimAdapter() adapter.Resource {
+func NewPersistentVolumeClaimAdapter() registry.Adapter {
 	return &persistentVolumeClaimAdapter{
-		adapter.NewResource(
+		registry.NewAdapter(
 			reflect.TypeOf(&coreV1.PersistentVolumeClaim{}),
 			"icons/pvc.svg",
 		),
@@ -36,7 +36,7 @@ func (thisAdapter *persistentVolumeClaimAdapter) tryCastObject(obj runtime.Objec
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *persistentVolumeClaimAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *persistentVolumeClaimAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	persistentVolumeAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.PersistentVolume{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

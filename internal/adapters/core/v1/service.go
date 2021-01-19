@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
 	coreV1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type serviceAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&serviceAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&serviceAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&coreV1.Service{}),
 			"icons/svg.svg",
 		),
@@ -33,7 +33,7 @@ func (thisAdapter *serviceAdapter) tryCastObject(obj runtime.Object) (*coreV1.Se
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *serviceAdapter) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *serviceAdapter) Configure(statefulGraph registry.StatefulGraph) error {
 	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
 	if err != nil {
 		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)

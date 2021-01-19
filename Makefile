@@ -164,7 +164,7 @@ $(GRAPHS_FOLDER)/full-gen.puml: cmd internal icons
 	$(info generating $@...)
 	@goplantuml -recursive $^ > $@
 
-$(GRAPHS_FOLDER)/core-gen.puml: internal/adapter internal/kubegraph internal/loader internal/utils
+$(GRAPHS_FOLDER)/core-gen.puml: internal/registry internal/kubegraph internal/utils
 	$(info generating $@...)
 	@goplantuml -recursive $^ > $@
 

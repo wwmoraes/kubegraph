@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	apiExtensionsV1beta1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type customResourceDefinitionAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&customResourceDefinitionAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&customResourceDefinitionAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&apiExtensionsV1beta1.CustomResourceDefinition{}),
 			"icons/crd.svg",
 		),

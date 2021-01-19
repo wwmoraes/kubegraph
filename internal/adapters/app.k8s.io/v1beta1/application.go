@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wwmoraes/kubegraph/internal/adapter"
+	"github.com/wwmoraes/kubegraph/internal/registry"
 	"k8s.io/apimachinery/pkg/runtime"
 	applicationV1beta1 "sigs.k8s.io/application/api/v1beta1"
 )
 
 // applicationAdapter a kubegraph adapter to render an specific kubernetes resource
 type applicationAdapter struct {
-	adapter.Resource
+	registry.Adapter
 }
 
 func init() {
-	adapter.MustRegister(&applicationAdapter{
-		adapter.NewResource(
+	registry.MustRegister(&applicationAdapter{
+		registry.NewAdapter(
 			reflect.TypeOf(&applicationV1beta1.Application{}),
 			"icons/unknown.svg",
 		),
