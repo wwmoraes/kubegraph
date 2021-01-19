@@ -19,9 +19,9 @@ type Registry interface {
 	// Get returns the adapter for a resource type, if it is registered
 	Get(reflect.Type) (Resource, error)
 	// GetMultiple returns a map of adapters with only the requested types
-	GetMultiple(...reflect.Type) ResourceAdapterMap
+	GetMultiple(...reflect.Type) ResourceMap
 	// GetAll returns all adapters registered
-	GetAll() ResourceAdapterMap
+	GetAll() ResourceMap
 	// GetAccessor returns the kubernetes metadata accessor shared instance
 	GetAccessor() meta.MetadataAccessor
 }
