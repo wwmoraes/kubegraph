@@ -10,12 +10,12 @@ import (
 )
 
 type secretAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&secretAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&coreV1.Secret{}),
 			"icons/secret.svg",
 		),

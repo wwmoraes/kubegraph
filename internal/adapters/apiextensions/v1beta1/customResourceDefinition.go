@@ -10,12 +10,12 @@ import (
 )
 
 type customResourceDefinitionAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&customResourceDefinitionAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&apiExtensionsV1beta1.CustomResourceDefinition{}),
 			"icons/crd.svg",
 		),

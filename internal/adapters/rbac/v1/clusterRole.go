@@ -10,12 +10,12 @@ import (
 )
 
 type clusterRoleAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&clusterRoleAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&rbacV1.ClusterRole{}),
 			"icons/c-role.svg",
 		),

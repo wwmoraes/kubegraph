@@ -12,12 +12,12 @@ import (
 )
 
 type horizontalPodAutoscalerAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&horizontalPodAutoscalerAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&autoscalingV2beta1.HorizontalPodAutoscaler{}),
 			"icons/hpa.svg",
 		),

@@ -10,12 +10,12 @@ import (
 )
 
 type virtualServiceAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&virtualServiceAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&networkV1alpha3.VirtualService{}),
 			"icons/unknown.svg",
 		),

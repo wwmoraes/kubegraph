@@ -11,12 +11,12 @@ import (
 )
 
 type IngressAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&IngressAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&extensionsV1beta1.Ingress{}),
 			"icons/ing.svg",
 		),

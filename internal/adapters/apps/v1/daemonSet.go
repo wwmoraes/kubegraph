@@ -13,12 +13,12 @@ import (
 )
 
 type daemonSetAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&daemonSetAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&appsV1.DaemonSet{}),
 			"icons/ds.svg",
 		),

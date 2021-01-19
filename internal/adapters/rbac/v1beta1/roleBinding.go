@@ -13,12 +13,12 @@ import (
 )
 
 type roleBindingAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&roleBindingAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&rbacV1beta1.RoleBinding{}),
 			"icons/rb.svg",
 		),

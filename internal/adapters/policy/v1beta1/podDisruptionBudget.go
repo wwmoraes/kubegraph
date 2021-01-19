@@ -12,12 +12,12 @@ import (
 )
 
 type podDisruptionBudgetAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&podDisruptionBudgetAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&policyV1beta1.PodDisruptionBudget{}),
 			"icons/pdb.svg",
 		),

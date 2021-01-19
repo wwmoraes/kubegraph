@@ -10,16 +10,16 @@ import (
 )
 
 type configMapAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(NewConfigMapAdapter())
 }
 
-func NewConfigMapAdapter() adapter.ResourceTransformer {
+func NewConfigMapAdapter() adapter.Resource {
 	return &configMapAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&coreV1.ConfigMap{}),
 			"icons/cm.svg",
 		),

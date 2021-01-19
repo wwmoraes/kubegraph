@@ -13,12 +13,12 @@ import (
 )
 
 type clusterRoleBindingAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&clusterRoleBindingAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&rbacV1beta1.ClusterRoleBinding{}),
 			"icons/crb.svg",
 		),

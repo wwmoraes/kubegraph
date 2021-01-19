@@ -13,8 +13,8 @@ func init() {
 	}
 }
 
-func New(resourceData adapter.ResourceData) adapter.ResourceTransformer {
-	return &resourceTransformer{
+func New(resourceData adapter.Resource) adapter.Resource {
+	return &adapterResource{
 		resourceData,
 	}
 }

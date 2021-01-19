@@ -11,12 +11,12 @@ import (
 )
 
 type serviceAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&serviceAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&coreV1.Service{}),
 			"icons/svg.svg",
 		),

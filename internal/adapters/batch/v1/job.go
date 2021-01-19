@@ -13,12 +13,12 @@ import (
 )
 
 type jobAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&jobAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&batchV1.Job{}),
 			"icons/job.svg",
 		),

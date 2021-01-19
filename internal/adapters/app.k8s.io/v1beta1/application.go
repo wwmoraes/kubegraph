@@ -11,12 +11,12 @@ import (
 
 // applicationAdapter a kubegraph adapter to render an specific kubernetes resource
 type applicationAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&applicationAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&applicationV1beta1.Application{}),
 			"icons/unknown.svg",
 		),

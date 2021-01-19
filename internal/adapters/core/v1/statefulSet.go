@@ -13,12 +13,12 @@ import (
 )
 
 type statefulSetAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&statefulSetAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&appsV1.StatefulSet{}),
 			"icons/sts.svg",
 		),

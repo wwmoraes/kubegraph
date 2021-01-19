@@ -10,11 +10,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type resourceTransformer struct {
-	adapter.ResourceData
+type adapterResource struct {
+	adapter.Resource
 }
 
-func (thisAdapter *resourceTransformer) tryCastObject(obj runtime.Object) (*coreV1.Pod, error) {
+func (thisAdapter *adapterResource) tryCastObject(obj runtime.Object) (*coreV1.Pod, error) {
 	casted, ok := obj.(*coreV1.Pod)
 	if !ok {
 		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
@@ -24,7 +24,7 @@ func (thisAdapter *resourceTransformer) tryCastObject(obj runtime.Object) (*core
 }
 
 // Configure connects the resources on thisAdapter adapter with its dependencies
-func (thisAdapter *resourceTransformer) Configure(statefulGraph adapter.StatefulGraph) error {
+func (thisAdapter *adapterResource) Configure(statefulGraph adapter.StatefulGraph) error {
 	configMapAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.ConfigMap{}))
 	if err != nil {
 		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))

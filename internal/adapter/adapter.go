@@ -1,11 +1,11 @@
 package adapter
 
-func Register(resourceTransformer ResourceTransformer) error {
-	return RegistryInstance().Register(resourceTransformer)
+func Register(resource Resource) error {
+	return RegistryInstance().Register(resource)
 }
 
-func MustRegister(resourceTransformer ResourceTransformer) {
-	if err := Register(resourceTransformer); err != nil {
+func MustRegister(resource Resource) {
+	if err := Register(resource); err != nil {
 		panic(err)
 	}
 }

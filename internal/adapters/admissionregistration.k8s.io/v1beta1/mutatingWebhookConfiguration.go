@@ -10,12 +10,12 @@ import (
 )
 
 type mutatingWebhookConfigurationAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&mutatingWebhookConfigurationAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&admissionregistrationV1beta1.MutatingWebhookConfiguration{}),
 			"icons/unknown.svg",
 		),

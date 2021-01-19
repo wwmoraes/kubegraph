@@ -7,7 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 )
 
-type ResourceAdapterMap map[reflect.Type]ResourceTransformer
+type ResourceMap map[reflect.Type]Resource
 
 type registrySingleton struct {
 	adapters ResourceAdapterMap
@@ -31,7 +31,7 @@ func RegistryInstance() Registry {
 
 // Register stores the adapter if none is currently registered for such type,
 // and if it is not registered with another registry instance
-func (thisInstance *registrySingleton) Register(adapter ResourceTransformer) error {
+func (thisInstance *registrySingleton) Register(adapter Resource) error {
 	if adapter.GetRegistry() != nil {
 		return ErrAdapterRegisteredElsewhere
 	}
@@ -45,7 +45,7 @@ func (thisInstance *registrySingleton) Register(adapter ResourceTransformer) err
 }
 
 // Deregister removes the adapter for its type
-func (thisInstance *registrySingleton) Deregister(adapter ResourceTransformer) {
+func (thisInstance *registrySingleton) Deregister(adapter Resource) {
 	thisInstance.DeregisterByType(adapter.GetType())
 }
 
@@ -55,7 +55,7 @@ func (thisInstance *registrySingleton) DeregisterByType(adapterType reflect.Type
 }
 
 // Get returns the adapter for a resource type, if it is registered
-func (thisInstance *registrySingleton) Get(resourceType reflect.Type) (ResourceTransformer, error) {
+func (thisInstance *registrySingleton) Get(resourceType reflect.Type) (Resource, error) {
 	adapter, adapterExists := thisInstance.adapters[resourceType]
 	if !adapterExists {
 		return nil, ErrAdapterNotFound
