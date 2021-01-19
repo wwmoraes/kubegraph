@@ -10,12 +10,12 @@ import (
 )
 
 type roleAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&roleAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&rbacV1.Role{}),
 			"icons/role.svg",
 		),

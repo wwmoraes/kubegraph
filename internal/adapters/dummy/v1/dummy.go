@@ -29,12 +29,12 @@ func (d dummyResource) DeepCopyObject() runtime.Object {
 
 // dummyAdapter a kubegraph adapter to render an specific kubernetes resource
 type dummyAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&dummyAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&dummyResource{}),
 			"icons/unknown.svg",
 		),

@@ -10,12 +10,12 @@ import (
 )
 
 type podSecurityPolicyAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&podSecurityPolicyAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&policyV1beta1.PodSecurityPolicy{}),
 			"icons/psp.svg",
 		),

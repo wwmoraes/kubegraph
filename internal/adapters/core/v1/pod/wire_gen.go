@@ -13,8 +13,8 @@ import (
 // Injectors from wire.go:
 
 func Register(resourceType reflect.Type, iconPath string) error {
-	resourceData := adapter.NewResourceData(resourceType, iconPath)
-	adapterResourceTransformer := New(resourceData)
+	resource := adapter.NewResource(resourceType, iconPath)
+	adapterResourceTransformer := New(resource)
 	error2 := adapter.Register(adapterResourceTransformer)
 	return error2
 }

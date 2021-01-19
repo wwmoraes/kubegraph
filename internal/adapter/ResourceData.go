@@ -9,53 +9,74 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
-// ResourceData data used by kubernetes resource adapters
-type ResourceData struct {
+// Resource is implemented by values that can transform a kubernetes object
+// kind information into nodes and create edges between them
+type Resource interface {
+	// IconPath returns the type icon file path
+	IconPath() string
+	// GetType returns the reflected type of the k8s kind managed by this instance
+	GetType() reflect.Type
+	// GetRegistry returns this adapter parent registry where it is registered at
+	GetRegistry() Registry
+	// Create add a graph node for the given object and stores it for further actions
+	Create(graph StatefulGraph, obj runtime.Object) (dot.Node, error)
+	// Connect creates and edge between the given node and an object on this adapter
+	Connect(graph StatefulGraph, source dot.Node, targetName string) (dot.Edge, error)
+	// Configure connects the resources on this adapter with its dependencies
+	Configure(graph StatefulGraph) error
+	// setRegistry stores a pointer to the registry where this adapter is registered at
+	SetRegistry(Registry)
+	// GetAccessor returns a global instance of a kubernetes metadata accessor
+	GetAccessor() meta.MetadataAccessor
+}
+
+// resourceData data used by kubernetes adapters
+type resourceData struct {
 	resourceType reflect.Type
 	iconPath     string
 	registry     Registry
 }
 
-func NewResourceData(resourceType reflect.Type, iconPath string) ResourceData {
-	return ResourceData{
+func NewResource(resourceType reflect.Type, iconPath string) Resource {
+	return &resourceData{
 		resourceType: resourceType,
 		iconPath:     iconPath,
 	}
 }
 
-// GetIconPath returns the type icon file path
-func (data *ResourceData) GetIconPath() string {
+// IconPath returns the type icon file path
+func (data *resourceData) IconPath() string {
 	return data.iconPath
 }
 
 // GetType returns the reflected type of the k8s kind managed by this instance
-func (data *ResourceData) GetType() reflect.Type {
+func (data *resourceData) GetType() reflect.Type {
 	return data.resourceType
 }
 
 // GetRegistry returns registry this adapter is registered to
-func (data *ResourceData) GetRegistry() Registry {
+func (data *resourceData) GetRegistry() Registry {
 	return data.registry
 }
 
 // GetAccessor returns a global instance of a kubernetes metadata accessor
-func (data *ResourceData) GetAccessor() meta.MetadataAccessor {
+func (data *resourceData) GetAccessor() meta.MetadataAccessor {
 	return data.registry.GetAccessor()
 }
 
-func (data *ResourceData) SetRegistry(registry Registry) {
+func (data *resourceData) SetRegistry(registry Registry) {
 	data.registry = registry
 }
 
 // Create add a graph node for the given object and stores it for further actions
-func (data *ResourceData) Create(graph StatefulGraph, obj runtime.Object) (dot.Node, error) {
+func (data *resourceData) Create(graph StatefulGraph, obj runtime.Object) (dot.Node, error) {
 	accessor := data.GetAccessor()
 	apiVersion, _ := accessor.APIVersion(obj)
 	kind, _ := accessor.Kind(obj)
 	name, _ := accessor.Name(obj)
 
 	nodeName := fmt.Sprintf("%s.%s~%s", apiVersion, kind, name)
-	resourceNode, err := graph.AddStyledNode(data.GetType(), obj, nodeName, name, data.GetIconPath())
+	resourceNode, err := graph.AddStyledNode(data.GetType(), obj, nodeName, name, data.IconPath())
 	if err != nil {
 		return nil, err
 	}
@@ -64,11 +85,11 @@ func (data *ResourceData) Create(graph StatefulGraph, obj runtime.Object) (dot.N
 }
 
 // Connect creates and edge between the given node and an object on this adapter
-func (data *ResourceData) Connect(graph StatefulGraph, source dot.Node, targetName string) (dot.Edge, error) {
+func (data *resourceData) Connect(graph StatefulGraph, source dot.Node, targetName string) (dot.Edge, error) {
 	return graph.LinkNode(source, data.GetType(), targetName)
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (data *ResourceData) Configure(graph StatefulGraph) error {
+func (data *resourceData) Configure(graph StatefulGraph) error {
 	return nil
 }

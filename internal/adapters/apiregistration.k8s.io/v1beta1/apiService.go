@@ -10,12 +10,12 @@ import (
 )
 
 type apiServiceAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&apiServiceAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&apiregistrationV1beta1.APIService{}),
 			"icons/unknown.svg",
 		),

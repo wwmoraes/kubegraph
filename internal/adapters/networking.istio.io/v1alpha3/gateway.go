@@ -10,12 +10,12 @@ import (
 )
 
 type gatewayAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&gatewayAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&networkV1alpha3.Gateway{}),
 			"icons/unknown.svg",
 		),

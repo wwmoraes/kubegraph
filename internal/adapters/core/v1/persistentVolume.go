@@ -10,16 +10,16 @@ import (
 )
 
 type persistentVolumeAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(NewPersistentVolumeAdapter())
 }
 
-func NewPersistentVolumeAdapter() adapter.ResourceTransformer {
+func NewPersistentVolumeAdapter() adapter.Resource {
 	return &persistentVolumeAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&coreV1.PersistentVolume{}),
 			"icons/persistentVolume.svg",
 		),

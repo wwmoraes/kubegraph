@@ -10,16 +10,16 @@ import (
 )
 
 type persistentVolumeClaimAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(NewPersistentVolumeClaimAdapter())
 }
 
-func NewPersistentVolumeClaimAdapter() adapter.ResourceTransformer {
+func NewPersistentVolumeClaimAdapter() adapter.Resource {
 	return &persistentVolumeClaimAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&coreV1.PersistentVolumeClaim{}),
 			"icons/pvc.svg",
 		),

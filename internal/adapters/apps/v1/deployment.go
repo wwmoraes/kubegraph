@@ -14,12 +14,12 @@ import (
 )
 
 type deploymentAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&deploymentAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&appsV1.Deployment{}),
 			"icons/deploy.svg",
 		),

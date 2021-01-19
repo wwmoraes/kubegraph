@@ -10,12 +10,12 @@ import (
 )
 
 type serviceAccountAdapter struct {
-	adapter.ResourceData
+	adapter.Resource
 }
 
 func init() {
 	adapter.MustRegister(&serviceAccountAdapter{
-		adapter.NewResourceData(
+		adapter.NewResource(
 			reflect.TypeOf(&coreV1.ServiceAccount{}),
 			"icons/sa.svg",
 		),
