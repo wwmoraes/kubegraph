@@ -81,7 +81,7 @@ go.sum: go.mod
 	go mod vendor
 
 .PHONY: run
-run: vendor
+run: $(SOURCE_FILES) vendor
 	go run cmd/kubegraph/main.go sample.yaml
 	dot -Tsvg -o sample.svg sample.dot
 
