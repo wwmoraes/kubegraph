@@ -1,0 +1,5 @@
+boundary Main
+control Kubegraph << (P,LightBlue) >>
+control Registry << (P,LightBlue) >>
+collections Adapters << (P,LightBlue) >>
+control Icons << (P,LightBlue) >>

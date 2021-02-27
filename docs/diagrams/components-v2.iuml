@@ -1,0 +1,11 @@
+boundary Main
+control Kubegraph << (P,LightBlue) >>
+control Registry << (P,LightBlue) >>
+collections Adapters << (P,LightBlue) >>
+control Icons << (P,LightBlue) >>
+
+' gets or creates the singleton instance of Registry
+!unquoted procedure $RegistryInstance($source)
+  $source -> Registry : get registry
+  return registry
+!endprocedure

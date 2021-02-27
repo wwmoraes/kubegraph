@@ -1,6 +1,6 @@
-docs/*
-!docs/*.puml
-docs/*-gen.puml
+docs/diagrams/*_gen.puml
+docs/diagrams/*.png
+docs/diagrams/*.svg
 
 # Binaries for programs and plugins
 *.exe
