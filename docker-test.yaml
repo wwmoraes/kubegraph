@@ -1,0 +1,73 @@
+schemaVersion: 2.0.0
+commandTests:
+- name: kubegraph run
+  command: /kubegraph
+  exitCode: 1
+  expectedError: ['Error: accepts [0-9] arg\(s\), received 0', 'Usage:']
+fileExistenceTests:
+- name: kubegraph binary
+  path: /kubegraph
+  shouldExist: true
+  permissions: -rwxr-xr-x
+  uid: 10001
+  gid: 10001
+  isExecutableBy: any
+- name: group
+  path: /etc/group
+  shouldExist: true
+  permissions: -rw-r--r--
+  uid: 0
+  gid: 0
+- name: passwd
+  path: /etc/passwd
+  shouldExist: true
+  permissions: -rw-r--r--
+  uid: 0
+  gid: 0
+fileContentTests:
+- name: group
+  path: /etc/group
+  expectedContents: ['kubegraph:x:10001:.*']
+  excludedContents: ['root:.*']
+- name: passwd
+  path: /etc/passwd
+  expectedContents: ['kubegraph:x:10001:10001::/:/dev/null']
+  excludedContents: ['root:.*']
+metadataTest:
+  entrypoint: ["/kubegraph"]
+  cmd: []
+  labels:
+  - key: org.opencontainers.image.title
+    value: kubegraph
+  - key: org.opencontainers.image.description
+    value: Kubernetes resource graph generator
+  - key: org.opencontainers.image.url
+    value: 'https://.+'
+    isRegex: true
+  - key: org.opencontainers.image.source
+    value: 'https://.+'
+    isRegex: true
+  - key: org.opencontainers.image.version
+    value: '^\d{1}\.\d{1}\.\d{1}(-\w+)?(\+\w+)?$'
+    isRegex: true
+  - key: org.opencontainers.image.created
+    value: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$'
+    isRegex: true
+  - key: org.opencontainers.image.revision
+    value: '^[\w-.]+$'
+    isRegex: true
+  - key: org.opencontainers.image.licenses
+    value: MIT
+  - key: org.opencontainers.image.documentation
+    value: 'https://.+'
+    isRegex: true
+  - key: org.opencontainers.image.authors
+    value: '.+'
+    isRegex: true
+  - key: org.opencontainers.image.vendor
+    value: '.+'
+    isRegex: true
+  env: []
+  exposedPorts: []
+  volumes: []
+  workdir: "/"
