@@ -16,6 +16,6 @@
 - [ ] `fix!` - fixes an issue for the user, but changes existing functionality
 - [ ] `chore!` - updating yarn/lerna scripts, etc
 
-## Commits
+## Changelog
 
-{{commits}}
+{{changelog}}
