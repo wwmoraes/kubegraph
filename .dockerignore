@@ -1,25 +1,27 @@
-.dockerignore
-*Dockerfile
-docker-compose.yaml
-
 .git
-.gitignore
-
 .github
+.make
 .vscode
+docs
+icons/*.svg
 
+.dockerignore
+.editorconfig
+.gitignore
 .golangci.yaml
 .goreleaser.yml
-sonar-project.properties
+.wakatime-project
+/*.md
 CODEOWNERS
+docker-*.yaml
+*Dockerfile
+/kubegraph
 LICENSE
 Makefile
-
-# repo markdown files
-/*.md
-
-icons/
-!icons/*.go
+sample.*
+/*.png
+/*.svg
+sonar-project.properties
 
 # Binaries for programs and plugins
 *.exe
@@ -49,10 +51,7 @@ dist/
 # lint, test and coverage reports
 golangci-lint-report.xml
 test-report.json
-coverage*.html
-
-# sample file conversions
-sample.*
+coverage.html
 
 # General
 .DS_Store
@@ -81,5 +80,3 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-.wakatime-project

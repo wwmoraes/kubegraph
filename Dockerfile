@@ -8,25 +8,40 @@ RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
 COPY . .
 RUN go mod vendor
-RUN --mount=type=cache,target=/root/.cache/go-build go build -mod=vendor -o kubegraph cmd/kubegraph/main.go
+ENV CGO_ENABLED=0
+RUN --mount=type=cache,target=/root/.cache/go-build go build \
+  -mod=vendor \
+  -o kubegraph cmd/kubegraph/main.go
 
-FROM alpine:latest
+FROM alpine:3 AS user
 
-COPY --from=build /go/src/kubegraph/kubegraph /usr/local/bin
+RUN echo "kubegraph:x:10001:kubegraph" >> /tmp/group
+RUN echo "kubegraph:x:10001:10001::/:/dev/null" >> /tmp/passwd
 
-### Prepare user
-RUN addgroup --gid 10001 kubegraph \
-  && adduser \
-  --home /home/kubegraph \
-  --gecos "" \
-  --shell /bin/ash \
-  --ingroup kubegraph \
-  --disabled-password \
-  --uid 10001 \
-  kubegraph
+FROM scratch
 
-WORKDIR /home/kubegraph
+COPY --from=user /tmp/passwd /etc/passwd
+COPY --from=user /tmp/group /etc/group
+COPY --from=build --chown=kubegraph:kubegraph /go/src/kubegraph/kubegraph /
 
-USER kubegraph
+USER kubegraph:kubegraph
 
-ENTRYPOINT [ "kubegraph" ]
+ARG OCI_VERSION
+ARG OCI_CREATED
+ARG OCI_REVISION
+ARG OCI_AUTHORS
+ARG OCI_VENDOR
+
+LABEL org.opencontainers.image.title=kubegraph
+LABEL org.opencontainers.image.description="Kubernetes resource graph generator"
+LABEL org.opencontainers.image.url=https://github.com/wwmoraes/kubegraph
+LABEL org.opencontainers.image.source=https://github.com/wwmoraes/kubegraph
+LABEL org.opencontainers.image.version=${OCI_VERSION}
+LABEL org.opencontainers.image.created=${OCI_CREATED}
+LABEL org.opencontainers.image.revision=${OCI_REVISION}
+LABEL org.opencontainers.image.licenses=MIT
+LABEL org.opencontainers.image.authors="${OCI_AUTHORS}"
+LABEL org.opencontainers.image.documentation=https://github.com/wwmoraes/kubegraph
+LABEL org.opencontainers.image.vendor="${OCI_VENDOR}"
+
+ENTRYPOINT [ "/kubegraph" ]
