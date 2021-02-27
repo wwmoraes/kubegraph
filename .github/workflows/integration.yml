@@ -288,7 +288,11 @@ jobs:
       uses: crazy-max/ghaction-docker-meta@v1
       with:
         images: ${{ github.repository }}
-        tag-sha: true
+        tag-edge: true
+        tag-semver: |
+          {{version}}
+          {{major}}
+          {{major}}.{{minor}}
         label-custom: |
           org.opencontainers.image.authors=${{ secrets.OCI_AUTHORS }}
           org.opencontainers.image.documentation=https://github.com/${{ github.repository }}
