@@ -280,7 +280,6 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: [build,lint,test]
-    if: github.event_name != 'pull_request'
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -290,6 +289,12 @@ jobs:
       with:
         images: ${{ github.repository }}
         tag-sha: true
+        label-custom: |
+          org.opencontainers.image.authors=${{ secrets.OCI_AUTHORS }}
+          org.opencontainers.image.documentation=https://github.com/${{ github.repository }}
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          org.opencontainers.image.url=https://github.com/${{ github.repository }}
+          org.opencontainers.image.vendor=${{ secrets.OCI_AUTHORS }}
         github-token: ${{ github.token }}
     - name: set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -308,26 +313,45 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: build and publish image
+    - name: build image
       uses: docker/build-push-action@v2
       env:
-        DOCKER_BUILDKIT: 1
+        DOCKER_BUILDKIT: 0
         BUILDKIT_INLINE_CACHE: 1
       with:
+        push: false
+        load: true
+        labels: ${{ steps.docker_meta.outputs.labels }}
         cache-to: type=inline
         cache-from: |
           ${{ steps.docker_meta.outputs.tags }}
           ${{ github.repository }}:master
           ${{ github.repository }}:latest
+        tags: ${{ github.repository }}:test
+    - name: test image
+      uses: brpaz/structure-tests-action@v1.1.2
+      with:
+        image: ${{ github.repository }}:test
+        configFile: docker-test.yaml
+    - name: push image
+      if: github.event_name != 'pull_request'
+      uses: docker/build-push-action@v2
+      env:
+        DOCKER_BUILDKIT: 1
+        BUILDKIT_INLINE_CACHE: 1
+      with:
         push: true
         platforms: linux/amd64,linux/arm/v7,linux/arm64
+        labels: ${{ steps.docker_meta.outputs.labels }}
+        cache-to: type=inline
+        cache-from: |
+          ${{ steps.docker_meta.outputs.tags }}
+          ${{ github.repository }}:test
+          ${{ github.repository }}:master
+          ${{ github.repository }}:latest
         tags: ${{ steps.docker_meta.outputs.tags }}
-        labels: |
-          ${{ steps.docker_meta.outputs.labels }}
-          org.opencontainers.image.authors=${{ secrets.OCI_AUTHORS }}
-          org.opencontainers.image.documentation=https://github.com/${{ github.repository }}
-          org.opencontainers.image.vendor=${{ secrets.OCI_AUTHORS }}
     - name: update DockerHub description
+      if: github.event_name != 'pull_request'
       uses: meeDamian/sync-readme@v1.0.6
       with:
         pass: ${{ secrets.DOCKER_PASSWORD }}
