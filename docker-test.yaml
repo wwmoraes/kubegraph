@@ -48,7 +48,7 @@ metadataTest:
     value: 'https://.+'
     isRegex: true
   - key: org.opencontainers.image.version
-    value: '^\d{1}\.\d{1}\.\d{1}(-\w+)?(\+\w+)?$|^pr-\d+$|^(master|latest)$'
+    value: '^\d{1}\.\d{1}\.\d{1}(-\w+)?(\+\w+)?$|^pr-\d+$|^(master|latest|edge)$'
     isRegex: true
   - key: org.opencontainers.image.created
     value: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$'
