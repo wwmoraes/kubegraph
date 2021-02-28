@@ -1,4 +1,6 @@
 from_owner:
 - dependabot[bot]
+- wwmoraes
 required_labels:
 - dependencies
+- ready
