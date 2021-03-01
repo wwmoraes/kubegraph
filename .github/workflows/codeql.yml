@@ -19,6 +19,6 @@ jobs:
       with:
         languages: go
     - name: build
-      run: go build -race ./...
+      uses: wwmoraes/actions/golang/build@master
     - name: CodeQL analysis
       uses: github/codeql-action/analyze@v1
