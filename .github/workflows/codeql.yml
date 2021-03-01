@@ -4,6 +4,9 @@ on:
   schedule:
   - cron: '0 9 * * 1'
 
+env:
+  GOLANG_VERSION: 1.16
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
@@ -13,7 +16,7 @@ jobs:
     - name: setup golang
       uses: actions/setup-go@v2
       with:
-        go-version: 1.15
+        go-version: ${{ matrix.go-version }}
     - name: initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
