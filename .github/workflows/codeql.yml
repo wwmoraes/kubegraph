@@ -16,7 +16,7 @@ jobs:
     - name: setup golang
       uses: actions/setup-go@v2
       with:
-        go-version: ${{ matrix.go-version }}
+        go-version: ${{ env.GOLANG_VERSION }}
     - name: initialize CodeQL
       uses: github/codeql-action/init@v1
       with:
