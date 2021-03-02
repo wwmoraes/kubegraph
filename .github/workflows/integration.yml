@@ -32,6 +32,7 @@ on:
 
 env:
   GOLANG_VERSION: 1.16
+  GOLANG_FLAGS: -race -mod=vendor
   TARGET_WORK_DIR: /usr/src
 
 jobs:
