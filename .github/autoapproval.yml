@@ -4,3 +4,4 @@ from_owner:
 required_labels:
 - dependencies
 - ready
+required_labels_mode: one_of
