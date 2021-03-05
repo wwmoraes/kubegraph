@@ -33,7 +33,7 @@ on:
 env:
   GOLANG_VERSION: 1.16
   GOLANG_FLAGS: -race -mod=vendor
-  TARGET_WORK_DIR: /usr/src
+  WORK_DIR: /usr/src
 
 jobs:
   build:
@@ -120,7 +120,7 @@ jobs:
       uses: wwmoraes/actions/golang/lint@master
       id: lint
       with:
-        target-work-dir: ${{ env.TARGET_WORK_DIR }}
+        work-dir: ${{ env.WORK_DIR }}
     - name: upload lint report
       uses: actions/upload-artifact@v2
       if: always()
@@ -192,7 +192,7 @@ jobs:
     - name: cache sonar scanner
       uses: actions/cache@v2.1.4
       with:
-        path: $HOME/sonar-scanner-cache
+        path: ${{ runner.temp }}/sonar-scanner/cache
         key: ${{ runner.os }}-sonar-scanner-cache-${{ hashFiles('**/sonar-project.properties') }}
         restore-keys: |
           ${{ runner.os }}-sonar-scanner-cache-${{ hashFiles('**/sonar-project.properties') }}
@@ -213,7 +213,8 @@ jobs:
       uses: wwmoraes/actions/sonar-scanner@master
       with:
         token: ${{ secrets.SONAR_TOKEN }}
-        target-work-dir: ${{ env.TARGET_WORK_DIR }}
+        work-dir: ${{ env.WORK_DIR }}
+        home: ${{ runner.temp }}/sonar-scanner
   release:
     runs-on: ubuntu-latest
     needs: [build,lint,test]
