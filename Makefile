@@ -35,6 +35,8 @@ OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
 
 .DEFAULT_GOAL := build
 
+TMPDIR ?= $(or $(TMPDIR),$(shell dirname $(shell mktemp -u)))
+
 .PHONY: icons
 icons: $(ICONS_GO_FILE)
 
@@ -87,7 +89,13 @@ run: $(SOURCE_FILES) vendor
 
 .PHONY: image
 image: Dockerfile $(SOURCE_FILES)
-	@docker build \
+	@time docker buildx build \
+		--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
+		--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
+		--cache-from $(REPO):single-$(GIT_SHA) \
+		--cache-from $(REPO):single-$(GIT_BRANCH) \
+		--cache-from $(REPO):single-master \
+		--cache-from $(REPO):single-latest \
 		--label org.opencontainers.image.title=$(OCI_TITLE) \
 		--label org.opencontainers.image.description="$(OCI_DESCRIPTION)" \
 		--label org.opencontainers.image.url=$(OCI_URL) \
@@ -99,25 +107,23 @@ image: Dockerfile $(SOURCE_FILES)
 		--label org.opencontainers.image.authors="$(OCI_AUTHORS)" \
 		--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
 		--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
-		--cache-from $(REPO):single-$(GIT_SHA) \
-		--cache-from $(REPO):single-$(GIT_BRANCH) \
-		--cache-from $(REPO):single-master \
-		--cache-from $(REPO):single-latest \
   	--tag $(REPO):single-$(GIT_SHA) \
 		--tag $(REPO):single-$(GIT_BRANCH) \
 		--tag $(REPO):single-latest \
+		--load \
 		.
 
 .PHONY: image-buildx
 image-buildx: Dockerfile $(SOURCE_FILES)
-ifneq ($(shell git status --porcelain | wc -l | xargs), 0)
-	@$(warning HEAD is not clean, aborting image build)
-	@false
-endif
 	@docker buildx inspect --builder multi || docker buildx create --name multi --use
-	@docker buildx build --builder multi \
+	@time docker buildx build --builder multi \
   --platform linux/amd64,linux/arm/v7,linux/arm64 \
-  --cache-to type=inline \
+	--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
+	--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
+  --cache-from $(REPO):$(GIT_SHA) \
+  --cache-from $(REPO):$(GIT_BRANCH) \
+	--cache-from $(REPO):master \
+	--cache-from $(REPO):latest \
   --label org.opencontainers.image.title=$(OCI_TITLE) \
   --label org.opencontainers.image.description="$(OCI_DESCRIPTION)" \
   --label org.opencontainers.image.url=$(OCI_URL) \
@@ -129,10 +135,6 @@ endif
 	--label org.opencontainers.image.authors="$(OCI_AUTHORS)" \
 	--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
 	--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
-  --cache-from $(REPO):$(GIT_SHA) \
-  --cache-from $(REPO):$(GIT_BRANCH) \
-	--cache-from $(REPO):master \
-	--cache-from $(REPO):latest \
   --tag $(REPO):$(GIT_SHA) \
   --tag $(REPO):$(GIT_BRANCH) \
   --tag $(REPO):latest \
