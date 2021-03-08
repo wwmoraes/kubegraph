@@ -48,6 +48,7 @@ metadataTest:
     value: 'https://.+'
     isRegex: true
   - key: org.opencontainers.image.version
+    # yamllint disable-line rule:line-length
     value: '^\d{1}\.\d{1}\.\d{1}(-\w+)?(\+\w+)?$|^pr-\d+$|^(master|latest|edge)$'
     isRegex: true
   - key: org.opencontainers.image.created

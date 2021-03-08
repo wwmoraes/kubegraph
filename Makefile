@@ -12,6 +12,7 @@ GRAPHS_FOLDER := docs
 GRAPHS_SRC_FILES := $(wildcard $(GRAPHS_FOLDER)/*.puml)
 GRAPHS_SVG_FILES := $(patsubst %.puml,%.svg,$(GRAPHS_SRC_FILES))
 GRAPHS_PNG_FILES := $(patsubst %.puml,%.png,$(GRAPHS_SRC_FILES))
+YAMLS := $(shell find . \( -name "*.yaml" -o -name "*.yml" \) -not -path "./vendor/*")
 
 GIT_SHA = sha-$(shell git log -n 1 --format="%h")
 GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
@@ -48,8 +49,11 @@ $(ICONS_GO_FILE): $(ICONS_FILES)
 	@go-bindata -o $(ICONS_GO_FILE) -pkg $(ICONS_PKG) -nometadata -mode 0664 -nomemcopy $(ICONS_FOLDER)
 
 .PHONY: lint
-lint:
+lint: yamllint
 	golangci-lint run
+
+yamllint:
+	@yamllint $(YAMLS)
 
 .PHONY: test
 test:
