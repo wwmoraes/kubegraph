@@ -11,6 +11,7 @@ on:
     - .golangci.yaml
     - .goreleaser.yaml
     - sonar-project.properties
+    - docker-test.yaml
     - Dockerfile
     - .dockerignore
     - go.mod
@@ -24,6 +25,7 @@ on:
     - .golangci.yaml
     - .goreleaser.yaml
     - sonar-project.properties
+    - docker-test.yaml
     - Dockerfile
     - .dockerignore
     - go.mod
