@@ -22,6 +22,8 @@ jobs:
       uses: github/codeql-action/init@v1
       with:
         languages: go
+    - name: vendor
+      run: go mod vendor
     - name: build
       uses: wwmoraes/actions/golang/build@master
     - name: CodeQL analysis
