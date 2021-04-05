@@ -276,7 +276,7 @@ jobs:
       uses: actions/checkout@v2
     - name: generate docker meta
       id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v1
+      uses: crazy-max/ghaction-docker-meta@v2.2.0
       with:
         images: ${{ github.repository }}
         tag-edge: true
