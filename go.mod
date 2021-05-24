@@ -11,8 +11,8 @@ require (
 	k8s.io/api v0.21.1
 	k8s.io/apiextensions-apiserver v0.21.0
 	k8s.io/apimachinery v0.21.1
-	k8s.io/client-go v0.21.0
-	k8s.io/kube-aggregator v0.21.0
+	k8s.io/client-go v0.21.1
+	k8s.io/kube-aggregator v0.21.1
 	sigs.k8s.io/application v0.8.3
 	sigs.k8s.io/structured-merge-diff/v3 v3.0.0 // indirect
 )
