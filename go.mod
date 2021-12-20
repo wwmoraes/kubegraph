@@ -5,7 +5,7 @@ go 1.16
 require (
 	github.com/google/wire v0.5.0
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/cobra v1.2.1
+	github.com/spf13/cobra v1.3.0
 	github.com/wwmoraes/dot v0.4.1
 	istio.io/client-go v1.12.1
 	k8s.io/api v0.23.0
