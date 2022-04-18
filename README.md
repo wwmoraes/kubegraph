@@ -6,7 +6,8 @@
 
 <div align="center">
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![Status](https://img.shields.io/badge/status-active-success.svg)][![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph?ref=badge_shield)
+()
 [![GitHub Issues](https://img.shields.io/github/issues/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
@@ -156,3 +157,7 @@ set it on your adapter's `Create` function, on the call to `statefulGraph.AddSty
 
 - Kubernetes sigs members for the excellent abstractions and interfaces available on Golang
 - [@damianopetrungaro](https://github.com/damianopetrungaro) for the honest reviews and patience
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph?ref=badge_large)
