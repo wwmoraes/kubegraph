@@ -10,6 +10,7 @@
 [![GitHub Issues](https://img.shields.io/github/issues/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph?ref=badge_shield)
 
 [![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/wwmoraes/kubegraph)](https://hub.docker.com/r/wwmoraes/kubegraph)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/wwmoraes/kubegraph?label=image%20version)](https://hub.docker.com/r/wwmoraes/kubegraph)
