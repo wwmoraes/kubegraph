@@ -31,8 +31,8 @@ OCI_CREATED = $(DATE)
 OCI_REVISION = $(GIT_REV)
 OCI_LICENSES = MIT
 OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
+OCI_VENDOR = $(USERNAME) <$(EMAIL)>
 OCI_DOCUMENTATION = https://github.com/$(REPO)
-OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
 
 .DEFAULT_GOAL := build
 
@@ -92,12 +92,13 @@ run: $(SOURCE_FILES) vendor
 	dot -Tsvg -o sample.svg sample.dot
 
 .PHONY: image
+image: GIT_BRANCH_SLUG=$(subst /,-,${GIT_BRANCH})
 image: Dockerfile $(SOURCE_FILES)
 	@time docker buildx build \
 		--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
 		--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
 		--cache-from $(REPO):single-$(GIT_SHA) \
-		--cache-from $(REPO):single-$(GIT_BRANCH) \
+		--cache-from $(REPO):single-$(GIT_BRANCH_SLUG) \
 		--cache-from $(REPO):single-master \
 		--cache-from $(REPO):single-latest \
 		--label org.opencontainers.image.title=$(OCI_TITLE) \
@@ -112,12 +113,13 @@ image: Dockerfile $(SOURCE_FILES)
 		--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
 		--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
   	--tag $(REPO):single-$(GIT_SHA) \
-		--tag $(REPO):single-$(GIT_BRANCH) \
+		--tag $(REPO):single-$(GIT_BRANCH_SLUG) \
 		--tag $(REPO):single-latest \
 		--load \
 		.
 
 .PHONY: image-buildx
+image-buildx: GIT_BRANCH_SLUG=$(subst /,-,${GIT_BRANCH})
 image-buildx: Dockerfile $(SOURCE_FILES)
 	@docker buildx inspect --builder multi || docker buildx create --name multi --use
 	@time docker buildx build --builder multi \
@@ -125,7 +127,7 @@ image-buildx: Dockerfile $(SOURCE_FILES)
 	--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
 	--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
   --cache-from $(REPO):$(GIT_SHA) \
-  --cache-from $(REPO):$(GIT_BRANCH) \
+  --cache-from $(REPO):$(GIT_BRANCH_SLUG) \
 	--cache-from $(REPO):master \
 	--cache-from $(REPO):latest \
   --label org.opencontainers.image.title=$(OCI_TITLE) \
@@ -140,7 +142,7 @@ image-buildx: Dockerfile $(SOURCE_FILES)
 	--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
 	--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
   --tag $(REPO):$(GIT_SHA) \
-  --tag $(REPO):$(GIT_BRANCH) \
+  --tag $(REPO):$(GIT_BRANCH_SLUG) \
   --tag $(REPO):latest \
   --file ./Dockerfile .
 
