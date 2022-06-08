@@ -34,7 +34,7 @@ on:
     - '**.go'
 
 env:
-  GOLANG_VERSION: 1.16
+  GOLANG_VERSION: 1.17
   GOLANG_FLAGS: -race -mod=vendor
   WORK_DIR: /usr/src
 
@@ -124,6 +124,7 @@ jobs:
       id: lint
       with:
         work-dir: ${{ env.WORK_DIR }}
+        version: v1.46-alpine
     - name: upload lint report
       uses: actions/upload-artifact@v2
       if: always()

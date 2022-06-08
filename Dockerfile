@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:experimental
-FROM golang:1.15-alpine AS build
+FROM golang:1.17-alpine AS build
 
 WORKDIR /go/src/kubegraph
 
