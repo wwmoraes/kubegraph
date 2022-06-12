@@ -275,24 +275,26 @@ jobs:
     steps:
     - name: checkout
       uses: actions/checkout@v2
-    - name: generate docker meta
-      id: docker_meta
-      uses: crazy-max/ghaction-docker-meta@v3.2.0
+    - name: generate container meta
+      id: meta
+      uses: docker/metadata-action@v3
       with:
         images: ${{ github.repository }}
-        tag-edge: true
-        tag-semver: |
-          {{version}}
-          {{major}}
-          {{major}}.{{minor}}
+        flavor: |
+          latest=true
         # yamllint disable rule:line-length
-        label-custom: |
+        labels: |
           org.opencontainers.image.authors=${{ secrets.OCI_AUTHORS }}
           org.opencontainers.image.documentation=https://github.com/${{ github.repository }}
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.url=https://github.com/${{ github.repository }}
           org.opencontainers.image.vendor=${{ secrets.OCI_AUTHORS }}
         # yamllint enable rule:line-length
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=raw,value=${{ env.BRANCH }}
+          type=semver,pattern={{version}}
         github-token: ${{ github.token }}
     - name: set up QEMU
       uses: docker/setup-qemu-action@v1
@@ -317,7 +319,7 @@ jobs:
       with:
         push: false
         load: true
-        labels: ${{ steps.docker_meta.outputs.labels }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-to: |
           type=local,mode=max,dest=${{ runner.temp }}/.buildx-cache
         cache-from: |
@@ -342,15 +344,15 @@ jobs:
       with:
         push: ${{ github.event_name != 'pull_request' }}
         platforms: linux/amd64,linux/arm/v7,linux/arm64
-        labels: ${{ steps.docker_meta.outputs.labels }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-to: |
           type=local,mode=max,dest=${{ runner.temp }}/.buildx-cache
         cache-from: |
           type=local,src=${{ runner.temp }}/.buildx-cache
-          ${{ steps.docker_meta.outputs.tags }}
+          ${{ steps.meta.outputs.tags }}
           ${{ github.repository }}:master
           ${{ github.repository }}:latest
-        tags: ${{ steps.docker_meta.outputs.tags }}
+        tags: ${{ steps.meta.outputs.tags }}
     - name: update DockerHub description
       if: github.event_name != 'pull_request'
       uses: meeDamian/sync-readme@v1.0.6
