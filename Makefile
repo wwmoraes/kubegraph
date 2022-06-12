@@ -22,17 +22,32 @@ DATE = $(shell date -u +"%Y-%m-%dT%TZ")
 REPO := wwmoraes/kubegraph
 USERNAME = $(shell git config user.name)
 EMAIL = $(shell git config user.email)
-OCI_TITLE = kubegraph
-OCI_DESCRIPTION = Kubernetes resource graph generator
-OCI_URL = https://github.com/$(REPO)
-OCI_SOURCE = https://github.com/$(REPO)
-OCI_VERSION = $(GIT_BRANCH)
+REPO_URL = https://github.com/$(REPO)
+
+OCI_URL = ${REPO_URL}
+OCI_SOURCE = ${REPO_URL}
+OCI_VERSION = $(patsubst v%,%,$(shell git describe --tags))
 OCI_CREATED = $(DATE)
 OCI_REVISION = $(GIT_REV)
-OCI_LICENSES = MIT
 OCI_AUTHORS = $(USERNAME) <$(EMAIL)>
 OCI_VENDOR = $(USERNAME) <$(EMAIL)>
 OCI_DOCUMENTATION = https://github.com/$(REPO)
+
+define dockerLabels
+--label org.opencontainers.image.url="${OCI_URL}" \
+--label org.opencontainers.image.source="${OCI_SOURCE}" \
+--label org.opencontainers.image.version="${OCI_VERSION}" \
+--label org.opencontainers.image.created="${OCI_CREATED}" \
+--label org.opencontainers.image.revision="${OCI_REVISION}" \
+--label org.opencontainers.image.documentation="${OCI_DOCUMENTATION}" \
+--label org.opencontainers.image.authors="${OCI_AUTHORS}" \
+--label org.opencontainers.image.vendor="${OCI_VENDOR}"
+endef
+
+define dockerCachedTag
+--cache-from $(REPO):$(2)$(1) \
+--tag $(REPO):$(2)$(1)
+endef
 
 .DEFAULT_GOAL := build
 
@@ -97,53 +112,27 @@ image: Dockerfile $(SOURCE_FILES)
 	@time docker buildx build \
 		--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
 		--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
-		--cache-from $(REPO):single-$(GIT_SHA) \
-		--cache-from $(REPO):single-$(GIT_BRANCH_SLUG) \
+		$(call dockerLabels) \
 		--cache-from $(REPO):single-master \
-		--cache-from $(REPO):single-latest \
-		--label org.opencontainers.image.title=$(OCI_TITLE) \
-		--label org.opencontainers.image.description="$(OCI_DESCRIPTION)" \
-		--label org.opencontainers.image.url=$(OCI_URL) \
-		--label org.opencontainers.image.source=$(OCI_SOURCE) \
-		--label org.opencontainers.image.version=$(OCI_VERSION) \
-		--label org.opencontainers.image.created=$(OCI_CREATED) \
-		--label org.opencontainers.image.revision=$(OCI_REVISION) \
-		--label org.opencontainers.image.licenses=$(OCI_LICENSES) \
-		--label org.opencontainers.image.authors="$(OCI_AUTHORS)" \
-		--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
-		--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
-  	--tag $(REPO):single-$(GIT_SHA) \
-		--tag $(REPO):single-$(GIT_BRANCH_SLUG) \
-		--tag $(REPO):single-latest \
+		$(call dockerCachedTag,latest,single-) \
+		$(call dockerCachedTag,$(GIT_SHA),single-) \
+		$(call dockerCachedTag,$(GIT_BRANCH_SLUG),single-) \
 		--load \
 		.
 
 .PHONY: image-buildx
 image-buildx: GIT_BRANCH_SLUG=$(subst /,-,${GIT_BRANCH})
 image-buildx: Dockerfile $(SOURCE_FILES)
-	@docker buildx inspect --builder multi || docker buildx create --name multi --use
-	@time docker buildx build --builder multi \
+	@docker buildx inspect --builder buildkit || docker buildx create --name buildkit --use
+	@time docker buildx build --builder buildkit \
   --platform linux/amd64,linux/arm/v7,linux/arm64 \
 	--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
 	--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
-  --cache-from $(REPO):$(GIT_SHA) \
-  --cache-from $(REPO):$(GIT_BRANCH_SLUG) \
+  $(call dockerLabels) \
 	--cache-from $(REPO):master \
-	--cache-from $(REPO):latest \
-  --label org.opencontainers.image.title=$(OCI_TITLE) \
-  --label org.opencontainers.image.description="$(OCI_DESCRIPTION)" \
-  --label org.opencontainers.image.url=$(OCI_URL) \
-  --label org.opencontainers.image.source=$(OCI_SOURCE) \
-  --label org.opencontainers.image.version=$(OCI_VERSION) \
-  --label org.opencontainers.image.created=$(OCI_CREATED) \
-  --label org.opencontainers.image.revision=$(OCI_REVISION) \
-  --label org.opencontainers.image.licenses=$(OCI_LICENSES) \
-	--label org.opencontainers.image.authors="$(OCI_AUTHORS)" \
-	--label org.opencontainers.image.documentation=$(OCI_DOCUMENTATION) \
-	--label org.opencontainers.image.vendor="$(OCI_VENDOR)" \
-  --tag $(REPO):$(GIT_SHA) \
-  --tag $(REPO):$(GIT_BRANCH_SLUG) \
-  --tag $(REPO):latest \
+		$(call dockerCachedTag,latest) \
+		$(call dockerCachedTag,$(GIT_SHA)) \
+		$(call dockerCachedTag,$(GIT_BRANCH_SLUG)) \
   --file ./Dockerfile .
 
 .PHONY: docs
