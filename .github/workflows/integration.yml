@@ -325,6 +325,8 @@ jobs:
         cache-from: |
           type=local,src=${{ runner.temp }}/.buildx-cache
         tags: ${{ github.repository }}:test
+        build-args: |
+          GOLANG_VERSION=${{ env.GOLANG_VERSION }}
     - name: test structure
       uses: brpaz/structure-tests-action@v1.1.2
       with:
@@ -352,6 +354,8 @@ jobs:
           ${{ steps.meta.outputs.tags }}
           ${{ github.repository }}:master
           ${{ github.repository }}:latest
+        build-args: |
+          GOLANG_VERSION=${{ env.GOLANG_VERSION }}
         tags: ${{ steps.meta.outputs.tags }}
     - name: update DockerHub description
       if: github.event_name != 'pull_request'
