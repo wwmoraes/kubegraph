@@ -2,6 +2,8 @@ name: CI
 
 # yamllint disable-line rule:truthy
 on:
+  release:
+    types: [published]
   push:
     branches:
     - master
@@ -333,7 +335,7 @@ jobs:
         image: ${{ github.repository }}:test
         configFile: docker-test.yaml
     - name: login to DockerHub
-      if: github.event_name != 'pull_request'
+      if: github.event_name == 'release'
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -344,7 +346,7 @@ jobs:
         DOCKER_BUILDKIT: 1
         BUILDKIT_INLINE_CACHE: 1
       with:
-        push: ${{ github.event_name != 'pull_request' }}
+        push: ${{ github.event_name == 'release' }}
         platforms: linux/amd64,linux/arm/v7,linux/arm64
         labels: ${{ steps.meta.outputs.labels }}
         cache-to: |
@@ -358,7 +360,7 @@ jobs:
           GOLANG_VERSION=${{ env.GOLANG_VERSION }}
         tags: ${{ steps.meta.outputs.tags }}
     - name: update DockerHub description
-      if: github.event_name != 'pull_request'
+      if: github.event_name == 'release'
       uses: meeDamian/sync-readme@v1.0.6
       with:
         pass: ${{ secrets.DOCKER_PASSWORD }}
