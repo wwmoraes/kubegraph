@@ -175,6 +175,11 @@ jobs:
     - name: test
       uses: wwmoraes/actions/golang/test@master
       id: test
+    - name: security scan
+      uses: anchore/scan-action@v3
+      with:
+        path: .
+        fail-build: true
     - name: upload coverage report
       uses: actions/upload-artifact@v2
       if: always()
@@ -334,6 +339,11 @@ jobs:
       with:
         image: ${{ github.repository }}:test
         configFile: docker-test.yaml
+    - name: security scan
+      uses: anchore/scan-action@v3
+      with:
+        image: ${{ github.repository }}:test
+        fail-build: true
     - name: login to DockerHub
       if: github.event_name == 'release'
       uses: docker/login-action@v1
