@@ -128,7 +128,7 @@ jobs:
         work-dir: ${{ env.WORK_DIR }}
         version: v1.46-alpine
     - name: upload lint report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: lint-report
@@ -181,13 +181,13 @@ jobs:
         path: .
         fail-build: true
     - name: upload coverage report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: coverage-report
         path: ${{ steps.test.outputs.cover-profile }}
     - name: upload test report
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       if: always()
       with:
         name: test-report
