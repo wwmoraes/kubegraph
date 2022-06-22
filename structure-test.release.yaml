@@ -1,0 +1,7 @@
+schemaVersion: 2.0.0
+metadataTest:
+  labels:
+  - key: org.opencontainers.image.version
+    # yamllint disable-line rule:line-length
+    value: '^\d{1}\.\d{1}\.\d{1}(-[\w\d-]+(\.[\w\d]+)*?)?(\+[\w\d-]+)?$'
+    isRegex: true

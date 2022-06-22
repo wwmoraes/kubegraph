@@ -1,11 +1,11 @@
 schemaVersion: 2.0.0
 commandTests:
-- name: kubegraph run
+- name: run
   command: /kubegraph
   exitCode: 1
   expectedError: ['Error: accepts [0-9] arg\(s\), received 0', 'Usage:']
 fileExistenceTests:
-- name: kubegraph binary
+- name: binary
   path: /kubegraph
   shouldExist: true
   permissions: -rwxr-xr-x
@@ -25,11 +25,11 @@ fileExistenceTests:
   uid: 0
   gid: 0
 fileContentTests:
-- name: group
+- name: group file
   path: /etc/group
   expectedContents: ['kubegraph:x:10001:.*']
   excludedContents: ['root:.*']
-- name: passwd
+- name: passwd file
   path: /etc/passwd
   expectedContents: ['kubegraph:x:10001:10001::/:/dev/null']
   excludedContents: ['root:.*']
@@ -49,7 +49,7 @@ metadataTest:
     isRegex: true
   - key: org.opencontainers.image.version
     # yamllint disable-line rule:line-length
-    value: '^\d{1}\.\d{1}\.\d{1}(-[\w\d-]+(\.[\w\d]+)*?)?(\+[\w\d-]+)?$|^pr-\d+$'
+    value: '^\d{1}\.\d{1}\.\d{1}(-[\w\d-]+(\.[\w\d]+)*?)?(\+[\w\d-]+)?$|^pr-\d+$|^(master)$'
     isRegex: true
   - key: org.opencontainers.image.created
     value: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$'

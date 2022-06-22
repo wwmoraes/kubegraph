@@ -346,25 +346,104 @@ jobs:
       uses: brpaz/structure-tests-action@v1.1.2
       with:
         image: ${{ github.repository }}:test
-        configFile: docker-test.yaml
+        configFile: structure-test.yaml
     - name: security scan
       uses: anchore/scan-action@v3
       with:
         image: ${{ github.repository }}:test
         fail-build: true
+  publish-docker:
+    runs-on: ubuntu-latest
+    needs: docker
+    if: github.event_name == 'release'
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+    - name: generate container meta
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ github.repository }}
+        flavor: |
+          latest=true
+        # yamllint disable rule:line-length
+        labels: |
+          org.opencontainers.image.authors=${{ secrets.OCI_AUTHORS }}
+          org.opencontainers.image.documentation=https://github.com/${{ github.repository }}
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          org.opencontainers.image.url=https://github.com/${{ github.repository }}
+          org.opencontainers.image.vendor=${{ secrets.OCI_AUTHORS }}
+        # yamllint enable rule:line-length
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=raw,value=${{ env.BRANCH }}
+          type=semver,pattern={{version}}
+        github-token: ${{ github.token }}
+    - name: set up QEMU
+      uses: docker/setup-qemu-action@v1
+    - name: set up docker buildx
+      uses: docker/setup-buildx-action@v1
+    - name: cache buildx
+      uses: pat-s/always-upload-cache@v2.1.5
+      with:
+        path: ${{ runner.temp }}/.buildx-cache
+        # yamllint disable-line rule:line-length
+        key: ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile', '.dockerignore') }}
+        # yamllint disable rule:line-length
+        restore-keys: |
+          ${{ runner.os }}-buildx-${{ hashFiles('Dockerfile', '.dockerignore') }}
+          ${{ runner.os }}-buildx-
+        # yamllint enable rule:line-length
     - name: login to DockerHub
-      if: github.event_name == 'release'
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-    - name: build & push multi-arch image
+    - name: build multi-arch image
       uses: docker/build-push-action@v2
       env:
         DOCKER_BUILDKIT: 1
         BUILDKIT_INLINE_CACHE: 1
       with:
-        push: ${{ github.event_name == 'release' }}
+        push: false
+        load: true
+        platforms: linux/amd64,linux/arm/v7,linux/arm64
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-to: |
+          type=local,mode=max,dest=${{ runner.temp }}/.buildx-cache-new
+        cache-from: |
+          type=local,src=${{ runner.temp }}/.buildx-cache
+          ${{ steps.meta.outputs.tags }}
+          ${{ github.repository }}:master
+          ${{ github.repository }}:latest
+        build-args: |
+          GOLANG_VERSION=${{ env.GOLANG_VERSION }}
+        tags: ${{ steps.meta.outputs.tags }}
+    # fix to prevent ever-growing caches
+    # https://github.com/docker/build-push-action/issues/252
+    # https://github.com/moby/buildkit/issues/1896
+    - name: Move cache
+      run: |
+        rm -rf ${{ runner.temp }}/.buildx-cache
+        mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
+    - name: test release
+      uses: brpaz/structure-tests-action@v1.1.2
+      with:
+        image: ${{ github.repository }}:test
+        configFile: structure-test.release.yaml
+    - name: security scan
+      uses: anchore/scan-action@v3
+      with:
+        image: ${{ github.repository }}:test
+        fail-build: true
+    - name: push multi-arch image
+      uses: docker/build-push-action@v2
+      env:
+        DOCKER_BUILDKIT: 1
+        BUILDKIT_INLINE_CACHE: 1
+      with:
+        push: true
         platforms: linux/amd64,linux/arm/v7,linux/arm64
         labels: ${{ steps.meta.outputs.labels }}
         cache-to: |
@@ -385,7 +464,6 @@ jobs:
         rm -rf ${{ runner.temp }}/.buildx-cache
         mv ${{ runner.temp }}/.buildx-cache-new ${{ runner.temp }}/.buildx-cache
     - name: update DockerHub description
-      if: github.event_name == 'release'
       uses: meeDamian/sync-readme@v1.0.6
       with:
         pass: ${{ secrets.DOCKER_PASSWORD }}
