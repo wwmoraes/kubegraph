@@ -15,3 +15,7 @@ indent_style = tab
 
 [*.mk]
 indent_style = tab
+
+[go.mod]
+indent_style = tab
+indent_size = 2
