@@ -1,5 +1,7 @@
 {
-  "recommendations": ["golang.go"],
+  "recommendations": [
+    "golang.go"
+  ],
   "unwantedRecommendations": [
     // Microsoft's global recommendations, FML
     "ms-vscode-remote.remote-containers",

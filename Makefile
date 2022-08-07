@@ -125,15 +125,15 @@ image-buildx: GIT_BRANCH_SLUG=$(subst /,-,${GIT_BRANCH})
 image-buildx: Dockerfile $(SOURCE_FILES)
 	@docker buildx inspect --builder buildkit || docker buildx create --name buildkit --use
 	@time docker buildx build --builder buildkit \
-  --platform linux/amd64,linux/arm/v7,linux/arm64 \
+	--platform linux/amd64,linux/arm/v7,linux/arm64 \
 	--cache-to type=local,mode=max,dest=$(TMPDIR)/.buildx-cache/$(REPO) \
 	--cache-from type=local,src=$(TMPDIR)/.buildx-cache/$(REPO) \
-  $(call dockerLabels) \
+	$(call dockerLabels) \
 	--cache-from $(REPO):master \
 		$(call dockerCachedTag,latest) \
 		$(call dockerCachedTag,$(GIT_SHA)) \
 		$(call dockerCachedTag,$(GIT_BRANCH_SLUG)) \
-  --file ./Dockerfile .
+	--file ./Dockerfile .
 
 .PHONY: docs
 docs: $(GRAPHS_SVG_FILES) $(GRAPHS_PNG_FILES)
