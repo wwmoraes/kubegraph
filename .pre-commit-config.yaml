@@ -59,3 +59,10 @@ repos:
   # - id: my-cmd-repo
   # - id: my-cmd-repo-mod
   # - id: my-cmd-repo-pkg
+ci:
+  skip:
+  - hadolint
+  - golangci-lint-repo-mod
+  - go-mod-tidy
+  - go-build-repo-mod
+  - go-test-repo-mod
