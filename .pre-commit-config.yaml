@@ -59,6 +59,15 @@ repos:
   # - id: my-cmd-repo
   # - id: my-cmd-repo-mod
   # - id: my-cmd-repo-pkg
+- repo: local
+  hooks:
+  - id: syft-grype
+    name: syft-grype scan
+    language: script
+    entry: .github/scripts/syft-grype.sh
+    args:
+    - dir:.
+    pass_filenames: false
 ci:
   skip:
   - hadolint

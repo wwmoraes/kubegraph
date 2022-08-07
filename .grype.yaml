@@ -4,5 +4,8 @@ check-for-app-update: false
 
 exclude:
 - ./.scannerwork/**
+- ./vendor/**
 
 fail-on-severity: high
+
+quiet: true
