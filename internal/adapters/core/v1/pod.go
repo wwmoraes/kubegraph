@@ -3,113 +3,80 @@ package v1
 import (
 	"fmt"
 	"log"
-	"reflect"
 
 	"github.com/wwmoraes/kubegraph/internal/registry"
-	coreV1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type adapterResource struct {
-	registry.Adapter
-}
-
-func init() {
-	registry.MustRegister(NewPodAdapter())
-}
-
-func NewPodAdapter() registry.Adapter {
-	return &adapterResource{
-		registry.NewAdapter(
-			reflect.TypeOf(&coreV1.Pod{}),
-			"icons/pod.svg",
-		),
-	}
-}
-
-func (thisAdapter *adapterResource) tryCastObject(obj runtime.Object) (*coreV1.Pod, error) {
-	casted, ok := obj.(*coreV1.Pod)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
-	}
-
-	return casted, nil
-}
-
 // Configure connects the resources on thisAdapter adapter with its dependencies
-func (thisAdapter *adapterResource) Configure(statefulGraph registry.StatefulGraph) error {
-	configMapAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.ConfigMap{}))
+func (this *PodAdapter) Configure(statefulGraph registry.StatefulGraph) error {
+	configMapAdapter, err := GetConfigMapAdapter()
 	if err != nil {
-		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
+		log.Println(fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err))
 	}
 
-	secretAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Secret{}))
+	secretAdapter, err := GetSecretAdapter()
 	if err != nil {
-		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
+		log.Println(fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err))
 	}
 
-	pvcAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.PersistentVolumeClaim{}))
+	pvcAdapter, err := GetPersistentVolumeClaimAdapter()
 	if err != nil {
-		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
+		log.Println(fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err))
 	}
 
-	saAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.ServiceAccount{}))
+	saAdapter, err := GetServiceAccountAdapter()
 	if err != nil {
-		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
+		log.Println(fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err))
 	}
 
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
+	objects, err := this.GetGraphObjects(statefulGraph)
 	if err != nil {
 		return err
 	}
 
-	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
-		if err != nil {
-			return err
-		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
+	for name, pod := range objects {
+		resourceNode, err := this.GetGraphNode(statefulGraph, name)
 		if err != nil {
 			return err
 		}
 
-		for _, volume := range resource.Spec.Volumes {
+		for _, volume := range pod.Spec.Volumes {
 			if volume.ConfigMap != nil && configMapAdapter != nil {
 				_, err := configMapAdapter.Connect(statefulGraph, resourceNode, volume.ConfigMap.Name)
 				if err != nil {
-					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+					fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 				}
 			} else if volume.Secret != nil && secretAdapter != nil {
 				_, err := secretAdapter.Connect(statefulGraph, resourceNode, volume.Secret.SecretName)
 				if err != nil {
-					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+					fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 				}
 			} else if volume.PersistentVolumeClaim != nil && pvcAdapter != nil {
 				_, err := pvcAdapter.Connect(statefulGraph, resourceNode, volume.PersistentVolumeClaim.ClaimName)
 				if err != nil {
-					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+					fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 				}
 			} else if projectedVolume := volume.Projected; projectedVolume != nil {
 				for _, projectionSource := range projectedVolume.Sources {
 					if projectionSource.ConfigMap != nil && configMapAdapter != nil {
 						_, err := configMapAdapter.Connect(statefulGraph, resourceNode, projectionSource.ConfigMap.Name)
 						if err != nil {
-							fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+							fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 						}
 					} else if projectionSource.Secret != nil && secretAdapter != nil {
 						_, err := secretAdapter.Connect(statefulGraph, resourceNode, projectionSource.Secret.Name)
 						if err != nil {
-							fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+							fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 						}
 					}
 				}
 			}
 		}
 
-		if resource.Spec.ServiceAccountName != "" && saAdapter != nil {
-			_, err := saAdapter.Connect(statefulGraph, resourceNode, resource.Spec.ServiceAccountName)
+		if pod.Spec.ServiceAccountName != "" && saAdapter != nil {
+			_, err := saAdapter.Connect(statefulGraph, resourceNode, pod.Spec.ServiceAccountName)
 			if err != nil {
-				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 			}
 		}
 	}

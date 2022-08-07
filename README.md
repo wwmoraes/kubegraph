@@ -55,20 +55,26 @@ make build
 
 ### Prerequisites
 
-Kubegraph is done using Golang 1.15, using a pure Go graphviz implementation to
-generate the graph.
+- Golang 1.15+
+- Graphviz (optional, not used directly by kubegraph)
 
-Everything is set as a direct dependency, and `go mod vendor` will install for you.
+Kubegraph is written using Golang, and depends on a pure Go graphviz
+implementation to generate the graph.
+
+Graphviz can then be used to convert the generated graph to more
+portable/conventional formats, such as PNG or SVG.
 
 ### Installing
 
 It can be installed using standard go install
 
 ```shell
-go install ./...
+go install github.com/wwmoraes/kubegraph/cmd/kubegraph
+# or if you cloned the repository locally
+go install ./cmd/kubegraph/...
 ```
 
-Then, if you have GOPATH on your path, you can call `kubepath` directly anywhere.
+You can then use `kubegraph` if you have GOPATH on your system path.
 
 ## 🔧 Running the tests
 
@@ -95,45 +101,80 @@ dot -Tsvg -o my-multidoc.svg my-multidoc.dot
 
 If your graphviz installation has been compiled with pango, cairo and rsvg, you'll
 also be able to generate static formats as png or jpeg. Do note that currently
-kubegraph uses svg icons, and cairo mess up when generating raster images with
+kubegraph uses svg icons, and cairo messes up when generating raster images with
 those (namely they'll either look blurred or won't be drawn at all). A future
-version will address this by using raster icons.
+version may address this by using raster icons.
 
 ### How to add support for a single/suite of custom resource definitions
 
-First, import the scheme and add it to client-go's scheme on `internal/loader/getDecoder.go@init`:
+If adding support for a non-core resource type, then declare the scheme on
+`internal/adapters/adapters.go`:
 
 ```go
 import (
-  "k8s.io/client-go/kubernetes/scheme"
-  // import the target scheme
-  myAwesomeScheme "githost.com/owner/repository/pkg/client/clientset/scheme"
-)
+  ...
 
-func init() {
-  // add the scheme to client-go's scheme
-  _ = myAwesomeScheme.AddToScheme(scheme.Scheme)
-}
+  //go:generate scheme -n importName -i url/to/scheme
+)
 ```
 
-then:
+Run `go generate` to create the scheme import and composition injection code.
+
+Afterwards:
 
 1. vendor it with `go mod vendor` to update `go.mod` and `go.sum`
 
-1. add adapters for the kinds on that scheme at
-`internal/adapters/<api-group>/<api-version>`. You can copy from an existing
-one, or use the `internal/adapters/dummy/v1/dummy.go` as a guide.
+1. create the folder structure for the target API group and API version:
+`internal/adapters/<api-group>/<api-version>`
 
-1. import your API versions on the group level (check
-`internal/adapters/dummy/dummy.go`)
+1. add an anonymous import on the group level, e.g.:
 
-1. import the group on the top level on `internal/adapters/adapters.go`
+`import _ "github.com/wwmoraes/kubegraph/internal/adapters/<api-group>/<api-version>"`
 
-1. [optional, recommended] add a SVG icon for the new kinds on `icons/` and
-set it on your adapter's `Create` function, on the call to
-`statefulGraph.AddStyledNode`
+1. add the adapter generator comments for all resource types you want to add
+support for, e.g.:
 
-1. regenerate the icons embedded asset module with `make icons`
+```go
+//go:generate -command adapter go run github.com/wwmoraes/kubegraph/cmd/adapter gen
+//go:generate adapter -i <import-URL> -n <import-name> -t <kind>
+```
+
+1. re-run `go generate` to create the adapters
+
+1. if the new kind(s) have relations with other kinds, then add a `<kind>.go`
+file for each, and overload the `Adapter.Configure` method, e.g.:
+
+```go
+func (this *<kind>Adapter) Configure(graph registry.StatefulGraph) error {
+  <dependency>Adapter, err := Get<dependency>Adapter()
+  if err != nil { ... }
+
+  objects, err := this.GetGraphObjects(graph)
+  if err != nil { ... }
+
+  // resource is a pointer to the target kubernetes kind struct
+  for name, resource := range objects {
+    node, err := this.GetGraphNode(graph, name)
+    if err != nil { ... }
+
+    // implement here the logic to check if this resource should connect to the
+    // dependency, or else skip it
+
+    // connect to the dependency
+    targetName := resource.PathTo.Dependency.Name
+    _, err := <dependency>Adapter.Connect(graph, node, targetName)
+    if err != nil { ... }
+  }
+}
+```
+
+1. [optional, recommended] add a SVG icon for the new kinds on `icons/`
+
+    1. regenerate the icons embedded asset module with `make icons`
+
+    1. add a `--icon <name>` to the adapter generate comment to use it
+
+    1. regenerate the adapters with `go generate`
 
 1. commit and profit :D
 

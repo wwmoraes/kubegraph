@@ -3,54 +3,24 @@ package v1beta1
 import (
 	"fmt"
 	"log"
-	"reflect"
 
 	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
-	policyV1beta1 "k8s.io/api/policy/v1beta1"
-	rbacV1beta1 "k8s.io/api/rbac/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type roleAdapter struct {
-	registry.Adapter
-}
-
-func init() {
-	registry.MustRegister(&roleAdapter{
-		registry.NewAdapter(
-			reflect.TypeOf(&rbacV1beta1.Role{}),
-			"icons/role.svg",
-		),
-	})
-}
-
-func (thisAdapter *roleAdapter) tryCastObject(obj runtime.Object) (*rbacV1beta1.Role, error) {
-	casted, ok := obj.(*rbacV1beta1.Role)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
-	}
-
-	return casted, nil
-}
-
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *roleAdapter) Configure(statefulGraph registry.StatefulGraph) error {
-	podSecurityPolicyV1beta1Adapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&policyV1beta1.PodSecurityPolicy{}))
+func (this *RoleAdapter) Configure(statefulGraph registry.StatefulGraph) error {
+	podSecurityPolicyV1beta1Adapter, err := GetPolicyV1beta1PodSecurityPolicyAdapter()
 	if err != nil {
-		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
+		log.Println(fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err))
 	}
 
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
+	objects, err := this.GetGraphObjects(statefulGraph)
 	if err != nil {
 		return err
 	}
-	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
-		if err != nil {
-			return err
-		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
+	for resourceName, resource := range objects {
+		resourceNode, err := this.GetGraphNode(statefulGraph, resourceName)
 		if err != nil {
 			return err
 		}
@@ -62,7 +32,7 @@ func (thisAdapter *roleAdapter) Configure(statefulGraph registry.StatefulGraph) 
 					if utils.ContainsString(rule.APIGroups, "policy") {
 						_, err := podSecurityPolicyV1beta1Adapter.Connect(statefulGraph, resourceNode, podSecurityPolicyResourceName)
 						if err != nil {
-							fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+							fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 						}
 					}
 				}

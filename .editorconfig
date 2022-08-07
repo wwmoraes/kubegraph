@@ -26,3 +26,6 @@ indent_style = tab
 
 [.git*]
 indent_style = tab
+
+[*.go.gotmpl]
+indent_style = tab

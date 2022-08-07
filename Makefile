@@ -155,7 +155,8 @@ test-release:
 	env -u GITLAB_TOKEN goreleaser release --rm-dist --snapshot
 
 %_gen.go: %.go
-	wire ./...
+	@type -p wire 1>/dev/null || go get -u github.com/google/wire/cmd/wire
+	wire gen $(dir $<)...
 
 $(GRAPHS_FOLDER)/full-gen.puml: cmd internal icons
 	$(info generating $@...)
