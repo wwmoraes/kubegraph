@@ -5,6 +5,7 @@
 ![Kubegraph sample](https://raw.githubusercontent.com/wwmoraes/kubegraph/master/sample.png)
 
 ![Status](https://img.shields.io/badge/status-active-success.svg)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/wwmoraes/kubegraph/master.svg)](https://results.pre-commit.ci/latest/github/wwmoraes/kubegraph/master)
 [![GitHub Issues](https://img.shields.io/github/issues/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
