@@ -47,7 +47,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
     - name: setup golang
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GOLANG_VERSION }}
     - name: set golang environment variables
@@ -88,7 +88,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
     - name: setup golang
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GOLANG_VERSION }}
     - name: set golang environment variables
@@ -139,7 +139,7 @@ jobs:
     - name: checkout
       uses: actions/checkout@v2
     - name: setup golang
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GOLANG_VERSION }}
     - name: set golang environment variables
@@ -241,7 +241,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: setup golang
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ env.GOLANG_VERSION }}
     - name: set golang environment variables
