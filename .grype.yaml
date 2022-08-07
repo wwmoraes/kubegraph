@@ -1,0 +1,8 @@
+add-cpes-if-none: true
+
+check-for-app-update: false
+
+exclude:
+- ./.scannerwork/**
+
+fail-on-severity: high
