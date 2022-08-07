@@ -1,7 +1,18 @@
 from_owner:
 - dependabot[bot]
 - wwmoraes
+
 required_labels:
 - dependencies
-- ready
+- auto-approve
+
 required_labels_mode: one_of
+
+blacklisted_labels:
+- wip
+
+apply_labels:
+- ready
+
+auto_rebase_merge_labels:
+- ready
