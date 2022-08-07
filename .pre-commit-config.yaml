@@ -75,3 +75,4 @@ ci:
   - go-mod-tidy
   - go-build-repo-mod
   - go-test-repo-mod
+  - syft-grype
