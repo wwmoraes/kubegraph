@@ -307,7 +307,7 @@ jobs:
           type=semver,pattern={{version}}
         github-token: ${{ github.token }}
     - name: set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: set up docker buildx
       uses: docker/setup-buildx-action@v1
     - name: cache buildx
@@ -391,7 +391,7 @@ jobs:
           type=semver,pattern={{version}}
         github-token: ${{ github.token }}
     - name: set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v2
     - name: set up docker buildx
       uses: docker/setup-buildx-action@v1
     - name: cache buildx
