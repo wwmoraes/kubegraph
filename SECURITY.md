@@ -9,10 +9,12 @@ following before using this software:
 
 - Review the software license to understand the contributor's obligations in
 terms of warranties and suitability for purpose
-- For any questions or concerns about security, you can [create an issue][create-issue]
-or [report a vulnerability][report-vulnerability]
+- For any questions or concerns about security, you can
+[create an issue][new-issue] or [report a vulnerability][new-sec-issue]
+- We request that you work with our security team and opt for
+[responsible disclosure][disclosure] using the guidelines below
 - All security related issues and pull requests you make should be tagged with
-`security` for easy identification
+"security" for easy identification
 - Please monitor this repository and update your environment in a timely manner
 as we release patches and updates
 
@@ -22,7 +24,7 @@ If you find a security bug in this repository, please work with contributors
 following responsible disclosure principles and these guidelines:
 
 - Do not submit a normal issue or pull request in our public repository, instead
-[report it privately][report-vulnerability].
+[report it directly][new-sec-issue].
 - We will review your submission and may follow up for additional details
 - If you have a patch, we will review it and approve it privately; once approved
 for release you can submit it as a pull request publicly in the repository (we
@@ -37,7 +39,9 @@ to patch
 
 ## Contact / Misc
 
-If you have any questions, please reach out by [creating an issue][create-issue].
+If you have any questions, please reach out directly by
+[creating an issue][new-issue].
 
-[create-issue]: https://github.com/wwmoraes/kubegraph/issues/new/choose
-[report-vulnerability]: https://github.com/wwmoraes/kubegraph/security/advisories/new
+[new-issue]: https://github.com/wwmoraes/kubegraph/issues/new/choose
+[new-sec-issue]: https://github.com/wwmoraes/kubegraph/security/advisories/new
+[disclosure]: https://corporate.walmart.com/article/responsible-disclosure-policy

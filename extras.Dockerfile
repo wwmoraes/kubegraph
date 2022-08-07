@@ -1,8 +1,12 @@
-FROM wwmoraes/kubegraph:latest
+# hadolint ignore=DL3007
+FROM wwmoraes/kubegraph:latest AS kubegraph
 
-FROM alpine:latest
+FROM alpine:3.16
 
-RUN apk add --no-cache --update graphviz librsvg
+RUN apk add --no-cache --update \
+  graphviz=~3.0 \
+  librsvg=~2.54 \
+  ;
 
 RUN addgroup --gid 10001 kubegraph \
   && adduser \
@@ -16,7 +20,7 @@ RUN addgroup --gid 10001 kubegraph \
 
 WORKDIR /home/kubegraph
 
-COPY --from=0 /usr/local/bin/kubegraph /usr/local/bin/kubegraph
+COPY --from=kubegraph /kubegraph /usr/local/bin/kubegraph
 
 USER kubegraph
 

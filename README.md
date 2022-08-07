@@ -1,12 +1,10 @@
-<p align="center">
- <img width=400px height=279px src="https://raw.githubusercontent.com/wwmoraes/kubegraph/master/sample.png" alt="kubegraph sample"></a>
-</p>
+# Kubegraph
 
-<h3 align="center">Kubegraph</h3>
+> Yet another kubernetes resource graph generator
 
-<div align="center">
+![Kubegraph sample](https://raw.githubusercontent.com/wwmoraes/kubegraph/master/sample.png)
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+![Status](https://img.shields.io/badge/status-active-success.svg)
 [![GitHub Issues](https://img.shields.io/github/issues/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/pulls)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
@@ -27,32 +25,26 @@
 [![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=code_smells)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
 [![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=sqale_index)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
 
-</div>
-
 ---
-
-<p align="center"> Yet another kubernetes resource graph generator
-    <br>
-</p>
 
 ## 📝 Table of Contents
 
-- [About](#about)
-- [Getting Started](#getting_started)
-- [Usage](#usage)
-- [Built Using](#built_using)
-- [TODO](../TODO.md)
-- [Contributing](../CONTRIBUTING.md)
-- [Authors](#authors)
-- [Acknowledgments](#acknowledgement)
+- [About](#-about)
+- [Getting Started](#-getting-started)
+- [Usage](#-usage)
+- [Built Using](#-built-using)
+- [TODO](./TODO.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Authors](#-authors)
+- [Acknowledgments](#-acknowledgements)
 
-## 🧐 About <a name = "about"></a>
+## 🧐 About
 
 Kubegraph is a CLI tool that parses kubernetes resources and generates a graph
 with the relations between those. The graph is done using Graphviz, and can be
 further customized after generation.
 
-## 🏁 Getting Started <a name = "getting_started"></a>
+## 🏁 Getting Started
 
 Fetch the dependencies and build with
 
@@ -77,11 +69,11 @@ go install ./...
 
 Then, if you have GOPATH on your path, you can call `kubepath` directly anywhere.
 
-## 🔧 Running the tests <a name = "tests"></a>
+## 🔧 Running the tests
 
 WIP, there's no tests yet 😞
 
-## 🎈 Usage <a name="usage"></a>
+## 🎈 Usage
 
 ```shell
 kubegraph my-multidoc.yaml
@@ -127,21 +119,24 @@ then:
 
 1. vendor it with `go mod vendor` to update `go.mod` and `go.sum`
 
-1. add adapters for the kinds on that scheme at `internal/adapters/<api-group>/<api-version>`. You can
-copy from an existing one, or use the `internal/adapters/dummy/v1/dummy.go` as a guide.
+1. add adapters for the kinds on that scheme at
+`internal/adapters/<api-group>/<api-version>`. You can copy from an existing
+one, or use the `internal/adapters/dummy/v1/dummy.go` as a guide.
 
-1. import your API versions on the group level (check `internal/adapters/dummy/dummy.go`)
+1. import your API versions on the group level (check
+`internal/adapters/dummy/dummy.go`)
 
 1. import the group on the top level on `internal/adapters/adapters.go`
 
 1. [optional, recommended] add a SVG icon for the new kinds on `icons/` and
-set it on your adapter's `Create` function, on the call to `statefulGraph.AddStyledNode`
+set it on your adapter's `Create` function, on the call to
+`statefulGraph.AddStyledNode`
 
 1. regenerate the icons embedded asset module with `make icons`
 
 1. commit and profit :D
 
-## ⛏️ Built Using <a name = "built_using"></a>
+## 🛠 Built Using
 
 - [Golang](https://golang.org) - Base language
 - [wwmoraes/dot](https://github.com/wwmoraes/dot) - plain Go Graphviz package
@@ -149,11 +144,13 @@ set it on your adapter's `Create` function, on the call to `statefulGraph.AddSty
 - [kubernetes/community](https://github.com/kubernetes/community) - amazing icons
 - [spf13/cobra](github.com/spf13/cobra) - CLI framework
 
-## ✍️ Authors <a name = "authors"></a>
+## 🧑‍💻 Authors
 
 - [@wwmoraes](https://github.com/wwmoraes) - Idea & Initial work
 
-## 🎉 Acknowledgements <a name = "acknowledgement"></a>
+## 🎉 Acknowledgements
 
-- Kubernetes sigs members for the excellent abstractions and interfaces available on Golang
-- [@damianopetrungaro](https://github.com/damianopetrungaro) for the honest reviews and patience
+- Kubernetes sigs members for the excellent abstractions and interfaces
+available on Golang
+- [@damianopetrungaro](https://github.com/damianopetrungaro) for the honest
+reviews and patience
