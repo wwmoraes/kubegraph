@@ -1,7 +1,7 @@
 ICONS_FOLDER := icons
 ICONS_PKG := icons
 ICONS_GO_FILE := $(ICONS_FOLDER)/icons.go
-ICONS_FILES := $(ICONS_FOLDER)/*.svg
+ICONS_FILES := $(wildcard $(ICONS_FOLDER)/*.svg)
 CMD_SOURCE_FILES := $(shell find cmd -type f -name '*.go')
 INTERNAL_SOURCE_FILES := $(shell find internal -type f -name '*.go')
 WIRE_SRC_FILES := $(shell find internal -type f -name 'wire*.go' -not -name '*_gen.go')
