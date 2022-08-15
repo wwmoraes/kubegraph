@@ -172,3 +172,12 @@ $(GRAPHS_FOLDER)/%.svg: $(GRAPHS_FOLDER)/%.puml
 $(GRAPHS_FOLDER)/%.png: $(GRAPHS_FOLDER)/%.puml
 	$(info generating $@ from $<...)
 	@plantuml -tpng $<
+
+generate:
+	go generate -tags wireinject ./...
+
+check:
+	@pre-commit run
+
+check-all:
+	@pre-commit run --all-files

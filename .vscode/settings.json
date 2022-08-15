@@ -1,18 +1,18 @@
 {
   "cSpell.words": [
+    "apimachinery",
     "BUILDKIT",
-    "Dsonar",
-    "GOCACHE",
-    "GOMODCACHE",
-    "QEMU",
     "buildx",
     "cgraph",
     "checkstyle",
     "configurators",
     "coverprofile",
     "dockerignore",
+    "Dsonar",
     "ghaction",
+    "GOCACHE",
     "golangci",
+    "GOMODCACHE",
     "goreleaser",
     "graphviz",
     "istio",
@@ -21,15 +21,15 @@
     "kubegraph",
     "mkdir",
     "opencontainers",
+    "QEMU",
     "rbac",
     "sgraph",
     "sigs",
     "sonarsource"
   ],
   "search.exclude": {
-    "**/vendor": true,
+    "**/vendor": true
   },
-  "workspace.isHidden": true,
   "go.lintTool": "golangci-lint",
   "go.lintFlags": [
     "--fast"

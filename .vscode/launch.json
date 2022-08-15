@@ -11,7 +11,9 @@
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/kubegraph/main.go",
       "env": {},
-      "args": ["${workspaceFolder}/sample.yaml"]
+      "args": [
+        "${workspaceFolder}/sample.yaml"
+      ]
     }
   ]
 }

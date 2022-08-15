@@ -38,10 +38,10 @@ repos:
 - repo: https://github.com/tekwizely/pre-commit-golang
   rev: v1.0.0-beta.5
   hooks:
-  - id: golangci-lint-repo-mod
-    name: golangci-lint
   - id: go-mod-tidy
     name: go mod tidy
+  - id: golangci-lint-repo-mod
+    name: golangci-lint
   - id: go-build-repo-mod
     name: go build
   - id: go-test-repo-mod
