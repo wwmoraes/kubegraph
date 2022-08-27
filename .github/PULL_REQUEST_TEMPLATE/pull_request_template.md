@@ -1,5 +1,7 @@
 # Changes
 
+<!-- describe here the changes introduced -->
+
 ## Non-breaking
 
 - [ ] `feat` - adds functionality for the user
@@ -12,10 +14,9 @@
 
 ## Breaking
 
-- [ ] `feat!` - adds functionality for the user, but changes existing functionality
+- [ ] `feat!` - adds functionality for the user, but changes existing
+functionality
 - [ ] `fix!` - fixes an issue for the user, but changes existing functionality
+- [ ] `refactor!` - changes that replaces existing functionality, eg. changing
+the arity of a function
 - [ ] `chore!` - updating yarn/lerna scripts, etc
-
-## Changelog
-
-{{changelog}}
