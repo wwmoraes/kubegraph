@@ -281,7 +281,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, lint, test]
     env:
-      GRYPE_DB_CACHE_DIR: ${{ runner.temp }}/.cache/grype/db/
+      # runner context is not available here...
+      GRYPE_DB_CACHE_TEMP_PATH: .cache/grype/db/
     steps:
     - name: checkout
       uses: actions/checkout@v2
@@ -352,7 +353,7 @@ jobs:
     - name: cache grype
       uses: pat-s/always-upload-cache@v2.1.5
       with:
-        path: ${{ env.GRYPE_DB_CACHE_DIR }}
+        path: ${{ runner.temp }}/${{ env.GRYPE_DB_CACHE_TEMP_PATH }}
         key: ${{ runner.os }}-grype-${{ hashFiles('.grype.yaml') }}
         restore-keys: |
           ${{ runner.os }}-grype-${{ hashFiles('.grype.yaml') }}
