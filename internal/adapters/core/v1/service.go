@@ -2,69 +2,42 @@ package v1
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
-	coreV1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type serviceAdapter struct {
-	registry.Adapter
-}
-
-func init() {
-	registry.MustRegister(&serviceAdapter{
-		registry.NewAdapter(
-			reflect.TypeOf(&coreV1.Service{}),
-			"icons/svg.svg",
-		),
-	})
-}
-
-func (thisAdapter *serviceAdapter) tryCastObject(obj runtime.Object) (*coreV1.Service, error) {
-	casted, ok := obj.(*coreV1.Service)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
-	}
-
-	return casted, nil
-}
-
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *serviceAdapter) Configure(statefulGraph registry.StatefulGraph) error {
-	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
+func (this *ServiceAdapter) Configure(statefulGraph registry.StatefulGraph) error {
+	podAdapter, err := GetPodAdapter()
 	if err != nil {
-		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
+		return fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err)
 	}
 
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
+	objects, err := statefulGraph.GetObjects(this.GetType())
 	if err != nil {
 		return err
 	}
 
 	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
+		resource, err := this.CastObject(resourceObject)
 		if err != nil {
 			return err
 		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
+		resourceNode, err := statefulGraph.GetNode(this.GetType(), resourceName)
 		if err != nil {
 			return err
 		}
 
-		objects, err := statefulGraph.GetObjects(reflect.TypeOf(&coreV1.Pod{}))
+		objects, err := podAdapter.GetGraphObjects(statefulGraph)
 		if err != nil {
 			return err
 		}
-		for podName, podObject := range objects {
-			pod := podObject.(*coreV1.Pod)
-
+		for name, pod := range objects {
 			if utils.MatchLabels(resource.Spec.Selector, pod.Labels) {
-				_, err := podAdapter.Connect(statefulGraph, resourceNode, podName)
+				_, err := podAdapter.Connect(statefulGraph, resourceNode, name)
 				if err != nil {
-					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+					fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 				}
 			}
 		}

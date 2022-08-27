@@ -9,7 +9,6 @@ package kubegraph
 import (
 	"github.com/wwmoraes/dot"
 	"github.com/wwmoraes/kubegraph/internal/adapters"
-	"github.com/wwmoraes/kubegraph/internal/registry"
 )
 
 import (
@@ -23,8 +22,7 @@ func InitializeKubegraph(optionsFn ...dot.GraphOptionFn) (*Kubegraph, error) {
 	if err != nil {
 		return nil, err
 	}
-	registryRegistry := registry.Instance()
 	decodeFn := adapters.GetDecoder()
-	kubegraph := NewKubegraph(graph, registryRegistry, decodeFn)
+	kubegraph := NewKubegraph(graph, decodeFn)
 	return kubegraph, nil
 }

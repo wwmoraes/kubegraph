@@ -15,10 +15,6 @@ import (
 	"github.com/wwmoraes/kubegraph/internal/adapters"
 	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
-	"k8s.io/apimachinery/pkg/runtime"
-
-	// self-register adapters
-	_ "github.com/wwmoraes/kubegraph/internal/adapters"
 )
 
 // New creates an instance of Kubegraph
@@ -31,16 +27,15 @@ func New() (*Kubegraph, error) {
 
 // Kubegraph graphviz wrapper that creates kubernetes resource graphs
 type Kubegraph struct {
-	dot.Graph
+	registry.Graph
 	k8sNodes   registry.TypeNodesMap
 	k8sObjects registry.TypeObjectsMap
-	registry   registry.Registry
 	decode     adapters.DecodeFn
 }
 
 // NewKubegraph creates an instance of Kubegraph with the provided dot Graph
 // and Registry instance
-func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode adapters.DecodeFn) *Kubegraph {
+func NewKubegraph(graph registry.Graph, decode adapters.DecodeFn) *Kubegraph {
 	graph.SetAttributes(attributes.Map{
 		constants.KeyRankDir:  attributes.NewString("TB"),
 		constants.KeyRankSep:  attributes.NewString("0.75"),
@@ -57,7 +52,7 @@ func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode ad
 	nodes := make(registry.TypeNodesMap)
 	objects := make(registry.TypeObjectsMap)
 
-	for adapterType := range registryInstance.GetAll() {
+	for adapterType := range registry.Instance().GetAll() {
 		nodes[adapterType] = make(registry.NodesMap)
 		objects[adapterType] = make(registry.ObjectsMap)
 	}
@@ -66,7 +61,6 @@ func NewKubegraph(graph dot.Graph, registryInstance registry.Registry, decode ad
 		graph,
 		nodes,
 		objects,
-		registryInstance,
 		decode,
 	}
 }
@@ -82,8 +76,8 @@ func (kgraph *Kubegraph) ConnectNodes() {
 }
 
 // Transform creates a node on the graph for the resource
-func (kgraph *Kubegraph) Transform(obj runtime.Object) (dot.Node, error) {
-	objectAdapter, err := kgraph.registry.Get(reflect.TypeOf(obj))
+func (kgraph *Kubegraph) Transform(obj registry.RuntimeObject) (registry.Node, error) {
+	objectAdapter, err := registry.Instance().Get(reflect.TypeOf(obj))
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +85,7 @@ func (kgraph *Kubegraph) Transform(obj runtime.Object) (dot.Node, error) {
 	return objectAdapter.Create(kgraph, obj)
 }
 
-func (graph *Kubegraph) createStyledNode(name string, label string, icon string) (dot.Node, error) {
+func (graph *Kubegraph) createStyledNode(name string, label string, icon string) (registry.Node, error) {
 	node := graph.Node(name)
 
 	// break long labels so it fits on our graph (k8s resource names can be up to
@@ -115,56 +109,33 @@ func (graph *Kubegraph) createStyledNode(name string, label string, icon string)
 	return node, nil
 }
 
-func (graph *Kubegraph) addNode(nodeType reflect.Type, nodeName string, node dot.Node) error {
-	nodes, err := graph.getNodes(nodeType)
-	if err != nil {
-		return err
-	}
-
-	nodes[nodeName] = node
-	return nil
-}
-
-func (graph *Kubegraph) getNodes(objectType reflect.Type) (registry.NodesMap, error) {
-	typeNodes, typeExists := graph.k8sNodes[objectType]
-	if !typeExists {
-		return nil, fmt.Errorf("no nodes for type %s found", objectType.String())
-	}
-
-	return typeNodes, nil
-}
-
-func (graph *Kubegraph) addObject(objectType reflect.Type, objectName string, object runtime.Object) error {
-	objects, err := graph.GetObjects(objectType)
-	if err != nil {
-		return err
-	}
-
-	objects[objectName] = object
-	return nil
-}
-
 // AddStyledNode creates a new styled node with the given resource
-func (graph *Kubegraph) AddStyledNode(resourceType reflect.Type, resourceObject runtime.Object, nodeName string, resourceName string, icon string) (dot.Node, error) {
+func (graph *Kubegraph) AddStyledNode(resourceType reflect.Type, resourceObject registry.RuntimeObject, nodeName string, resourceName string, icon string) (registry.Node, error) {
 
 	node, err := graph.createStyledNode(nodeName, resourceName, icon)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := graph.addNode(resourceType, resourceName, node); err != nil {
-		return nil, err
+	nodes, exists := graph.k8sNodes[resourceType]
+	if !exists {
+		return nil, ErrUnregistered
 	}
-	if err := graph.addObject(resourceType, resourceName, resourceObject); err != nil {
-		// TODO remove node added previously
-		return nil, err
+
+	objects, exists := graph.k8sObjects[resourceType]
+	if !exists {
+		return nil, ErrUnregistered
 	}
+
+	nodes[resourceName] = node
+	objects[resourceName] = resourceObject
 
 	return node, nil
 }
 
 // LinkNode links the node to the target node type/name, if it exists
-func (graph *Kubegraph) LinkNode(node dot.Node, targetNodeType reflect.Type, targetNodeName string) (edge dot.Edge, err error) {
+func (graph *Kubegraph) LinkNode(node registry.Node, targetNodeType reflect.Type, targetNodeName string) (edge registry.Edge, err error) {
+	// TODO why do we need to recover from a fatal error again?
 	defer func() {
 		if recoverErr := recover(); recoverErr != nil {
 			edge = nil
@@ -172,11 +143,15 @@ func (graph *Kubegraph) LinkNode(node dot.Node, targetNodeType reflect.Type, tar
 		}
 	}()
 
-	targetNode, ok := graph.k8sNodes[targetNodeType][targetNodeName]
+	nodes, ok := graph.k8sNodes[targetNodeType]
+	if !ok {
+		return nil, fmt.Errorf("unable to link: %w", ErrUnregistered)
+	}
+
+	targetNode, ok := nodes[targetNodeName]
 	// TODO get or create unknown node and link here
 	if !ok {
-		// log.Printf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
-		return nil, fmt.Errorf("%s node %s not found, unable to link", targetNodeType, targetNodeName)
+		return nil, fmt.Errorf("unable to link: %w", ErrNodeNotFound)
 	}
 
 	edge = graph.Edge(node, targetNode)
@@ -188,22 +163,22 @@ func (graph *Kubegraph) LinkNode(node dot.Node, targetNodeType reflect.Type, tar
 func (graph *Kubegraph) GetObjects(objectType reflect.Type) (registry.ObjectsMap, error) {
 	typeObjects, typeExists := graph.k8sObjects[objectType]
 	if !typeExists {
-		return nil, fmt.Errorf("no objects for type %s found", objectType.String())
+		return nil, ErrUnregistered
 	}
 
 	return typeObjects, nil
 }
 
 // GetNode gets a node by type/name
-func (graph *Kubegraph) GetNode(nodeType reflect.Type, nodeName string) (dot.Node, error) {
+func (graph *Kubegraph) GetNode(nodeType reflect.Type, nodeName string) (registry.Node, error) {
 	typeNodes, typeExists := graph.k8sNodes[nodeType]
 	if !typeExists {
-		return nil, fmt.Errorf("no nodes for type %s found", nodeType.String())
+		return nil, ErrUnregistered
 	}
 
 	node, nodeExists := typeNodes[nodeName]
 	if !nodeExists {
-		return nil, fmt.Errorf("node %s/%s not found", nodeType.String(), nodeName)
+		return nil, ErrNodeNotFound
 	}
 
 	return node, nil

@@ -2,54 +2,28 @@ package v1beta1
 
 import (
 	"fmt"
-	"reflect"
 
 	"github.com/wwmoraes/kubegraph/internal/registry"
-	coreV1 "k8s.io/api/core/v1"
-	extensionsV1beta1 "k8s.io/api/extensions/v1beta1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type IngressAdapter struct {
-	registry.Adapter
-}
-
-func init() {
-	registry.MustRegister(&IngressAdapter{
-		registry.NewAdapter(
-			reflect.TypeOf(&extensionsV1beta1.Ingress{}),
-			"icons/ing.svg",
-		),
-	})
-}
-
-func (thisAdapter *IngressAdapter) tryCastObject(obj runtime.Object) (*extensionsV1beta1.Ingress, error) {
-	casted, ok := obj.(*extensionsV1beta1.Ingress)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
-	}
-
-	return casted, nil
-}
-
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *IngressAdapter) Configure(statefulGraph registry.StatefulGraph) error {
-	serviceAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Service{}))
+func (this *IngressAdapter) Configure(statefulGraph registry.StatefulGraph) error {
+	serviceAdapter, err := GetServiceAdapter()
 	if err != nil {
-		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
+		return fmt.Errorf("warning[%s configure]: %w", this.GetType().String(), err)
 	}
 
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
+	objects, err := statefulGraph.GetObjects(this.GetType())
 	if err != nil {
 		return err
 	}
 
 	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
+		resource, err := this.CastObject(resourceObject)
 		if err != nil {
 			return err
 		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
+		resourceNode, err := statefulGraph.GetNode(this.GetType(), resourceName)
 		if err != nil {
 			return err
 		}
@@ -58,7 +32,7 @@ func (thisAdapter *IngressAdapter) Configure(statefulGraph registry.StatefulGrap
 		if resource.Spec.Backend != nil && resource.Spec.Backend.ServiceName != "" {
 			_, err := serviceAdapter.Connect(statefulGraph, resourceNode, resource.Spec.Backend.ServiceName)
 			if err != nil {
-				fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+				fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 			}
 		}
 
@@ -68,7 +42,7 @@ func (thisAdapter *IngressAdapter) Configure(statefulGraph registry.StatefulGrap
 				if path.Backend.ServiceName != "" {
 					_, err := serviceAdapter.Connect(statefulGraph, resourceNode, path.Backend.ServiceName)
 					if err != nil {
-						fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
+						fmt.Println(fmt.Errorf("%s configure error: %w", this.GetType().String(), err))
 					}
 				}
 			}

@@ -3,62 +3,35 @@ package v1
 import (
 	"fmt"
 	"log"
-	"reflect"
 
-	"github.com/wwmoraes/dot"
 	"github.com/wwmoraes/kubegraph/internal/registry"
 	"github.com/wwmoraes/kubegraph/internal/utils"
-	appsV1 "k8s.io/api/apps/v1"
-	coreV1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
-type deploymentAdapter struct {
-	registry.Adapter
-}
-
-func init() {
-	registry.MustRegister(&deploymentAdapter{
-		registry.NewAdapter(
-			reflect.TypeOf(&appsV1.Deployment{}),
-			"icons/deploy.svg",
-		),
-	})
-}
-
-func (thisAdapter *deploymentAdapter) tryCastObject(obj runtime.Object) (*appsV1.Deployment, error) {
-	casted, ok := obj.(*appsV1.Deployment)
-	if !ok {
-		return nil, fmt.Errorf("unable to cast object %s to %s", reflect.TypeOf(obj), thisAdapter.GetType().String())
-	}
-
-	return casted, nil
-}
-
 // Create add a graph node for the given object and stores it for further actions
-func (thisAdapter *deploymentAdapter) Create(statefulGraph registry.StatefulGraph, obj runtime.Object) (dot.Node, error) {
-	resource, err := thisAdapter.tryCastObject(obj)
-	if err != nil {
-		return nil, err
-	}
-	name := fmt.Sprintf("%s.%s~%s", resource.APIVersion, resource.Kind, resource.Name)
-	resourceNode, err := statefulGraph.AddStyledNode(thisAdapter.GetType(), obj, name, resource.Name, "icons/deploy.svg")
+func (adapter *DeploymentAdapter) Create(graph registry.StatefulGraph, obj registry.RuntimeObject) (registry.Node, error) {
+	resource, err := adapter.CastObject(obj)
 	if err != nil {
 		return nil, err
 	}
 
-	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
+	resourceNode, err := adapter.AddStyledNode(graph, obj)
 	if err != nil {
-		log.Println(fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err))
+		return nil, err
+	}
+
+	podAdapter, err := GetPodAdapter()
+	if err != nil {
+		log.Println(fmt.Errorf("warning[%s configure]: %w", adapter.GetType().String(), err))
 	} else {
 		podMetadata := resource.Spec.Template.ObjectMeta
 		podMetadata.Name = resource.Name
-		_, err := podAdapter.Create(statefulGraph, &coreV1.Pod{
+		_, err := podAdapter.Create(graph, &PodObject{
 			ObjectMeta: podMetadata,
 			Spec:       resource.Spec.Template.Spec,
 		})
 		if err != nil {
-			fmt.Println(fmt.Errorf("%s create error: %w", thisAdapter.GetType().String(), err))
+			fmt.Println(fmt.Errorf("%s create error: %w", adapter.GetType().String(), err))
 		}
 	}
 
@@ -66,39 +39,36 @@ func (thisAdapter *deploymentAdapter) Create(statefulGraph registry.StatefulGrap
 }
 
 // Configure connects the resources on this adapter with its dependencies
-func (thisAdapter *deploymentAdapter) Configure(statefulGraph registry.StatefulGraph) error {
-	podAdapter, err := thisAdapter.GetRegistry().Get(reflect.TypeOf(&coreV1.Pod{}))
+func (adapter *DeploymentAdapter) Configure(graph registry.StatefulGraph) error {
+	podAdapter, err := GetPodAdapter()
 	if err != nil {
-		return fmt.Errorf("warning[%s configure]: %v", thisAdapter.GetType().String(), err)
+		return fmt.Errorf("warning[%s configure]: %w", adapter.GetType().String(), err)
 	}
 
-	objects, err := statefulGraph.GetObjects(thisAdapter.GetType())
+	objects, err := adapter.GetGraphObjects(graph)
 	if err != nil {
 		return err
 	}
 
-	for resourceName, resourceObject := range objects {
-		resource, err := thisAdapter.tryCastObject(resourceObject)
-		if err != nil {
-			return err
-		}
-		resourceNode, err := statefulGraph.GetNode(thisAdapter.GetType(), resourceName)
-		if err != nil {
-			return err
-		}
+	podObjects, err := podAdapter.GetGraphObjects(graph)
+	if err != nil {
+		return err
+	}
 
-		objects, err := statefulGraph.GetObjects(reflect.TypeOf(&coreV1.Pod{}))
-		if err != nil {
-			return err
-		}
-		for podName, podObject := range objects {
-			pod := podObject.(*coreV1.Pod)
+	for name, resource := range objects {
+		for podName, pod := range podObjects {
+			if !utils.MatchLabels(resource.Spec.Selector.MatchLabels, pod.Labels) {
+				continue
+			}
 
-			if utils.MatchLabels(resource.Spec.Selector.MatchLabels, pod.Labels) {
-				_, err := podAdapter.Connect(statefulGraph, resourceNode, podName)
-				if err != nil {
-					fmt.Println(fmt.Errorf("%s configure error: %w", thisAdapter.GetType().String(), err))
-				}
+			resourceNode, err := adapter.GetGraphNode(graph, name)
+			if err != nil {
+				return err
+			}
+
+			_, err = podAdapter.Connect(graph, resourceNode, podName)
+			if err != nil {
+				fmt.Println(fmt.Errorf("%s configure error: %w", adapter.GetType().String(), err))
 			}
 		}
 	}

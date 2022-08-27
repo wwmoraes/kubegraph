@@ -4,13 +4,16 @@ import (
 	"errors"
 )
 
-// ErrAdapterNotFound means the requested adapter was not found on the registry
-var ErrAdapterNotFound = errors.New("adapter not found for such type")
+var (
+	// ErrAdapterNotFound means the requested adapter was not found on the registry
+	ErrAdapterNotFound = errors.New("adapter not found")
 
-// ErrAdapterAlreadyRegistered means there's already an adapter registered for
-// a given reflected type
-var ErrAdapterAlreadyRegistered = errors.New("only one adapter should be registered per type")
+	// ErrAdapterAlreadyRegistered means there's already an adapter registered for
+	// a given reflected type
+	ErrAdapterAlreadyRegistered = errors.New("adapter already registered")
 
-// ErrAdapterRegisteredElsewhere means the adapter has been registered within
-// another registry instance, and thus cannot be registered on another one
-var ErrAdapterRegisteredElsewhere = errors.New("adapter is already registered on another registry instance")
+	// ErrUnimplemented means an interface method has no overload implemented
+	ErrUnimplemented = errors.New("Unimplemented")
+
+	ErrIncompatibleType = errors.New("incompatible type")
+)
