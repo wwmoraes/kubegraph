@@ -7,7 +7,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.4.0
 	github.com/wwmoraes/dot v0.4.1
-	istio.io/client-go v1.14.3
+	istio.io/client-go v1.15.0
 	k8s.io/api v0.25.2
 	k8s.io/apiextensions-apiserver v0.24.1
 	k8s.io/apimachinery v0.25.2
@@ -29,11 +29,11 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368 // indirect
+	google.golang.org/genproto v0.0.0-20220628213854-d9e0b6570c03 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	istio.io/api v0.0.0-20220728184806-7837c4e62d82 // indirect
+	istio.io/api v0.0.0-20220826132550-04f2b20dc284 // indirect
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed // indirect
 	sigs.k8s.io/controller-runtime v0.4.0 // indirect
