@@ -7,7 +7,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.4.0
 	github.com/wwmoraes/dot v0.4.1
-	istio.io/client-go v1.15.0
+	istio.io/client-go v1.15.1
 	k8s.io/api v0.25.2
 	k8s.io/apiextensions-apiserver v0.24.1
 	k8s.io/apimachinery v0.25.2
@@ -33,7 +33,7 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	istio.io/api v0.0.0-20220826132550-04f2b20dc284 // indirect
+	istio.io/api v0.0.0-20220907134937-b47284812feb // indirect
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed // indirect
 	sigs.k8s.io/controller-runtime v0.4.0 // indirect
