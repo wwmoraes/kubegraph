@@ -5,26 +5,20 @@
 ![Kubegraph sample](https://raw.githubusercontent.com/wwmoraes/kubegraph/master/sample.png)
 
 ![Status](https://img.shields.io/badge/status-active-success.svg)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/wwmoraes/kubegraph/master.svg)](https://results.pre-commit.ci/latest/github/wwmoraes/kubegraph/master)
 [![GitHub Issues](https://img.shields.io/github/issues/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/issues)
 [![GitHub Pull Requests](https://img.shields.io/github/issues-pr/wwmoraes/kubegraph.svg)](https://github.com/wwmoraes/kubegraph/pulls)
+
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/wwmoraes/kubegraph/master.svg)](https://results.pre-commit.ci/latest/github/wwmoraes/kubegraph/master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f75bfca2d8a64170b48f/maintainability)](https://codeclimate.com/github/wwmoraes/kubegraph/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f75bfca2d8a64170b48f/test_coverage)](https://codeclimate.com/github/wwmoraes/kubegraph/test_coverage)
+
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fwwmoraes%2Fkubegraph?ref=badge_shield)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/6563/badge)](https://bestpractices.coreinfrastructure.org/projects/6563)
 
 [![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/wwmoraes/kubegraph)](https://hub.docker.com/r/wwmoraes/kubegraph)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/wwmoraes/kubegraph?label=image%20version)](https://hub.docker.com/r/wwmoraes/kubegraph)
 [![Docker Pulls](https://img.shields.io/docker/pulls/wwmoraes/kubegraph)](https://hub.docker.com/r/wwmoraes/kubegraph)
-
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=alert_status)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=bugs)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=security_rating)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=coverage)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=code_smells)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=wwmoraes_kubegraph&metric=sqale_index)](https://sonarcloud.io/dashboard?id=wwmoraes_kubegraph)
 
 ---
 

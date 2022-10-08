@@ -27,9 +27,8 @@
     "sonarsource"
   ],
   "search.exclude": {
-    "**/vendor": true,
+    "**/vendor": true
   },
-  "workspace.isHidden": true,
   "go.lintTool": "golangci-lint",
   "go.lintFlags": [
     "--fast"
