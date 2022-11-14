@@ -8,9 +8,9 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/wwmoraes/dot v0.4.1
 	istio.io/client-go v1.15.3
-	k8s.io/api v0.25.3
+	k8s.io/api v0.25.4
 	k8s.io/apiextensions-apiserver v0.24.1
-	k8s.io/apimachinery v0.25.3
+	k8s.io/apimachinery v0.25.4
 	k8s.io/client-go v0.25.3
 	k8s.io/kube-aggregator v0.25.3
 	sigs.k8s.io/application v0.8.3
