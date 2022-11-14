@@ -212,15 +212,15 @@ jobs:
           ${{ runner.os }}-sonar-scanner-cache-
         # yamllint enable rule:line-length
     - name: download lint report
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: lint-report
     - name: download test report
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: test-report
     - name: download coverage report
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: coverage-report
     - name: run sonar scanner
