@@ -558,10 +558,10 @@ gotest.tools v2.2.0+incompatible/go.mod h1:DsYFclhRJ6vuDpmuTbkuFWG+y2sxOXAzmJt81
 honnef.co/go/tools v0.0.0-20190102054323-c2f93a96b099/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190106161140-3f1c8253044a/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
 honnef.co/go/tools v0.0.0-20190523083050-ea95bdfd59fc/go.mod h1:rf3lG4BRIbNafJWhAfAdb/ePZxsR/4RtNHQocxwk9r4=
-istio.io/api v0.0.0-20221013011440-bc935762d2b9 h1:oDY95NgV77atZrCMx7i3XaSPL/OSirRI8jWWsiHA4GI=
-istio.io/api v0.0.0-20221013011440-bc935762d2b9/go.mod h1:hQkF0Q19MCmfOTre/Sg4KvrwwETq45oaFplnBm2p4j8=
-istio.io/client-go v1.15.3 h1:Zyd4ZVYCImWlPs+7yGye//K7l0j4UM06cqmQm5v8JX4=
-istio.io/client-go v1.15.3/go.mod h1:7M4mYZ9o9UVQQEwWihAq//EK9Ak0a/pUfOvP7b3I+XM=
+istio.io/api v0.0.0-20221208070204-0528cb6ce63b h1:pVcDWtdJYwrI79dLtj4x9tO3uF3o5Ye+Xd+KOlVnyqQ=
+istio.io/api v0.0.0-20221208070204-0528cb6ce63b/go.mod h1:hQkF0Q19MCmfOTre/Sg4KvrwwETq45oaFplnBm2p4j8=
+istio.io/client-go v1.16.1 h1:xkCpqOL3KbuZINRcSlBqJzN+hB5Ov/Q1LsRpsyAkhI8=
+istio.io/client-go v1.16.1/go.mod h1:NT96qrYnZ7AcuKnuknH/3GI+tv9Qm6VhC2ZX2vRaKeg=
 k8s.io/api v0.0.0-20190918155943-95b840bb6a1f/go.mod h1:uWuOHnjmNrtQomJrvEBg0c0HRNyQ+8KTEERVsK0PW48=
 k8s.io/api v0.17.0/go.mod h1:npsyOePkeP0CPwyGfXDHxvypiYMJxBWAMpQxCaJ4ZxI=
 k8s.io/api v0.25.4 h1:3YO8J4RtmG7elEgaWMb4HgmpS2CfY1QlaOz9nwB+ZSs=
